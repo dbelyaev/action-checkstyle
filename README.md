@@ -11,44 +11,56 @@ This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checks
 
 ## Input
 
-```yaml
-inputs:
-  github_token:
-    description: 'GITHUB_TOKEN'
-    default: '${{ github.token }}'
-  workdir:
-    description: 'Working directory relative to the root directory.'
-    default: '.'
-  ### Flags for reviewdog ###
-  level:
-    description: 'Report level for reviewdog [info,warning,error]'
-    default: 'info'
-  reporter:
-    description: 'Reporter of reviewdog command [github-pr-check,github-pr-review].'
-    default: 'github-pr-check'
-  filter_mode:
-    description: |
-      Filtering mode for the reviewdog command [added,diff_context,file,nofilter].
-      Default is added.
-    default: 'added'
-  fail_on_error:
-    description: |
-      Exit code for reviewdog when errors are found [true,false]
-      Default is `false`.
-    default: 'false'
-  reviewdog_flags:
-    description: 'Additional reviewdog flags'
-    default: ''
-  ### Flags for checkstyle ###
-  checkstyle_config:
-    description: |
-      Checkstyle configuration specifies which ruleset to apply during scan.
-      There are two built-in configurations in checkstyle: [google_checks.xml,sun_checks.xml].
-      google_checks.xml configures Checkstyle for the Google coding conventions (https://google.github.io/styleguide/javaguide.html)
-      sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
-    required: true
-    default: 'google_checks.xml'
-```
+### `checkstyle_config`
+
+Checkstyle configuration specifies which ruleset to apply during the scan.
+There are two built-in configurations in checkstyle: `[google_checks.xml,sun_checks.xml]`.
+* `google_checks.xml` 
+configures Checkstyle for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
+* `sun_checks.xml`
+configures Checkstyle for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+
+It is also possible to supply your custom Checkstyle configuration file located in the same directory.
+
+**`Default:`**  `google_checks.xml`
+
+### `workdir`
+Working directory relative to the root directory.
+
+**`Default:`** `.`
+
+### `level`
+Report level for reviewdog.
+
+**`Values:`** `[info, warning, error]`
+
+**`Default:`** `info`
+
+### `reporter`
+Reporter of reviewdog command.
+
+**`Values:`** `[github-pr-check, github-check, github-pr-review]`
+
+**`Default:`** `github-pr-check`
+
+### `filter_mode`
+Filtering mode for the reviewdog command.
+
+**`Values:`** `[added, diff_context, file, nofilter]`
+
+**`Default:`** `added`
+
+### `fail_on_error`
+Exit code for reviewdog when errors are found.
+
+**`Values:`** `[true, false]`
+
+**`Default:`** `false`
+
+### `reviewdog_flags`
+Additional reviewdog flags.
+
+**`Default:`** ``
 
 ## Usage
 
@@ -61,12 +73,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: dbelyaev/action-checkstyle@master
+      - uses: dbelyaev/action-checkstyle@v0.1.1
         with:
           github_token: ${{ secrets.github_token }}
-          # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
+          # Change reviewdog reporter if you need [github-pr-check, github-check, github-pr-review].
           reporter: github-pr-review
           # Change reporter level if you need [info,warning,error].
-          # GitHub Status Check won't become failure with warning.
-          level: ewarning
+          # GitHub Status Check won't become failure with a warning.
+          level: warning
 ```

@@ -28,7 +28,7 @@ inputs:
   reviewdog_flags:
     description: 'Additional reviewdog flags'
     default: ''
-  ### Flags for <linter-name> ###
+  ### Flags for checkstyle ###
   checkstyle_config:
     description: |
       Checkstyle configuration specifies which ruleset to apply during scan.
