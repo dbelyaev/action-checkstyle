@@ -14,7 +14,7 @@ This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checks
 ### `checkstyle_config`
 
 Checkstyle configuration specifies which ruleset to apply during the scan.
-There are two built-in configurations in checkstyle: `[google_checks.xml,sun_checks.xml]`.
+There are two built-in configurations in checkstyle: `[google_checks.xml, sun_checks.xml]`.
 * `google_checks.xml` 
 configures Checkstyle for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
 * `sun_checks.xml`

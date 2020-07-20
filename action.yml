@@ -1,5 +1,5 @@
-name: 'Run checkstyle with reviewdog'
-description: '🐶 Run checkstyle with reviewdog on pull requests to improve code review experience.'
+name: 'Checkstyle for Java'
+description: '🐶 Run checkstyle analysis on Java code and report results directly to PR with the help of reviewdog to improve code review experience.'
 author: 'Dmitriy Belyaev'
 inputs:
   github_token:
@@ -10,19 +10,19 @@ inputs:
     default: '.'
   ### Flags for reviewdog ###
   level:
-    description: 'Report level for reviewdog [info,warning,error]'
+    description: 'Report level for reviewdog [info, warning, error]'
     default: 'info'
   reporter:
-    description: 'Reporter of reviewdog command [github-pr-check,github-pr-review].'
+    description: 'Reporter of reviewdog command [github-pr-check, github-pr-review].'
     default: 'github-pr-check'
   filter_mode:
     description: |
-      Filtering mode for the reviewdog command [added,diff_context,file,nofilter].
+      Filtering mode for the reviewdog command [added, diff_context, file, nofilter].
       Default is added.
     default: 'added'
   fail_on_error:
     description: |
-      Exit code for reviewdog when errors are found [true,false]
+      Exit code for reviewdog when errors are found [true, false]
       Default is `false`.
     default: 'false'
   reviewdog_flags:
@@ -32,7 +32,7 @@ inputs:
   checkstyle_config:
     description: |
       Checkstyle configuration specifies which ruleset to apply during scan.
-      There are two built-in configurations in checkstyle: [google_checks.xml,sun_checks.xml].
+      There are two built-in configurations in checkstyle: [google_checks.xml, sun_checks.xml].
       google_checks.xml configures Checkstyle for the Google coding conventions (https://google.github.io/styleguide/javaguide.html)
       sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
     required: true
@@ -42,7 +42,6 @@ runs:
   image: 'Dockerfile'
 
 # Ref: https://haya14busa.github.io/github-action-brandings/
-# TODO: update branding if you want.
 branding:
   icon: 'check'
-  color: 'blue'
+  color: 'green'
