@@ -24,6 +24,12 @@ It is also possible to supply your custom Checkstyle configuration file located 
 
 **`Default:`**  `google_checks.xml`
 
+### `checkstyle_version`
+Checkstyle version to be used during analysis.
+For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+
+**`Default:`** `8.38`
+
 ### `workdir`
 Working directory relative to the root directory.
 
@@ -73,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: dbelyaev/action-checkstyle@v0.1.1
+      - uses: dbelyaev/action-checkstyle@master
         with:
           github_token: ${{ secrets.github_token }}
           # Change reviewdog reporter if you need [github-pr-check, github-check, github-pr-review].
