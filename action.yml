@@ -38,6 +38,11 @@ inputs:
       sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
     required: true
     default: 'google_checks.xml'
+  checkstyle_version:
+    description: |
+      Checkstyle version to be used during analysis.
+      For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+    default: '8.38'
 runs:
   using: 'docker'
   image: 'Dockerfile'
