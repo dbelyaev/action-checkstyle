@@ -9,64 +9,81 @@
 
 This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) check on your Java code and report status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull request.
 
-## Input
+## Input parameters
 
-### `checkstyle_config`
+* ### `checkstyle_config`  
 
-Checkstyle configuration specifies which ruleset to apply during the scan.
-There are two built-in configurations in checkstyle: `[google_checks.xml, sun_checks.xml]`.
-* `google_checks.xml` 
-configures Checkstyle for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
-* `sun_checks.xml`
-configures Checkstyle for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+  Checkstyle configuration specifies which ruleset to apply during the scan.  
+  There are two built-in configurations:
+  * `google_checks.xml` 
+config for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
+  * `sun_checks.xml`
+config for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
 
-It is also possible to supply your custom Checkstyle configuration file located in the same directory.
+  It is also possible to supply your custom Checkstyle configuration file located in the same directory.
 
-**`Default:`**  `google_checks.xml`
+  **`Default:`**  `google_checks.xml`
 
-### `checkstyle_version`
-Checkstyle version to be used during analysis.
-For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+* ### `checkstyle_version`
 
-**`Default:`** `8.38`
+  Checkstyle version to be used during analysis.  
+  For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-### `workdir`
-Working directory relative to the root directory.
+  **`Default:`** `8.38`
 
-**`Default:`** `.`
+* ### `workdir`
 
-### `level`
-Report level for reviewdog.
+  Working directory relative to the root directory.
 
-**`Values:`** `[info, warning, error]`
+  **`Default:`** `.`
 
-**`Default:`** `info`
+* ### `level`
 
-### `reporter`
-Reporter of reviewdog command.
+  Report level for reviewdog.
+  
+  **`Values:`** `[info, warning, error]`
+  
+  You can control GitHub status check result with this feature.
 
-**`Values:`** `[github-pr-check, github-check, github-pr-review]`
+  | Level     | GitHub Status |
+  | --------- | ------------- |
+  | `info`    | neutral       |
+  | `warning` | neutral       |
+  | `error`   | failure       |
 
-**`Default:`** `github-pr-check`
+  **`Default:`** `info`
 
-### `filter_mode`
-Filtering mode for the reviewdog command.
+* ### `reporter`
 
-**`Values:`** `[added, diff_context, file, nofilter]`
+  Reporter of reviewdog command.  
+  See more in reviewdog documentation: https://github.com/reviewdog/reviewdog#reporters
 
-**`Default:`** `added`
+  **`Values:`** `[github-pr-check, github-check, github-pr-review]`
 
-### `fail_on_error`
-Exit code for reviewdog when errors are found.
+  **`Default:`** `github-pr-check`
 
-**`Values:`** `[true, false]`
+* ### `filter_mode`
 
-**`Default:`** `false`
+  Filtering mode for the reviewdog command.  
+  See more in reviewdog documentation: https://github.com/reviewdog/reviewdog#filter-mode
 
-### `reviewdog_flags`
-Additional reviewdog flags.
+  **`Values:`** `[added, diff_context, file, nofilter]`
 
-**`Default:`** ``
+  **`Default:`** `added`
+
+* ### `fail_on_error`
+
+  Exit code for reviewdog when errors are found.
+
+  **`Values:`** `[true, false]`
+
+  **`Default:`** `false`
+
+* ### `reviewdog_flags`
+
+  Additional reviewdog flags.
+
+  **`Default:`** ``
 
 ## Usage
 
@@ -82,9 +99,6 @@ jobs:
       - uses: dbelyaev/action-checkstyle@master
         with:
           github_token: ${{ secrets.github_token }}
-          # Change reviewdog reporter if you need [github-pr-check, github-check, github-pr-review].
           reporter: github-pr-review
-          # Change reporter level if you need [info,warning,error].
-          # GitHub Status Check won't become failure with a warning.
           level: warning
 ```
