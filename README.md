@@ -15,7 +15,6 @@ An example of how the reported Checkstyle violations will look on a pull request
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
 
-
 ## Usage
 
 ```yaml
@@ -114,5 +113,11 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 * ### `reviewdog_flags`
 
   Additional reviewdog flags.
+
+  **`Default:`** ``
+
+* ### `properties_file`
+  
+  Properties file relative to the root directory.
 
   **`Default:`** ``
