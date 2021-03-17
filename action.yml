@@ -42,7 +42,7 @@ inputs:
     description: |
       Checkstyle version to be used during analysis.
       For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
-    default: '8.38'
+    default: '8.41'
 runs:
   using: 'docker'
   image: 'Dockerfile'
