@@ -1,34 +1,34 @@
-name: 'Checkstyle for Java'
+name: "Checkstyle for Java"
 # description should be no more than 125 characters!
-description: '🐶 Run checkstyle analysis on Java code and report results directly to pull request with the help of reviewdog.'
-author: 'Dmitriy Belyaev'
+description: "🐶 Run checkstyle analysis on Java code and report results directly to pull request with the help of reviewdog."
+author: "Dmitriy Belyaev"
 inputs:
   github_token:
-    description: 'GITHUB_TOKEN'
-    default: '${{ github.token }}'
+    description: "GITHUB_TOKEN"
+    default: "${{ github.token }}"
   workdir:
-    description: 'Working directory relative to the root directory.'
-    default: '.'
+    description: "Working directory relative to the root directory."
+    default: "."
   ### Flags for reviewdog ###
   level:
-    description: 'Report level for reviewdog [info, warning, error]'
-    default: 'info'
+    description: "Report level for reviewdog [info, warning, error]"
+    default: "info"
   reporter:
-    description: 'Reporter of reviewdog command [github-pr-check, github-pr-review].'
-    default: 'github-pr-check'
+    description: "Reporter of reviewdog command [github-pr-check, github-pr-review]."
+    default: "github-pr-check"
   filter_mode:
     description: |
       Filtering mode for the reviewdog command [added, diff_context, file, nofilter].
       Default is added.
-    default: 'added'
+    default: "added"
   fail_on_error:
     description: |
       Exit code for reviewdog when errors are found [true, false]
       Default is `false`.
-    default: 'false'
+    default: "false"
   reviewdog_flags:
-    description: 'Additional reviewdog flags'
-    default: ''
+    description: "Additional reviewdog flags"
+    default: ""
   ### Flags for checkstyle ###
   checkstyle_config:
     description: |
@@ -37,17 +37,17 @@ inputs:
       google_checks.xml configures Checkstyle for the Google coding conventions (https://google.github.io/styleguide/javaguide.html)
       sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
     required: true
-    default: 'google_checks.xml'
+    default: "google_checks.xml"
   checkstyle_version:
     description: |
       Checkstyle version to be used during analysis.
       For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
-    default: '8.41'
+    default: "8.43"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
 
 # Ref: https://haya14busa.github.io/github-action-brandings/
 branding:
-  icon: 'check'
-  color: 'green'
+  icon: "check"
+  color: "green"
