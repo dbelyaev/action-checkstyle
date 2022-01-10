@@ -9,6 +9,24 @@
 
 This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) check on your Java code and report status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull request.
 
+## Usage
+
+```yaml
+name: reviewdog
+on: [pull_request]
+jobs:
+  checkstyle:
+    name: runner / checkstyle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dbelyaev/action-checkstyle@v0.5.1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          level: warning
+```
+
 ## Input parameters
 
 * ### `checkstyle_config`  
@@ -29,7 +47,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   Checkstyle version to be used during analysis.  
   For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-  **`Default:`** `8.43`
+  **`Default:`** `9.2`
 
 * ### `workdir`
 
@@ -84,21 +102,3 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   Additional reviewdog flags.
 
   **`Default:`** ``
-
-## Usage
-
-```yaml
-name: reviewdog
-on: [pull_request]
-jobs:
-  checkstyle:
-    name: runner / checkstyle
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: dbelyaev/action-checkstyle@master
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review
-          level: warning
-```
