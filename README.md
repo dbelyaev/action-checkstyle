@@ -29,7 +29,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   Checkstyle version to be used during analysis.  
   For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-  **`Default:`** `8.43`
+  **`Default:`** `9.2`
 
 * ### `workdir`
 
