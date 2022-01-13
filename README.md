@@ -9,6 +9,13 @@
 
 This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) check on your Java code and report status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull request.
 
+## Example
+
+An example of how the reported checkstyle violations will look like on pull request is shown below ([link to PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/1)):
+
+![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
+
+
 ## Usage
 
 ```yaml
