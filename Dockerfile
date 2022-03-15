@@ -1,6 +1,6 @@
 FROM openjdk:8-alpine
 
-ENV REVIEWDOG_VERSION=v0.13.1
+ENV REVIEWDOG_VERSION=v0.14.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
