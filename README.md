@@ -26,7 +26,7 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dbelyaev/action-checkstyle@v0.7.3
         with:
           github_token: ${{ secrets.github_token }}
@@ -54,7 +54,11 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   Checkstyle version to be used during analysis.  
   For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-  **`Default:`** `9.2`
+    **IMPORTANT NOTE**
+  This field will always try to follow Checkstyle releases as close as possible and will use the latest available by default.
+  If it is not a default preference for your project, please, pin the needed version using this property.
+
+  **`Default:`** `10.9.3`
 
 * ### `workdir`
 
