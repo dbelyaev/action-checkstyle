@@ -42,7 +42,7 @@ inputs:
     description: |
       Checkstyle version to be used during analysis.
       For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
-      **IMPORTANT**
+      **IMPORTANT NOTE**
       This field will always try to follow Checkstyle releases as close as possible and will use the latest available by default.
       If it is not a default preference for your project, please, pin the needed version using this property.
     default: "10.9.3"
