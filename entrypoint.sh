@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "Running check"
-
 command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 1; }
 
 set -e
@@ -20,10 +18,11 @@ printenv
 ls
 
 # fetch checkstyle of a requested version
-echo "Downloading Checkstyle v${INPUT_CHECKSTYLE_VERSION}"
+echo "Download Checkstyle v${INPUT_CHECKSTYLE_VERSION}"
 wget -O - -q "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar" > /checkstyle.jar
 
-exec java -jar /checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "${INPUT_WORKDIR}" ${OPT_PROPERTIES_FILE} -f xml \
+echo "Run Checkstyle check"
+exec java -jar /checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" ${OPT_PROPERTIES_FILE} -f xml \
   | reviewdog -f=checkstyle \
       -name="checkstyle" \
       -reporter="${INPUT_REPORTER:-github-pr-check}" \
