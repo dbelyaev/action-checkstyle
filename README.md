@@ -7,11 +7,11 @@
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
 [![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
-This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) check on your Java code and report status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull request.
+This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) checks on your Java code and report the status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull requests.
 
 ## Example
 
-An example of how the reported checkstyle violations will look like on pull request is shown below ([link to PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/1)):
+An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/1)):
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
 
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dbelyaev/action-checkstyle@v0.7.4
+      - uses: dbelyaev/action-checkstyle@v0.8.1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -52,13 +52,13 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 * ### `checkstyle_version`
 
   Checkstyle version to be used during analysis.  
-  For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+  For a list of available version numbers, go to the[Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-    **IMPORTANT NOTE**
-  This field will always try to follow Checkstyle releases as close as possible and will use the latest available by default.
-  If it is not a default preference for your project, please, pin the needed version using this property.
+  **IMPORTANT NOTE**  
+  This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
+  If the default preference is not suitable for your project, please pin the needed version using this property.
 
-  **`Default:`** `10.9.3`
+  **`Default:`** `10.12.1`
 
 * ### `workdir`
 
