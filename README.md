@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dbelyaev/action-checkstyle@v0.8.1
+      - uses: dbelyaev/action-checkstyle@v0.8.2
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -52,23 +52,24 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 * ### `checkstyle_version`
 
   Checkstyle version to be used during analysis.  
-  For a list of available version numbers, go to the[Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+  For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
   **IMPORTANT NOTE**  
   This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
+
   If the default preference is not suitable for your project, please pin the needed version using this property.
 
   **`Default:`** `10.12.1`
 
 * ### `workdir`
 
-  Working directory relative to the root directory.
+  The working directory relative to the root directory.
 
   **`Default:`** `.`
 
 * ### `level`
 
-  Report level for reviewdog.
+  Report level for the reviewdog command.
   
   **`Values:`** `[info, warning, error]`
   
@@ -84,8 +85,9 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
 * ### `reporter`
 
-  Reporter of reviewdog command.  
-  See more in reviewdog documentation: https://github.com/reviewdog/reviewdog#reporters
+  Reporter for the reviewdog command.  
+
+  For more information, see the reviewdog documentation: https://github.com/reviewdog/reviewdog#reporters
 
   **`Values:`** `[github-pr-check, github-check, github-pr-review]`
 
@@ -94,7 +96,8 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 * ### `filter_mode`
 
   Filtering mode for the reviewdog command.  
-  See more in reviewdog documentation: https://github.com/reviewdog/reviewdog#filter-mode
+
+  For more information, see the reviewdog documentation: https://github.com/reviewdog/reviewdog#filter-mode
 
   **`Values:`** `[added, diff_context, file, nofilter]`
 
