@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dbelyaev/action-checkstyle@v0.8.2
+      - uses: dbelyaev/action-checkstyle@v0.8.4
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -110,14 +110,14 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   **`Default:`** `false`
 
-* ### `reviewdog_flags`
-
-  Additional reviewdog flags.
-
-  **`Default:`** ``
-
 * ### `properties_file`
   
   Properties file relative to the root directory.
+
+  **`Default:`** ``
+
+* ### `reviewdog_flags`
+
+  Additional reviewdog flags.
 
   **`Default:`** ``
