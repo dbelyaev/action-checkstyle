@@ -25,8 +25,8 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dbelyaev/action-checkstyle@v0.9.2
+      - uses: actions/checkout@v4
+      - uses: dbelyaev/action-checkstyle@v0.9.3
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
