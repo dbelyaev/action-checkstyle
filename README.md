@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dbelyaev/action-checkstyle@v0.8.4
+      - uses: dbelyaev/action-checkstyle@v0.9.2
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -58,7 +58,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   If the default preference is not suitable for your project, please pin the needed version using this property.
 
-  **`Default:`** `10.12.1`
+  **`Default:`** `10.12.3`
 
 * ### `workdir`
 
