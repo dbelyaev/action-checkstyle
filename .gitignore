@@ -1,0 +1,4 @@
+# Folders to ignore
+.vscode/
+*.jar
+*.DS_Store

@@ -36,7 +36,6 @@ inputs:
       There are two built-in configurations in checkstyle: [google_checks.xml, sun_checks.xml].
       google_checks.xml configures Checkstyle for the Google coding conventions (https://google.github.io/styleguide/javaguide.html)
       sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
-    required: true
     default: "google_checks.xml"
   checkstyle_version:
     description: |
@@ -48,8 +47,8 @@ inputs:
     default: "10.12.3"
   properties_file:
     description: |
-      Properties file relative to the root directory.
-    default: ''
+      Location of the properties file relative to the root directory. This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+    default: ""
 runs:
   using: "docker"
   image: "Dockerfile"

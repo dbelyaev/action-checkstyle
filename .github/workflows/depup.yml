@@ -1,7 +1,7 @@
 name: depup
 on:
   schedule:
-    - cron:  '14 14 * * *' # Runs at 14:14 UTC every day
+    - cron: "14 14 * * *" # Runs at 14:14 UTC every day
   repository_dispatch:
     types: [depup]
   workflow_dispatch:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: haya14busa/action-depup@v1
+      - uses: reviewdog/action-depup@v1
         id: depup
         with:
           file: Dockerfile

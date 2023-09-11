@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@v0.9.3
+      - uses: dbelyaev/action-checkstyle@v0.9.4
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -112,7 +112,9 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
 * ### `properties_file`
   
-  Properties file relative to the root directory.
+  Location of the properties file relative to the root directory.  
+  
+  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
 
   **`Default:`** ``
 
