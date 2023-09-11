@@ -4,6 +4,7 @@ on:
     branches:
       - master
   pull_request:
+
 jobs:
   test-check:
     name: runner / checkstyle (github-check)
@@ -29,7 +30,7 @@ jobs:
           reporter: github-pr-check
           level: warning
           locale: "US"
-          workdir: ./testdata/subdir/
+          workdir: ./testdata/java/
 
   test-pr-review:
     if: github.event_name == 'pull_request'
@@ -44,3 +45,40 @@ jobs:
           level: error
           locale: "US"
           reviewdog_flags: -filter-mode=file -fail-on-error
+
+  test-properties-file:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (properties_file)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          github_token: ${{ secrets.github_token }}
+          workdir: ./testdata/java/
+          checkstyle_config: ./testdata/properties_file/test_checks.xml
+          properties_file: ./testdata/properties_file/additional.properties
+
+  test-custom-checkstyle-version-9:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v9.0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          github_token: ${{ secrets.github_token }}
+          workdir: ./testdata/java/
+          checkstyle_version: "9.0"
+
+  test-custom-checkstyle-version-10:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v10.0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          github_token: ${{ secrets.github_token }}
+          workdir: ./testdata/java/
+          checkstyle_version: "10.0"
