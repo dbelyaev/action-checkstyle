@@ -11,7 +11,7 @@ This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checks
 
 ## Example
 
-An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/1)):
+An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9)):
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
 
@@ -48,9 +48,30 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   **`Default:`**  `google_checks.xml`
 
+  **`Example:`**
+
+  ```yaml
+  name: Checkstyle
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: dbelyaev/action-checkstyle@master
+          with:
+            github_token: ${{ secrets.github_token }}
+            reporter: github-pr-review
+            checkstyle_config: sun_checks.xml
+  ```
+
+  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10).
+
 * ### `checkstyle_version`
 
   Checkstyle version to be used during analysis.  
+
   For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
   **IMPORTANT NOTE**  
@@ -59,6 +80,24 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   If the default preference is not suitable for your project, please pin the needed version using this property.
 
   **`Default:`** `10.12.3`
+
+  **`Example:`**
+
+  ```yaml
+  name: reviewdog
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: dbelyaev/action-checkstyle@master
+          with:
+            github_token: ${{ secrets.github_token }}
+            reporter: github-pr-review
+            checkstyle_version: "9.0" # double quotes important here
+  ```
 
 * ### `workdir`
 
@@ -117,6 +156,27 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
 
   **`Default:`** ``
+
+  **`Example:`**
+
+  ```yaml
+  name: Checkstyle
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: dbelyaev/action-checkstyle@master
+          with:
+            github_token: ${{ secrets.github_token }}
+            reporter: github-pr-review
+            checkstyle_config: ./properties_file/test_checks.xml
+            properties_file: ./properties_file/additional.properties
+  ```
+
+  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
 
 * ### `reviewdog_flags`
 
