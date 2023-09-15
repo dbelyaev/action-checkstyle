@@ -52,7 +52,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
-          markdownlint_flags: '--disable MD013 --' # disable line length rule
+          markdownlint_flags: '**/*.md --ignore LICENSE.md --disable MD013 --' # disable line length rule and ignore LICENSE file
 
   misspell:
     name: runner / misspell

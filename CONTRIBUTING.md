@@ -21,40 +21,52 @@ In general, we follow [Work and Pull Request Workflow](https://github.com/susam/
 Here's a quick guide:
 
 1. Create your fork of the repository.
-2. Clone the project to your machine.
-3. To keep track of the original repository add another remote named "upstream".
-```shell
-git remote add upstream git@github.com:equinor/oilmod1-code-style.git
-```
-4. Create a branch locally with a succinct but descriptive name, prefixed with change type. 
-```shell
-git checkout -b feature/my-new-feature
-```
-5. Make the changes in the created branch. 
-7. Add the changed files.
-```shell
-git add path/to/filename
-```
-8. Commit your changes using the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) formatting for the commit messages. 
-```shell
-git commit -m "conventional commit formatted message"
-```
-9. Before sending the pull request, make sure to rebase onto the upstream source. This ensures your code is based on the latest available code.
-```shell
-git fetch upstream
-git rebase upstream/main
-```
-10. Push to your fork.
-```shell
-git push origin feature/my-new-feature
-```
-11. Submit a pull request to the original repository via GitHub interface.  
+1. Clone the project to your machine.
+1. To keep track of the original repository add another remote named "upstream".
+
+    ```shell
+    git remote add upstream git@github.com:equinor/oilmod1-code-style.git
+    ```
+
+1. Create a branch locally with a succinct but descriptive name, prefixed with change type.
+
+    ```shell
+    git checkout -b feature/my-new-feature
+    ```
+
+1. Make the changes in the created branch.
+1. Add the changed files.
+
+    ```shell
+    git add path/to/filename
+    ```
+
+1. Commit your changes using the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) formatting for the commit messages.
+
+    ```shell
+    git commit -m "conventional commit formatted message"
+    ```
+
+1. Before sending the pull request, make sure to rebase onto the upstream source. This ensures your code is based on the latest available code.
+
+    ```shell
+    git fetch upstream
+    git rebase upstream/main
+    ```
+
+1. Push to your fork.
+
+    ```shell
+    git push origin feature/my-new-feature
+    ```
+
+1. Submit a pull request to the original repository via GitHub interface.  
     * Please provide us with some explanation of why you made the changes you made.  
-    * For new features make sure to explain a standard use case to us. 
+    * For new features make sure to explain a standard use case to us.
 
 That's it... thank you for your contribution!
 
-After your pull request is merged, you can safely delete your branch. 
+After your pull request is merged, you can safely delete your branch.
 
 ## Code review process
 
