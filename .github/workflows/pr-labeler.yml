@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Label the PR size
     steps:
-      - uses: codelytv/pr-size-labeler@54ef36785e9f4cb5ecf1949cfc9b00dbb621d761 # v1.8.1
+      - uses: codelytv/pr-size-labeler@v1.8.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           xs_max_size: '10'
@@ -30,6 +30,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: banyan/auto-label@45a96386f4cac601434ed0f34db11c8df2fcac86 # v1.2
+      - uses: banyan/auto-label@1.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@v0.9.4
+      - uses: dbelyaev/action-checkstyle@v0.9.5
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
