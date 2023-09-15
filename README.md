@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@v0.9.4
+      - uses: dbelyaev/action-checkstyle@v0.9.5
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -39,7 +39,7 @@ jobs:
 
   Checkstyle configuration specifies which ruleset to apply during the scan.  
   There are two built-in configurations:
-  * `google_checks.xml` 
+  * `google_checks.xml`
 config for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
   * `sun_checks.xml`
 config for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
@@ -86,7 +86,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   Reporter for the reviewdog command.  
 
-  For more information, see the reviewdog documentation: https://github.com/reviewdog/reviewdog#reporters
+  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation.
 
   **`Values:`** `[github-pr-check, github-check, github-pr-review]`
 
@@ -96,7 +96,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   Filtering mode for the reviewdog command.  
 
-  For more information, see the reviewdog documentation: https://github.com/reviewdog/reviewdog#filter-mode
+  For more information, check [reviewdog / filter-mode](https://github.com/reviewdog/reviewdog#filter-mode) documentation.
 
   **`Values:`** `[added, diff_context, file, nofilter]`
 
