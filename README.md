@@ -51,7 +51,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   **`Example:`**
 
   ```yaml
-  name: Checkstyle
+  name: reviewdog
   on: [pull_request]
   jobs:
     checkstyle:
@@ -160,7 +160,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   **`Example:`**
 
   ```yaml
-  name: Checkstyle
+  name: reviewdog
   on: [pull_request]
   jobs:
     checkstyle:
