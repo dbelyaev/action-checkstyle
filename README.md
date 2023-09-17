@@ -36,6 +36,8 @@ jobs:
 
 ## Input parameters
 
+### Checkstyle parameters
+
 * ### `checkstyle_config`  
 
   Checkstyle configuration specifies which ruleset to apply during the scan.  
@@ -104,7 +106,38 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   The working directory relative to the root directory.
 
-  **`Default:`** `.`
+  **`Default:`** `'.'` (root)
+
+* ### `properties_file`
+  
+  Location of the properties file relative to the root directory.  
+  
+  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+
+  **`Default:`** `''` (empty)
+
+  **`Example:`**
+
+  ```yaml
+  name: reviewdog
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: dbelyaev/action-checkstyle@master
+          with:
+            github_token: ${{ secrets.github_token }}
+            reporter: github-pr-review
+            checkstyle_config: ./properties_file/test_checks.xml
+            properties_file: ./properties_file/additional.properties
+  ```
+
+  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
+
+### Reviewdog parameters
 
 * ### `level`
 
@@ -149,35 +182,6 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   **`Values:`** `[true, false]`
 
   **`Default:`** `false`
-
-* ### `properties_file`
-  
-  Location of the properties file relative to the root directory.  
-  
-  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
-
-  **`Default:`** ``
-
-  **`Example:`**
-
-  ```yaml
-  name: reviewdog
-  on: [pull_request]
-  jobs:
-    checkstyle:
-      name: runner / checkstyle
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
-          with:
-            github_token: ${{ secrets.github_token }}
-            reporter: github-pr-review
-            checkstyle_config: ./properties_file/test_checks.xml
-            properties_file: ./properties_file/additional.properties
-  ```
-
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
 
 * ### `reviewdog_flags`
 
