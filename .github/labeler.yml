@@ -1,5 +1,5 @@
 action:
-  - any: ['action.yml, 'Dockerfile', 'entrypoint.sh']
+  - any: ['action.yml', 'Dockerfile', 'entrypoint.sh']
 tests:
   - testdata/**/*
 automation:
