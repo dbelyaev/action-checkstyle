@@ -10,9 +10,9 @@ This document outlines the process to help ensure your contribution is accepted.
 
 There are several ways to contribute:
 
-* Suggest [features](https://github.com/equinor/oilmod1-code-style/issues/new?assignees=&labels=type%3A+%3Abulb%3A+feature+request&template=feature-request.md&title=)
-* Suggest [changes](https://github.com/equinor/oilmod1-code-style/issues/new?assignees=&labels=type%3A+%3Awrench%3A+maintenance&template=code-maintenance.md&title=)
-* Report [bugs](https://github.com/equinor/oilmod1-code-style/issues/new?assignees=&labels=type%3A+%3Abug+bug&template=bug-report.md&title=)
+* Suggest [features](https://github.com/dbelyaev/action-checkstyle/issues/new?assignees=&labels=type%3A+%3Abulb%3A+feature+request&template=feature-request.md&title=)
+* Suggest [changes](https://github.com/dbelyaev/action-checkstyle/issues/new?assignees=&labels=type%3A+%3Awrench%3A+maintenance&template=code-maintenance.md&title=)
+* Report [bugs](https://github.com/dbelyaev/action-checkstyle/issues/new?assignees=&labels=type%3A+%3Abug+bug&template=bug-report.md&title=)
 
 ## How to contribute your changes via PR
 
@@ -25,7 +25,7 @@ Here's a quick guide:
 1. To keep track of the original repository add another remote named "upstream".
 
     ```shell
-    git remote add upstream git@github.com:equinor/oilmod1-code-style.git
+    git remote add upstream git@github.com:dbelyaev/action-checkstyle.git
     ```
 
 1. Create a branch locally with a succinct but descriptive name, prefixed with change type.
