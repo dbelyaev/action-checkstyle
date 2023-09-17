@@ -7,8 +7,9 @@ on:
 jobs:
 
   label-pr-size:
+    name: Label PR size
     runs-on: ubuntu-latest
-    name: Label the PR size
+
     steps:
       - uses: codelytv/pr-size-labeler@v1.8.1
         with:
@@ -23,13 +24,17 @@ jobs:
             Please make sure you are NOT addressing multiple issues with one PR.
             Note this PR might be rejected due to its size.
 
-  # add labels based on files in submitted changes
   label-pr-changes:
-    name: Label the PR changes
+    name: Label PR changes
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: banyan/auto-label@1.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          sync-labels: true
+          dot: true   
