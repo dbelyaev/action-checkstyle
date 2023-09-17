@@ -1,8 +1,8 @@
 action:
-  - action.yml
+  - any: ['action.yml, 'Dockerfile', 'entrypoint.sh']
 tests:
   - testdata/**/*
 automation:
-  - .github/workflows/*
+  - .github/*
 docs:
   - '*.md'
