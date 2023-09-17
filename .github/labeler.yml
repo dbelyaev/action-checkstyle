@@ -1,0 +1,8 @@
+action:
+  - action.yml
+tests:
+  - testdata/**/*
+automation:
+  - .github/workflows/*
+docs:
+  - '*.md'
