@@ -27,7 +27,7 @@ jobs:
   label-pr-changes:
     name: Label PR changes
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       pull-requests: write
@@ -35,6 +35,5 @@ jobs:
     steps:
       - uses: actions/labeler@v4
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           sync-labels: true
-          dot: true   
+          dot: true
