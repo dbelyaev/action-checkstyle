@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 ENV REVIEWDOG_VERSION=v0.15.0
 
