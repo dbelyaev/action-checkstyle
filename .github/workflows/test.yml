@@ -16,7 +16,6 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-check
           level: info
-          locale: "US"
 
   test-pr-check:
     if: github.event_name == 'pull_request'
@@ -29,7 +28,6 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-check
           level: warning
-          locale: "US"
           workdir: ./testdata/java/
 
   test-pr-review:
@@ -43,7 +41,6 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           level: error
-          locale: "US"
           reviewdog_flags: -filter-mode=file -fail-on-error
 
   test-properties-file:
