@@ -21,7 +21,7 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"
-  wget -q -O /opt/lib/checkstyle.jar $url
+  wget -q -O /opt/lib/checkstyle.jar "$url"
 fi
 
 export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
