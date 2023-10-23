@@ -82,7 +82,7 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   If the default preference is not suitable for your project, please pin the needed version using this property.
 
-  **`Default:`** `10.12.3`
+  **`Default:`** latest available
 
   **`Example:`**
 

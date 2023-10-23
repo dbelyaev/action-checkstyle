@@ -44,7 +44,7 @@ inputs:
       **IMPORTANT NOTE**
       This field will always try to follow Checkstyle releases as close as possible and will use the latest available by default.
       If it is not a default preference for your project, please, pin the needed version using this property.
-    default: "10.12.3"
+    default: ""
   properties_file:
     description: |
       Location of the properties file relative to the root directory. This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
