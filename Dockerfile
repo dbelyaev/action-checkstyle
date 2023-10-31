@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21.0.1_12-jre-alpine
 
 ENV REVIEWDOG_VERSION v0.15.0
 ENV CHECKSTYLE_VERSION 10.12.4
