@@ -1,15 +1,19 @@
 action:
 - any:
-  - changed-files: ['action.yml', 'Dockerfile', 'entrypoint.sh']
+  - changed-files:
+    - any-glob-to-any-file: ['action.yml', 'Dockerfile', 'entrypoint.sh']
 
 tests:
-- changed-files:
-  - any-glob-to-any-file: testdata/**
+- any:
+  - changed-files:
+    - any-glob-to-any-file: testdata/**
 
 automation:
-- changed-files:
-  - any-glob-to-any-file: .github/**
+- any:
+  - changed-files:
+    - any-glob-to-any-file: .github/**
 
 docs:
-- changed-files:
-  - any-glob-to-any-file: '**/*.md'
+- any:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
