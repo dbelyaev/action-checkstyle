@@ -77,10 +77,10 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-  **IMPORTANT NOTE**  
-  This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
-
-  If the default preference is not suitable for your project, please pin the needed version using this property.
+  >[!IMPORTANT]
+  > This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
+  >
+  > If the default preference is not suitable for your project, please pin the needed version using this property.
 
   **`Default:`** latest available
 
