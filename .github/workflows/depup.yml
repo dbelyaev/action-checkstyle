@@ -11,6 +11,11 @@ jobs:
   reviewdog:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: reviewdog/action-depup@8e83b53888bf85c0248425f0b7e9ea55aaedf9da # v1.4.11
         id: depup
@@ -37,6 +42,11 @@ jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: reviewdog/action-depup@8e83b53888bf85c0248425f0b7e9ea55aaedf9da # v1.4.11
         id: depup-checkstyle
