@@ -4,9 +4,14 @@ on:
   pull_request:
     types: [ opened, synchronize ]
 
+permissions:
+  contents: read
+
 jobs:
 
   label-pr-size:
+    permissions:
+      pull-requests: write  # for codelytv/pr-size-labeler to add labels & comment on PRs
     name: Label PR size
     runs-on: ubuntu-latest
 
