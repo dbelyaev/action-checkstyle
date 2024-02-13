@@ -10,10 +10,11 @@ permissions:
 jobs:
 
   label-pr-size:
-    permissions:
-      pull-requests: write  # for codelytv/pr-size-labeler to add labels & comment on PRs
     name: Label PR size
     runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write  # for codelytv/pr-size-labeler to add labels & comment on PRs
 
     steps:
       - uses: codelytv/pr-size-labeler@v1.8.1
