@@ -10,10 +10,18 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # hay14busa/action-* to create releases, push tags
+      pull-requests: read # hay14busa/action-* to list pull requests
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -56,6 +64,11 @@ jobs:
   release-check:
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # hay14busa/action-* to add changelog comment to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
