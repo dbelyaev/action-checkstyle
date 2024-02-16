@@ -7,9 +7,17 @@ on:
     types: [depup]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   reviewdog:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # for peter-evans/create-pull-request to read/write repo contents
+      pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -41,6 +49,11 @@ jobs:
 
   checkstyle:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # for peter-evans/create-pull-request to read/write repo contents
+      pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0

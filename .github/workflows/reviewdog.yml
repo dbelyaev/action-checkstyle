@@ -7,10 +7,18 @@ on:
   pull_request:
     types: [ opened, synchronize ]
 
+permissions:
+  contents: read
+
 jobs:
   shellcheck:
     name: runner / shellcheck
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # add check status to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -33,6 +41,11 @@ jobs:
   hadolint:
     name: runner / hadolint
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # add check status to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -55,6 +68,11 @@ jobs:
   markdown-lint:
     name: runner / markdownlint
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # add check status to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -72,6 +90,11 @@ jobs:
   misspell:
     name: runner / misspell
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # add check status to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -89,6 +112,11 @@ jobs:
   alex:
     name: runner / alex
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # add check status to PR
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
