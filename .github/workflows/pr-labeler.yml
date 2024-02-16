@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      pull-requests: write  # for codelytv/pr-size-labeler to add labels & comment on PRs
+      pull-requests: write # for codelytv/pr-size-labeler to add labels & comment on PRs
 
     steps:
       - name: Harden Runner
