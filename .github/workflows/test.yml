@@ -5,15 +5,13 @@ on:
       - master
   pull_request:
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   test-check:
     name: runner / checkstyle (github-check)
     runs-on: ubuntu-latest
-
-    permissions:
-      checks: write
-
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -31,10 +29,6 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-check)
     runs-on: ubuntu-latest
-
-    permissions:
-      checks: write
-
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
