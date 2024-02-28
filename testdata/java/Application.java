@@ -13,7 +13,7 @@ public class Application {
     }
 
     private void DoReallyNothing() {
-                            var counter = 100;
+                            var counter = 100;                              
     }
 
     /**
