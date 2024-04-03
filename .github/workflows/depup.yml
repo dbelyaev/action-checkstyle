@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write # for peter-evans/create-pull-request to read/write repo contents
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
 
     steps:
@@ -51,7 +50,6 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write # for peter-evans/create-pull-request to read/write repo contents
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
 
     steps:
