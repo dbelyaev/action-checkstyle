@@ -7,12 +7,15 @@
 #
 # Source repository: https://github.com/actions/dependency-review-action
 name: 'Dependency Review'
+
 on: [pull_request]
 
+# only allow minimum required permissions at top-level
 permissions:
   contents: read
 
 jobs:
+
   dependency-review:
     runs-on: ubuntu-latest
     steps:

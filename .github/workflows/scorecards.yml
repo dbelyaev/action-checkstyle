@@ -3,6 +3,7 @@
 # policy, and support documentation.
 
 name: Scorecard supply-chain security
+
 on:
   # For Branch-Protection check. Only the default branch is supported. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
@@ -14,10 +15,11 @@ on:
   push:
     branches: ["master"]
 
-# Declare default permissions as read only.
+# only allow minimum required permissions at top-level
 permissions: read-all
 
 jobs:
+
   analysis:
     name: Scorecard analysis
     runs-on: ubuntu-latest

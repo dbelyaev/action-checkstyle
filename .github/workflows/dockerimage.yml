@@ -6,10 +6,12 @@ on:
       - master
   pull_request:
 
+# only allow minimum required permissions at top-level
 permissions:
   contents: read
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     steps:
