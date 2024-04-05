@@ -7,10 +7,12 @@ on:
     types: [depup]
   workflow_dispatch:
 
+# only allow minimum required permissions at top-level
 permissions:
   contents: read
 
 jobs:
+
   reviewdog:
     runs-on: ubuntu-latest
 

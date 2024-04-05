@@ -6,11 +6,13 @@ on:
       - master
   pull_request:
 
+# only allow minimum required permissions at top-level
 permissions:
   contents: read
 
 jobs:
-  build:
+
+  docker-build:
     runs-on: ubuntu-latest
     steps:
     - name: Harden Runner

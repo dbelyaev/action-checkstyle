@@ -10,10 +10,12 @@ on:
     types:
       - labeled
 
+# only allow minimum required permissions at top-level
 permissions:
   contents: read
 
 jobs:
+
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
