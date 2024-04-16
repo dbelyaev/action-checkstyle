@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21-jre-alpine@sha256:6f78a61a2aa1e6907dda2da3eb791d44ef3d18e36aee1d1bdaa3543bd44cff4b
 
-ENV REVIEWDOG_VERSION v0.17.2
+ENV REVIEWDOG_VERSION v0.17.3
 ENV CHECKSTYLE_VERSION 10.15.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
