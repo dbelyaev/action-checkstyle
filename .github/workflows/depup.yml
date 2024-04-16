@@ -18,6 +18,7 @@ jobs:
 
     permissions:
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
+      contents: write # to access git (used in auto commits)
 
     steps:
       - name: Harden Runner
@@ -53,6 +54,7 @@ jobs:
 
     permissions:
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
+      contents: write # to access git (used in auto commits)
 
     steps:
       - name: Harden Runner
