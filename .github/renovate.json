@@ -1,8 +1,15 @@
 {
   "extends": [
-    "config:base"
+    "config:best-practices"
   ],
   "labels": [
-    "bump:patch"
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
   ]
 }
