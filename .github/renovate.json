@@ -3,6 +3,6 @@
     "config:best-practices"
   ],
   "labels": [
-    "bump:patch"
+    "dependencies"
   ]
 }
