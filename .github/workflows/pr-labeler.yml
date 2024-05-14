@@ -22,7 +22,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: codelytv/pr-size-labeler@f2aafc4d8735009c6de18acefe15eecbfbfae56f # v1.9.0
+      - uses: codelytv/pr-size-labeler@56f6f0fc35c7cc0f72963b8467729e1120cb4bed # v1.10.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           xs_max_size: '10'
