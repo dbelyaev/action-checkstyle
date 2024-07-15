@@ -27,7 +27,7 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - uses: reviewdog/action-depup@c3f629695a3eb3923a57940dc8d862e6c9183020 # v1.5.0
+      - uses: reviewdog/action-depup@0e4ab9e4a2328dad5d2fa348377611c028c20889 # v1.6.0
         id: depup
         with:
           file: Dockerfile
@@ -63,7 +63,7 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - uses: reviewdog/action-depup@c3f629695a3eb3923a57940dc8d862e6c9183020 # v1.5.0
+      - uses: reviewdog/action-depup@0e4ab9e4a2328dad5d2fa348377611c028c20889 # v1.6.0
         id: depup-checkstyle
         with:
           file: Dockerfile
