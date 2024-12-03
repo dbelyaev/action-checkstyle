@@ -9,6 +9,7 @@
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/dbelyaev/action-checkstyle/badge)](https://securityscorecards.dev/viewer/?uri=github.com/dbelyaev/action-checkstyle)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_shield)
 
 This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) checks on your Java code and report the status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull requests.
 
