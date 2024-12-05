@@ -104,7 +104,7 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: reviewdog/action-misspell@6dbb2a0a90daef8df58aa6301645b59cc3253733 # v1.25.0
+      - uses: reviewdog/action-misspell@18ffb61effb93b47e332f185216be7e49592e7e1 # v1.26.1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-check
