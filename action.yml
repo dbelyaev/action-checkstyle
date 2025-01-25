@@ -21,11 +21,11 @@ inputs:
       Filtering mode for the reviewdog command [added, diff_context, file, nofilter].
       Default is added.
     default: "added"
-  fail_on_error:
+  fail_level:
     description: |
-      Exit code for reviewdog when errors are found [true, false]
-      Default is `false`.
-    default: "false"
+      Exits code 1 when errors are found at that level or above. Options are [none,any,error,warning,info]
+      Default is `error`.
+    default: "error"
   reviewdog_flags:
     description: "Additional reviewdog flags"
     default: ""
