@@ -178,13 +178,17 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   **`Default:`** `added`
 
-* ### `fail_on_error`
+* ### `fail_level`
 
-  Exit code for reviewdog when errors are found.
+  The reviewdog tool gives you a way to tell your automated system (like a CI pipeline) if it has found any errors in your code. This is done using something known as an exit code.
 
-  **`Values:`** `[true, false]`
+  By default (`-fail-level=none`), reviewdog will finish its run and give an exit code of `0`, which means everything is fine, even if it actually found some errors.
 
-  **`Default:`** `false`
+  But you can change this. If you use the `-fail-level` flag with `any`, `info`, `warning`, or `error`, reviewdog will finish with an exit code of `1` if it finds at least one problem with severity greater than or equal to the given level. This tells your automated system that there's something that needs attention (and you can trigger some actions, rules or events based on it).
+
+  **`Values:`** `[none, any, info, warning, error]`
+
+  **`Default:`** `none`
 
 * ### `reviewdog_flags`
 
