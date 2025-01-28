@@ -43,7 +43,7 @@ exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE
       -name="checkstyle" \
       -reporter="${INPUT_REPORTER:-github-pr-check}" \
       -filter-mode="${INPUT_FILTER_MODE:-added}" \
-      -fail-on-error="${INPUT_FAIL_ON_ERROR:-false}" \
+      -fail-level="${INPUT_FAIL_LEVEL:-none}" \
       -level="${INPUT_LEVEL}" \
       ${INPUT_REVIEWDOG_FLAGS}
 
