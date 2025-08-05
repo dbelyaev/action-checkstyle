@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.7_6-jre-alpine@sha256:8728e354e012e18310faa7f364d00185277dec741f4f6d593af6c61fc0eb15fd
+FROM eclipse-temurin:21.0.8_9-jre-alpine@sha256:4ca7eff3ab0ef9b41f5fefa35efaeda9ed8d26e161e1192473b24b3a6c348aef
 
 ENV REVIEWDOG_VERSION=v0.20.3
 ENV CHECKSTYLE_VERSION=10.26.1
