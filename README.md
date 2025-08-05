@@ -1,17 +1,29 @@
 # Checkstyle for Java GitHub Action
 
+<!-- Release and Build Status -->
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
 [![Test](https://github.com/dbelyaev/action-checkstyle/workflows/Test/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3ATest)
 [![reviewdog](https://github.com/dbelyaev/action-checkstyle/workflows/reviewdog/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Areviewdog)
-[![depup](https://github.com/dbelyaev/action-checkstyle/workflows/depup/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Adepup)
 [![release](https://github.com/dbelyaev/action-checkstyle/workflows/release/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Arelease)
-[![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
+[![depup](https://github.com/dbelyaev/action-checkstyle/workflows/depup/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Adepup)
 
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
+<!-- Project Quality and Community -->
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/dbelyaev/action-checkstyle/badge)](https://securityscorecards.dev/viewer/?uri=github.com/dbelyaev/action-checkstyle)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_shield)
+[![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
-This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) checks on your Java code and report the status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull requests.
+A GitHub action that integrates [Checkstyle](https://github.com/checkstyle/checkstyle) with your pull request workflow to enforce Java code quality standards. Violations are automatically reported via [reviewdog](https://github.com/reviewdog/reviewdog), making code reviews more efficient and consistent.
+
+## Table of Contents
+
+- [Checkstyle for Java GitHub Action](#checkstyle-for-java-github-action)
+  - [Table of Contents](#table-of-contents)
+  - [Example](#example)
+  - [Usage](#usage)
+  - [Input Parameters](#input-parameters)
+    - [Checkstyle Parameters](#checkstyle-parameters)
+    - [Reviewdog Parameters](#reviewdog-parameters)
 
 ## Example
 
@@ -37,24 +49,23 @@ jobs:
           level: warning
 ```
 
-## Input parameters
+## Input Parameters
 
-### Checkstyle parameters
+### Checkstyle Parameters
 
-* ### `checkstyle_config`  
+- ### `checkstyle_config`  
 
   Checkstyle configuration specifies which ruleset to apply during the scan.  
+  
   There are two built-in configurations:
-  * `google_checks.xml`
-config for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
-  * `sun_checks.xml`
-config for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+  - `google_checks.xml` - Configuration for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
+  - `sun_checks.xml` - Configuration for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
 
   It is also possible to supply your custom Checkstyle configuration file located in the same directory.
 
-  **`Default:`**  `google_checks.xml`
+  **Default:** `google_checks.xml`
 
-  **`Example:`**
+  **Example:**
 
   ```yaml
   name: reviewdog
@@ -74,20 +85,17 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10).
 
-* ### `checkstyle_version`
+- ### `checkstyle_version`
 
   Checkstyle version to be used during analysis.  
 
   For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
 
-  >[!IMPORTANT]
-  > This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
-  >
-  > If the default preference is not suitable for your project, please pin the needed version using this property.
+  **Important:** This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default. If the default preference is not suitable for your project, please pin the needed version using this property.
 
-  **`Default:`** latest available
+  **Default:** Latest available version
 
-  **`Example:`**
+  **Example:**
 
   ```yaml
   name: reviewdog
@@ -105,21 +113,21 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
             checkstyle_version: "9.0" # double quotes important here
   ```
 
-* ### `workdir`
+- ### `workdir`
 
   The working directory relative to the root directory.
 
-  **`Default:`** `'.'` (root)
+  **Default:** `'.'` (root)
 
-* ### `properties_file`
+- ### `properties_file`
   
   Location of the properties file relative to the root directory.  
   
   This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
 
-  **`Default:`** `''` (empty)
+  **Default:** `''` (empty)
 
-  **`Example:`**
+  **Example:**
 
   ```yaml
   name: reviewdog
@@ -140,15 +148,25 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
 
   Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
 
-### Reviewdog parameters
+### Reviewdog Parameters
 
-* ### `level`
+- ### `reporter`
 
-  Report level for the reviewdog command.
+  Specific reporter to be used for the GitHub results reporting by reviewdog.  
+
+  **Values:** `github-pr-check`, `github-check`, `github-pr-review`
+
+  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation, which includes examples of GitHub reports and descriptions of possible limitations.
+
+  **Default:** `github-pr-check`
+
+- ### `level`
+
+  This flag is used to change report level for the chosen `reporter`.
   
-  **`Values:`** `[info, warning, error]`
+  **Values:** `info`, `warning`, `error`
   
-  You can control GitHub status check result with this feature.
+  You can control GitHub status check result with this feature:
 
   | Level     | GitHub Status |
   | --------- | ------------- |
@@ -156,42 +174,30 @@ config for the [Sun coding conventions](https://www.oracle.com/java/technologies
   | `warning` | neutral       |
   | `error`   | failure       |
 
-  **`Default:`** `info`
+  **Default:** `info`
 
-* ### `reporter`
-
-  Reporter for the reviewdog command.  
-
-  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation.
-
-  **`Values:`** `[github-pr-check, github-check, github-pr-review]`
-
-  **`Default:`** `github-pr-check`
-
-* ### `filter_mode`
+- ### `filter_mode`
 
   Filtering mode for the reviewdog command.  
 
+  **Values:** `added`, `diff_context`, `file`, `nofilter`
+
   For more information, check [reviewdog / filter-mode](https://github.com/reviewdog/reviewdog#filter-mode) documentation.
 
-  **`Values:`** `[added, diff_context, file, nofilter]`
+  **Default:** `added`
 
-  **`Default:`** `added`
+- ### `fail_level`
 
-* ### `fail_level`
+  Controls when reviewdog should return a non-zero exit code to fail your workflow.
+  
+  **Values:** `none`, `any`, `info`, `warning`, `error`
+  
+  By default (`none`), reviewdog will exit with code `0` even if it finds errors. Setting this to another value will cause reviewdog to exit with code `1` when it finds issues at or above the specified severity level, which can be used to fail the GitHub workflow.
 
-  The reviewdog tool gives you a way to tell your automated system (like a CI pipeline) if it has found any errors in your code. This is done using something known as an exit code.
+  **Default:** `none`
 
-  By default (`-fail-level=none`), reviewdog will finish its run and give an exit code of `0`, which means everything is fine, even if it actually found some errors.
-
-  But you can change this. If you use the `-fail-level` flag with `any`, `info`, `warning`, or `error`, reviewdog will finish with an exit code of `1` if it finds at least one problem with severity greater than or equal to the given level. This tells your automated system that there's something that needs attention (and you can trigger some actions, rules or events based on it).
-
-  **`Values:`** `[none, any, info, warning, error]`
-
-  **`Default:`** `none`
-
-* ### `reviewdog_flags`
+- ### `reviewdog_flags`
 
   Additional reviewdog flags.
 
-  **`Default:`** ``
+  **Default:** `""`
