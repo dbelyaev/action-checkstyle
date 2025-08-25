@@ -21,6 +21,10 @@ A GitHub action that integrates [Checkstyle](https://github.com/checkstyle/check
   - [Table of Contents](#table-of-contents)
   - [Example](#example)
   - [Usage](#usage)
+    - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
+      - [Pinning by Tag](#pinning-by-tag)
+      - [Pinning by Commit SHA](#pinning-by-commit-sha)
+      - [Best Practice](#best-practice)
   - [Input Parameters](#input-parameters)
     - [Checkstyle Parameters](#checkstyle-parameters)
     - [Reviewdog Parameters](#reviewdog-parameters)
@@ -48,6 +52,38 @@ jobs:
           reporter: github-pr-review
           level: warning
 ```
+
+### Security Note: Pin by Tag or by Hash?
+
+When using GitHub Actions, you can pin to a specific version in two ways:
+
+#### Pinning by Tag
+
+```yaml
+- uses: dbelyaev/action-checkstyle@v2 # pin to the latest major tag
+```
+
+```yaml
+- uses: dbelyaev/action-checkstyle@v2.0.0 # pin to specific version tag
+```
+
+- **Pros**: Convenient, automatically receives updates
+- **Cons**: Less secure, as tags can be modified to point to different commits
+
+#### Pinning by Commit SHA
+
+```yaml
+- uses: dbelyaev/action-checkstyle@8cf9c6f2656938f2a745dca3179929d14e7a5316 # v2.0.0
+```
+
+- **Pros**: Maximum security, guarantees the exact same code runs every time
+- **Cons**: Requires manual updates when new versions are released
+
+#### Best Practice
+
+GitHub [officially recommends](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions) pinning actions to a full length commit SHA for production workflows and 3rd party actions to ensure security. For non-critical workflows, major version tags provide a reasonable balance between convenience and safety.
+
+For automated SHA updates, consider using tools like [Dependabot (owned by GitHub)](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) or [Renovate (owned by mend.io)](https://github.com/apps/renovate) to keep your actions current while maintaining security.
 
 ## Input Parameters
 
