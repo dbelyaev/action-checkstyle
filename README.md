@@ -41,8 +41,8 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@master
+      - uses: actions/checkout@v5
+      - uses: dbelyaev/action-checkstyle@v2
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -75,8 +75,8 @@ jobs:
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
+        - uses: actions/checkout@v5
+        - uses: dbelyaev/action-checkstyle@v2
           with:
             github_token: ${{ secrets.github_token }}
             reporter: github-pr-review
@@ -105,8 +105,8 @@ jobs:
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
+        - uses: actions/checkout@v5
+        - uses: dbelyaev/action-checkstyle@v2
           with:
             github_token: ${{ secrets.github_token }}
             reporter: github-pr-review
