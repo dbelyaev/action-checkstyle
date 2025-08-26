@@ -4,12 +4,11 @@ on:
   schedule:
     - cron: "14 14 * * *" # Runs at 14:14 UTC every day
   repository_dispatch:
-    types: [depup]
+    types: [ depup ]
   workflow_dispatch:
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 

@@ -6,18 +6,14 @@ on:
       - master
   pull_request:
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 
   test-check:
     name: runner / checkstyle (github-check)
     runs-on: ubuntu-latest
-
-    permissions:
-      checks: write
 
     steps:
       - name: Harden Runner
@@ -36,9 +32,6 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-check)
     runs-on: ubuntu-latest
-
-    permissions:
-      checks: write
 
     steps:
       - name: Harden Runner
