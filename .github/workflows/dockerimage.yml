@@ -6,14 +6,17 @@ on:
       - master
   pull_request:
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 
   docker-build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
     steps:
     - name: Harden Runner
       uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0

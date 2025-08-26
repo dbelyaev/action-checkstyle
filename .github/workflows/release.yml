@@ -10,9 +10,8 @@ on:
     types:
       - labeled
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 

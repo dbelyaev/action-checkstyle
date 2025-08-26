@@ -7,9 +7,8 @@ on:
   pull_request:
     types: [ opened, synchronize ]
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 
