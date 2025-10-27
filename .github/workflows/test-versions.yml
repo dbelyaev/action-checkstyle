@@ -49,7 +49,7 @@ jobs:
 
   test-custom-checkstyle-version-11:
     if: github.event_name == 'pull_request'
-    name: runner / checkstyle (v11.0)
+    name: runner / checkstyle (v11.0.0)
     runs-on: ubuntu-latest
 
     steps:
@@ -63,4 +63,4 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           workdir: ./testdata/java/
-          checkstyle_version: "11.0"
+          checkstyle_version: "11.0.0"
