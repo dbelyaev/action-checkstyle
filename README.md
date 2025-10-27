@@ -2,10 +2,12 @@
 
 <!-- Release and Build Status -->
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
-[![Test](https://github.com/dbelyaev/action-checkstyle/workflows/Test/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3ATest)
 [![reviewdog](https://github.com/dbelyaev/action-checkstyle/workflows/reviewdog/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Areviewdog)
 [![release](https://github.com/dbelyaev/action-checkstyle/workflows/release/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Arelease)
 [![depup](https://github.com/dbelyaev/action-checkstyle/workflows/depup/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Adepup)
+[![Test - Reviewers](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-reviewers.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-reviewers.yml)
+[![Test - Versions](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-versions.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-versions.yml)
+[![Test - Other](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-other.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-other.yml)
 
 <!-- Project Quality and Community -->
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/dbelyaev/action-checkstyle/badge)](https://securityscorecards.dev/viewer/?uri=github.com/dbelyaev/action-checkstyle)
