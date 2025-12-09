@@ -1,16 +1,28 @@
 {
-  "extends": ["config:best-practices"],
-  "labels": ["dependencies"],
+  "extends": [
+    "config:best-practices"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
       "description": "Automerge non-major updates",
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     },
     {
-      "matchManagers": ["github-actions"],
-      "matchPackagePatterns": ["^actions/", "^github/"],
-      "pinDigests": false
+      "matchManagers": [
+        "github-actions"
+      ],
+      "pinDigests": false,
+      "matchPackageNames": [
+        "/^actions//",
+        "/^github//"
+      ]
     }
   ]
 }
