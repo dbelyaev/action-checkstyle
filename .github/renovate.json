@@ -9,7 +9,6 @@
     },
     {
       "matchManagers": ["github-actions"],
-      "matchDepTypes": ["action"],
       "matchPackagePatterns": ["^actions/", "^github/"],
       "pinDigests": false
     }
