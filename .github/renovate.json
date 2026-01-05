@@ -5,6 +5,7 @@
   "labels": [
     "dependencies"
   ],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "description": "Automerge non-major updates",
@@ -13,6 +14,21 @@
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "description": "Longer cooldown for major versions",
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "15 days"
+    },
+    {
+      "description": "Medium cooldown for minor versions",
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Short cooldown for patch versions",
+      "matchUpdateTypes": ["patch"],
+      "minimumReleaseAge": "3 days"
     }
   ]
 }
