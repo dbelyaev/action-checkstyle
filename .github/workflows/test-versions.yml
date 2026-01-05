@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "9.0"
 
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "10.0"
 
@@ -65,6 +65,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "11.0.0"

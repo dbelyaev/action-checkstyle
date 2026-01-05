@@ -39,7 +39,7 @@ jobs:
           if_false: "github-check"
       - uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: ${{ steps.reporter.outputs.value }}
           level: warning
 
@@ -66,7 +66,7 @@ jobs:
           if_false: "github-check"
       - uses: reviewdog/action-hadolint@fc7ee4a9f71e521bc43e370819247b70e5327540 # v1.50.2
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: ${{ steps.reporter.outputs.value }}
           level: warning
 
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: reviewdog/action-misspell@d6429416b12b09b4e2768307d53bef58d172e962 # v1.27.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
           locale: "US"
@@ -131,6 +131,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: reviewdog/action-alex@6083b8ca333981fa617c6828c5d8fb21b13d916b # v1.16.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning

@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: info
 
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
           level: warning
           workdir: ./testdata/java/
@@ -65,6 +65,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error
