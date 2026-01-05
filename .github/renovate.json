@@ -13,16 +13,6 @@
         "patch"
       ],
       "automerge": true
-    },
-    {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "pinDigests": false,
-      "matchPackageNames": [
-        "/^actions//",
-        "/^github//"
-      ]
     }
   ]
 }
