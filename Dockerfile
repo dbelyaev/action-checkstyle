@@ -13,6 +13,12 @@ RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master
     mkdir -p /opt/lib && \
     wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar
 
+# create non-root user
+RUN addgroup -S actionuser && adduser -S actionuser -G actionuser
+
 COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chown actionuser:actionuser /entrypoint.sh
+
+USER actionuser
 
 ENTRYPOINT ["/entrypoint.sh"]
