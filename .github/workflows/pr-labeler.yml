@@ -15,8 +15,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # for codelytv/pr-size-labeler to add labels & comment on PRs
+      contents: read # to calculate PR diff size
+      pull-requests: write # to add size labels and post warning comments (codelytv/pr-size-labeler)
 
     steps:
       - name: Harden Runner
@@ -43,8 +43,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write
+      contents: read # to read .github/labeler.yml config and checkout repository
+      pull-requests: write # to add/sync labels based on changed file paths (actions/labeler)
 
     steps:
       - name: Harden Runner

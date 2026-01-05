@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
+      contents: read # to checkout repository and read dependency manifest files
 
     steps:
       - name: Harden Runner

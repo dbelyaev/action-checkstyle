@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
+      contents: read # to checkout repository and access Dockerfile for building
 
     steps:
     - name: Harden Runner

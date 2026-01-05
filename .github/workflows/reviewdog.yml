@@ -22,8 +22,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository for linting
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-shellcheck)
 
     steps:
       - name: Harden Runner
@@ -50,8 +50,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and lint Dockerfile
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-hadolint)
 
     steps:
       - name: Harden Runner
@@ -78,8 +78,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and lint markdown files
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-markdownlint)
 
     steps:
       - name: Harden Runner
@@ -101,8 +101,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and check for spelling errors
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-misspell)
 
     steps:
       - name: Harden Runner
@@ -124,8 +124,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and check text for insensitive language
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-alex)
 
     steps:
       - name: Harden Runner
