@@ -51,16 +51,6 @@ jobs:
           sarif_file: 'trivy-dockerfile-results.sarif'
           category: 'trivy'
 
-      - name: Run Trivy vulnerability scanner on Dockerfile (table format)
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
-        with:
-          scan-type: 'config'
-          scan-ref: 'Dockerfile'
-          format: 'table'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'
-          ignore-unfixed: false
-
   trivy-image-scan:
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -98,13 +88,3 @@ jobs:
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'trivy-image'
-
-      - name: Run Trivy vulnerability scanner on Docker image (table format)
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
-        with:
-          scan-type: 'image'
-          image-ref: 'action-checkstyle:${{ github.sha }}'
-          format: 'table'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'
-          ignore-unfixed: false
