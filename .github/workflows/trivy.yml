@@ -22,8 +22,6 @@ jobs:
     permissions:
       contents: read # to checkout repository and access Dockerfile for security scanning
       security-events: write # to upload SARIF results to GitHub security dashboard (github/codeql-action)
-      #pull-requests: write # to post security scan results as PR comments (aquasecurity/trivy-action)
-      #actions: read # to access workflow run metadata for SARIF upload telemetry (github/codeql-action)
 
     steps:
       - name: Harden Runner
@@ -58,7 +56,6 @@ jobs:
     permissions:
       contents: read # to checkout repository and build Docker image for security scanning
       security-events: write # to upload SARIF results to GitHub security dashboard (github/codeql-action)
-      #actions: read # to access workflow run metadata for SARIF upload telemetry (github/codeql-action)
 
     steps:
       - name: Harden Runner
