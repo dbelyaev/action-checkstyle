@@ -6,25 +6,32 @@
     "dependencies"
   ],
   "schedule": [
-    "after 10pm and before 5am every weekday"
+    "after 10pm every weekday",
+    "before 5am every weekday"
   ],
   "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "description": "Longer cooldown for major versions",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "minimumReleaseAge": "15 days"
     },
     {
       "description": "Medium cooldown for minor versions with automerge",
-      "matchUpdateTypes": ["minor"],
+      "matchUpdateTypes": [
+        "minor"
+      ],
       "minimumReleaseAge": "7 days",
       "automerge": true
     },
     {
       "description": "Patch versions with 3-day default cooldown and automerge",
-      "matchUpdateTypes": ["patch"],
+      "matchUpdateTypes": [
+        "patch"
+      ],
       "automerge": true
     }
   ]
