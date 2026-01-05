@@ -19,7 +19,7 @@
       "automerge": true
     },
     {
-      "description": "Short cooldown for patch versions with automerge",
+      "description": "Patch versions with 3-day default cooldown and automerge",
       "matchUpdateTypes": ["patch"],
       "automerge": true
     }
