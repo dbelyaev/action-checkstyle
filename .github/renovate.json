@@ -24,11 +24,6 @@
       "description": "Medium cooldown for minor versions",
       "matchUpdateTypes": ["minor"],
       "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Short cooldown for patch versions",
-      "matchUpdateTypes": ["patch"],
-      "minimumReleaseAge": "3 days"
     }
   ]
 }
