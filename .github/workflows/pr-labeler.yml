@@ -12,6 +12,7 @@ jobs:
   label-pr-size:
     name: Label PR size
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       contents: read
@@ -39,6 +40,7 @@ jobs:
   label-pr-changes:
     name: Label PR changes
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       contents: read

@@ -18,6 +18,7 @@ jobs:
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       contents: write # hay14busa/action-* to create releases, push tags
@@ -65,6 +66,7 @@ jobs:
   release-check:
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       contents: read

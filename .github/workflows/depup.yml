@@ -14,6 +14,7 @@ jobs:
 
   reviewdog:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
@@ -50,6 +51,7 @@ jobs:
 
   checkstyle:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
       pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs

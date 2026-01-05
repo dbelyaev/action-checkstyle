@@ -19,6 +19,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (reviewdog-flags)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -36,6 +37,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (properties_file)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner

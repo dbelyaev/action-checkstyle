@@ -18,6 +18,7 @@ jobs:
   test-check:
     name: runner / checkstyle (github-check)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -36,6 +37,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-check)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -55,6 +57,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-review)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
