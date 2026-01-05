@@ -9,6 +9,10 @@ on:
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test-reviewdog-flags:
