@@ -54,8 +54,8 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      pull-requests: write # for peter-evans/create-pull-request to add upgrade PRs
-      contents: write # to access git (used in auto commits)
+      pull-requests: write # to create/update PRs with dependency updates (peter-evans/create-pull-request)
+      contents: write # to checkout repository and commit/push version changes to branches
 
     steps:
       - name: Harden Runner
