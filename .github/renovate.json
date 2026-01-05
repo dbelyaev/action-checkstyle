@@ -5,24 +5,23 @@
   "labels": [
     "dependencies"
   ],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
-      "description": "Automerge non-major updates",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "description": "Longer cooldown for major versions",
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "15 days"
+    },
+    {
+      "description": "Medium cooldown for minor versions with automerge",
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "7 days",
       "automerge": true
     },
     {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "pinDigests": false,
-      "matchPackageNames": [
-        "/^actions//",
-        "/^github//"
-      ]
+      "description": "Patch versions with 3-day default cooldown and automerge",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
     }
   ]
 }
