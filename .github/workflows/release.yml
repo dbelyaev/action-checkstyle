@@ -18,10 +18,11 @@ jobs:
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: write # hay14busa/action-* to create releases, push tags
-      pull-requests: read # hay14busa/action-* to list pull requests
+      contents: write # to create GitHub releases, push version tags, and update semver tags (action-bumpr, action-update-semver)
+      pull-requests: read # to read PR labels and determine version bump type (action-bumpr)
 
     steps:
       - name: Harden Runner
@@ -65,10 +66,11 @@ jobs:
   release-check:
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # hay14busa/action-* to add changelog comment to PR
+      contents: read # to checkout repository and read version information
+      pull-requests: write # to post version bump preview comments on PRs (action-bumpr)
 
     steps:
       - name: Harden Runner

@@ -23,13 +23,12 @@ jobs:
   analysis:
     name: Scorecard analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
-      # Needed to upload the results to code-scanning dashboard.
-      security-events: write
-      # Needed to publish results and get a badge (see publish_results below).
-      id-token: write
-      contents: read
-      actions: read
+      security-events: write # to upload SARIF results to GitHub security dashboard (github/codeql-action)
+      id-token: write # to publish results to OpenSSF REST API and enable Scorecard badge (ossf/scorecard-action)
+      contents: read # to checkout repository for security analysis
+      actions: read # to analyze workflow files for security checks (ossf/scorecard-action)
 
     steps:
       - name: Harden Runner

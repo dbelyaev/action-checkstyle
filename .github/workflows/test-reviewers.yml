@@ -9,11 +9,16 @@ on:
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test-check:
     name: runner / checkstyle (github-check)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -24,7 +29,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: info
 
@@ -32,6 +37,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-check)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -42,7 +48,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
           level: warning
           workdir: ./testdata/java/
@@ -51,6 +57,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (github-pr-review)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -61,6 +68,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error

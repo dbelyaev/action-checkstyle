@@ -9,12 +9,17 @@ on:
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test-reviewdog-flags:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (reviewdog-flags)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -25,13 +30,14 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reviewdog_flags: -filter-mode=added -fail-level=none
 
   test-properties-file:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (properties_file)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -42,7 +48,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_config: ./testdata/properties_file/test_checks.xml
           properties_file: ./testdata/properties_file/additional.properties

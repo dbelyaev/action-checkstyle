@@ -9,12 +9,17 @@ on:
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test-custom-checkstyle-version-9:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (v9.0)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -25,7 +30,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "9.0"
 
@@ -33,6 +38,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (v10.0)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -43,7 +49,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "10.0"
 
@@ -51,6 +57,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: runner / checkstyle (v11.0.0)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Harden Runner
@@ -61,6 +68,25 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: ./
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "11.0.0"
+
+  test-custom-checkstyle-version-12:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v12.0.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "12.0.0"

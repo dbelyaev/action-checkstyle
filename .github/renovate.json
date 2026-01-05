@@ -5,6 +5,10 @@
   "labels": [
     "dependencies"
   ],
+  "schedule": [
+    "after 10pm and before 5am every weekday"
+  ],
+  "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {

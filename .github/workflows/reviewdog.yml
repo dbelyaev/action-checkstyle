@@ -10,15 +10,20 @@ on:
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   shellcheck:
     name: runner / shellcheck
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository for linting
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-shellcheck)
 
     steps:
       - name: Harden Runner
@@ -35,17 +40,18 @@ jobs:
           if_false: "github-check"
       - uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: ${{ steps.reporter.outputs.value }}
           level: warning
 
   hadolint:
     name: runner / hadolint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and lint Dockerfile
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-hadolint)
 
     steps:
       - name: Harden Runner
@@ -62,17 +68,18 @@ jobs:
           if_false: "github-check"
       - uses: reviewdog/action-hadolint@fc7ee4a9f71e521bc43e370819247b70e5327540 # v1.50.2
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: ${{ steps.reporter.outputs.value }}
           level: warning
 
   markdown-lint:
     name: runner / markdownlint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and lint markdown files
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-markdownlint)
 
     steps:
       - name: Harden Runner
@@ -91,10 +98,11 @@ jobs:
   misspell:
     name: runner / misspell
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and check for spelling errors
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-misspell)
 
     steps:
       - name: Harden Runner
@@ -105,7 +113,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: reviewdog/action-misspell@d6429416b12b09b4e2768307d53bef58d172e962 # v1.27.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
           locale: "US"
@@ -113,10 +121,11 @@ jobs:
   alex:
     name: runner / alex
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # add check status to PR
+      contents: read # to checkout repository and check text for insensitive language
+      pull-requests: write # to post review comments and check status on PRs (reviewdog/action-alex)
 
     steps:
       - name: Harden Runner
@@ -127,6 +136,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: reviewdog/action-alex@6083b8ca333981fa617c6828c5d8fb21b13d916b # v1.16.0
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
