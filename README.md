@@ -175,7 +175,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   > - New rules that flag previously accepted code
   > - Modified rule behavior causing different violation counts
   > - Deprecated configuration options
-  > 
+  >
   > **Recommended:** Pin to a specific version in production workflows to ensure consistent and reproducible builds. Update the version intentionally when you're ready to address any new violations.
 
   **Default:** Latest available version
