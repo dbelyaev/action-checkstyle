@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dbelyaev/action-checkstyle@v3
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 That's it! The action will now analyze Java files in every pull request using Google's coding conventions.
@@ -90,7 +90,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dbelyaev/action-checkstyle@v3
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
 ```
@@ -158,7 +158,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
         - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
-            github_token: ${{ secrets.github_token }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
             reporter: github-pr-review
             checkstyle_config: sun_checks.xml
   ```
@@ -193,7 +193,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
         - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
-            github_token: ${{ secrets.github_token }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
             reporter: github-pr-review
             checkstyle_version: "12.3.0" # use double quotes for version numbers
   ```
@@ -227,7 +227,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
         - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
-            github_token: ${{ secrets.github_token }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
             reporter: github-pr-review
             checkstyle_config: ./properties_file/test_checks.xml
             properties_file: ./properties_file/additional.properties
@@ -252,7 +252,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   ```yaml
   - uses: dbelyaev/action-checkstyle@v3
     with:
-      github_token: ${{ secrets.github_token }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
   ```
 
   For more information about GitHub tokens, see the [automatic token authentication documentation](https://docs.github.com/en/actions/security-guides/automatic-token-authentication).
