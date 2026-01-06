@@ -237,6 +237,26 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
 ### Reviewdog Parameters
 
+- ### `github_token`
+
+  GitHub token for API authentication, required for reviewdog to post comments and annotations.
+
+  Use the automatically provided `secrets.github_token` or `secrets.GITHUB_TOKEN` in your workflow. This token is automatically created by GitHub for each workflow run with appropriate permissions.
+
+  > **Note:** For the `github-pr-review` and `github-pr-check` reporters to work properly, ensure your workflow has `pull-requests: write` permission. This is granted by default in most cases.
+
+  **Required:** Yes
+
+  **Example:**
+
+  ```yaml
+  - uses: dbelyaev/action-checkstyle@v3
+    with:
+      github_token: ${{ secrets.github_token }}
+  ```
+
+  For more information about GitHub tokens, see the [automatic token authentication documentation](https://docs.github.com/en/actions/security-guides/automatic-token-authentication).
+
 - ### `reporter`
 
   Determines how reviewdog reports Checkstyle violations in GitHub.  
