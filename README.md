@@ -131,13 +131,13 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
 - ### `checkstyle_config`  
 
-  Checkstyle configuration specifies which ruleset to apply during the scan.  
+  Specifies which Checkstyle ruleset to apply during analysis.  
   
-  There are two built-in configurations:
+  Two built-in configurations are available:
   - `google_checks.xml` - Configuration for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
   - `sun_checks.xml` - Configuration for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
 
-  It is also possible to supply your custom Checkstyle configuration file located in the same directory.
+  You can also supply a custom Checkstyle configuration file from your repository.
 
   **Default:** `google_checks.xml`
 
@@ -159,15 +159,15 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             checkstyle_config: sun_checks.xml
   ```
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10).
+  [View example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10) showing custom configuration.
 
 - ### `checkstyle_version`
 
-  Checkstyle version to be used during analysis.  
+  Specifies which Checkstyle version to use for analysis.  
 
-  For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+  See the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/) for available versions.
 
-  **Important:** This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default. If the default preference is not suitable for your project, please pin the needed version using this property.
+  > **Important:** By default, this action uses the latest Checkstyle version, which updates automatically. Pin to a specific version if you need consistent behavior across builds or want to avoid potential breaking changes.
 
   **Default:** Latest available version
 
@@ -186,20 +186,20 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
           with:
             github_token: ${{ secrets.github_token }}
             reporter: github-pr-review
-            checkstyle_version: "9.0" # double quotes important here
+            checkstyle_version: "9.0" # use double quotes for version numbers
   ```
 
 - ### `workdir`
 
-  The working directory relative to the root directory.
+  Working directory for Checkstyle analysis, relative to the repository root.
 
   **Default:** `'.'` (root)
 
 - ### `properties_file`
   
-  Location of the properties file relative to the root directory.  
+  Path to a properties file (relative to repository root) for defining variables used in your Checkstyle configuration.  
   
-  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+  Use this to avoid repetition and centralize configuration values.
 
   **Default:** `''` (empty)
 
@@ -222,27 +222,27 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             properties_file: ./properties_file/additional.properties
   ```
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
+  [View example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) showing properties file usage.
 
 ### Reviewdog Parameters
 
 - ### `reporter`
 
-  Specific reporter to be used for the GitHub results reporting by reviewdog.  
+  Determines how reviewdog reports Checkstyle violations in GitHub.  
 
   **Values:** `github-pr-check`, `github-check`, `github-pr-review`
 
-  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation, which includes examples of GitHub reports and descriptions of possible limitations.
+  See the [reviewdog reporters documentation](https://github.com/reviewdog/reviewdog#reporters) for examples and limitations of each reporter type.
 
   **Default:** `github-pr-check`
 
 - ### `level`
 
-  This flag is used to change report level for the chosen `reporter`.
+  Sets the severity level for reported violations, affecting GitHub status check results.
   
   **Values:** `info`, `warning`, `error`
   
-  You can control GitHub status check result with this feature:
+  Control GitHub status check behavior:
 
   | Level     | GitHub Status |
   | --------- | ------------- |
@@ -258,17 +258,17 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
   **Values:** `added`, `diff_context`, `file`, `nofilter`
 
-  For more information, check [reviewdog / filter-mode](https://github.com/reviewdog/reviewdog#filter-mode) documentation.
+  See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for details on each mode.
 
   **Default:** `added`
 
 - ### `fail_level`
 
-  Controls when reviewdog should return a non-zero exit code to fail your workflow.
+  Determines when reviewdog exits with a non-zero code, failing the workflow.
   
   **Values:** `none`, `any`, `info`, `warning`, `error`
   
-  By default (`none`), reviewdog will exit with code `0` even if it finds errors. Setting this to another value will cause reviewdog to exit with code `1` when it finds issues at or above the specified severity level, which can be used to fail the GitHub workflow.
+  By default (`none`), reviewdog exits with code `0` even when violations exist. Set this to fail your workflow when violations at or above the specified severity level are found.
 
   **Default:** `none`
 
