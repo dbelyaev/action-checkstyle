@@ -15,7 +15,36 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_shield)
 [![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
-A GitHub action that integrates [Checkstyle](https://github.com/checkstyle/checkstyle) with your pull request workflow to enforce Java code quality standards. Violations are automatically reported via [reviewdog](https://github.com/reviewdog/reviewdog), making code reviews more efficient and consistent.
+Enforce Java code quality standards in your pull requests with automated [Checkstyle](https://github.com/checkstyle/checkstyle) analysis.  
+Powered by [reviewdog](https://github.com/reviewdog/reviewdog), this action reports violations directly in your PR reviews, making it easy to maintain consistent code style across your team.
+
+## Features
+
+- **Zero Configuration** - Works out of the box with Google or Sun coding conventions
+- **Flexible Reporting** - Choose between PR comments, checks, or reviews
+- **Version Control** - Pin to any Checkstyle version for consistency
+- **Custom Rules** - Use your own Checkstyle configuration files
+- **Smart Filtering** - Only review changed lines or entire files
+- **GitHub Integration** - Native support for GitHub status checks and annotations
+
+## Quick Start
+
+Add this workflow to your repository at `.github/workflows/checkstyle.yml`:
+
+```yaml
+name: checkstyle
+on: [pull_request]
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+```
+
+That's it! The action will now analyze Java files in every pull request using Google's coding conventions.
 
 ## Table of Contents
 
@@ -47,7 +76,7 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.github_token }}
@@ -66,7 +95,7 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 ```
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3.0.0 # pin to specific version tag
+- uses: dbelyaev/action-checkstyle@v3.4.1 # pin to specific version tag
 ```
 
 - **Pros**: Convenient, automatically receives updates
@@ -113,7 +142,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
@@ -143,7 +172,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
@@ -175,7 +204,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
