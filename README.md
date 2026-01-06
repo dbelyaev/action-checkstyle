@@ -71,9 +71,11 @@ That's it! The action will now analyze Java files in every pull request using Go
 
 ## Example
 
-An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9)):
+Checkstyle violations appear as inline comments on your pull request, making it easy to identify and fix issues:
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
+
+*[View complete example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9) with Checkstyle violations and comments*
 
 ## Usage
 
@@ -134,10 +136,10 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   Specifies which Checkstyle ruleset to apply during analysis.  
   
   Two built-in configurations are available:
-  - `google_checks.xml` - Configuration for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
-  - `sun_checks.xml` - Configuration for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+  - `google_checks.xml` - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) rules
+  - `sun_checks.xml` - [Sun Code Conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html) rules
 
-  You can also supply a custom Checkstyle configuration file from your repository. Provide the path relative to the repository root.
+  You can also supply a custom Checkstyle configuration file from your repository. Provide the path relative to the repository root. See the [Checkstyle configuration documentation](https://checkstyle.org/config.html) to learn how to create custom rules.
 
   > **Note:** If the specified configuration file is not found or contains invalid XML, the workflow will fail with an error message.
 
@@ -161,13 +163,13 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             checkstyle_config: sun_checks.xml
   ```
 
-  [View example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10) showing custom configuration.
+  *[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10) demonstrating Sun code conventions configuration*
 
 - ### `checkstyle_version`
 
   Specifies which Checkstyle version to use for analysis.  
 
-  See the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/) for available versions.
+  Browse available versions on the [Checkstyle releases page](https://github.com/checkstyle/checkstyle/releases/).
 
   > **Important:** By default, this action automatically uses the latest Checkstyle version. New Checkstyle releases may introduce:
   > - New rules that flag previously accepted code
@@ -206,7 +208,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   
   Path to a properties file (relative to repository root) for defining variables used in your Checkstyle configuration.  
   
-  Use this to avoid repetition and centralize configuration values. The properties file should use standard Java properties format (`key=value`).
+  Use this to avoid repetition and centralize configuration values. The properties file should use standard [Java properties format](https://docs.oracle.com/javase/tutorial/essential/environment/properties.html) (`key=value`).
 
   > **Note:** If the specified file is not found, the workflow will fail. Referenced properties in the config file must exist in the properties file, or Checkstyle will report an error.
 
@@ -231,7 +233,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             properties_file: ./properties_file/additional.properties
   ```
 
-  [View example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) showing properties file usage.
+  *[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) demonstrating properties file usage with custom configuration*
 
 ### Reviewdog Parameters
 
@@ -241,7 +243,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
   **Values:** `github-pr-check`, `github-check`, `github-pr-review`
 
-  See the [reviewdog reporters documentation](https://github.com/reviewdog/reviewdog#reporters) for examples and limitations of each reporter type.
+  See the [reviewdog reporters documentation](https://github.com/reviewdog/reviewdog#reporters) for detailed examples, screenshots, and permission requirements for each reporter type.
 
   **Default:** `github-pr-check`
 
@@ -267,7 +269,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
   **Values:** `added`, `diff_context`, `file`, `nofilter`
 
-  See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for details on each mode.
+  See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for detailed explanations of when to use each filtering mode.
 
   **Default:** `added`
 
