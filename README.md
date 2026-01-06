@@ -48,17 +48,26 @@ That's it! The action will now analyze Java files in every pull request using Go
 
 ## Table of Contents
 
-- [Checkstyle for Java GitHub Action](#checkstyle-for-java-github-action)
-  - [Table of Contents](#table-of-contents)
-  - [Example](#example)
-  - [Usage](#usage)
-    - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
-      - [Pinning by Tag](#pinning-by-tag)
-      - [Pinning by Commit SHA](#pinning-by-commit-sha)
-      - [Best Practice](#best-practice)
-  - [Input Parameters](#input-parameters)
-    - [Checkstyle Parameters](#checkstyle-parameters)
-    - [Reviewdog Parameters](#reviewdog-parameters)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Example](#example)
+- [Usage](#usage)
+  - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
+- [Input Parameters](#input-parameters)
+  - [Checkstyle Parameters](#checkstyle-parameters)
+    - [`checkstyle_config`](#checkstyle_config)
+    - [`checkstyle_version`](#checkstyle_version)
+    - [`workdir`](#workdir)
+    - [`properties_file`](#properties_file)
+  - [Reviewdog Parameters](#reviewdog-parameters)
+    - [`github_token`](#github_token)
+    - [`reporter`](#reporter)
+    - [`level`](#level)
+    - [`filter_mode`](#filter_mode)
+    - [`fail_level`](#fail_level)
+    - [`reviewdog_flags`](#reviewdog_flags)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Example
 
@@ -268,3 +277,19 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   Additional reviewdog flags.
 
   **Default:** `""`
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to:
+
+- Report bugs and request features
+- Submit pull requests
+- Follow our code of conduct
+
+We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_large)
