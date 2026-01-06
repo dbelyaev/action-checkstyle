@@ -137,7 +137,9 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   - `google_checks.xml` - Configuration for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
   - `sun_checks.xml` - Configuration for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
 
-  You can also supply a custom Checkstyle configuration file from your repository.
+  You can also supply a custom Checkstyle configuration file from your repository. Provide the path relative to the repository root.
+
+  > **Note:** If the specified configuration file is not found or contains invalid XML, the workflow will fail with an error message.
 
   **Default:** `google_checks.xml`
 
@@ -167,7 +169,12 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
   See the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/) for available versions.
 
-  > **Important:** By default, this action uses the latest Checkstyle version, which updates automatically. Pin to a specific version if you need consistent behavior across builds or want to avoid potential breaking changes.
+  > **Important:** By default, this action automatically uses the latest Checkstyle version. New Checkstyle releases may introduce:
+  > - New rules that flag previously accepted code
+  > - Modified rule behavior causing different violation counts
+  > - Deprecated configuration options
+  > 
+  > **Recommended:** Pin to a specific version in production workflows to ensure consistent and reproducible builds. Update the version intentionally when you're ready to address any new violations.
 
   **Default:** Latest available version
 
@@ -186,7 +193,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
           with:
             github_token: ${{ secrets.github_token }}
             reporter: github-pr-review
-            checkstyle_version: "9.0" # use double quotes for version numbers
+            checkstyle_version: "12.3.0" # use double quotes for version numbers
   ```
 
 - ### `workdir`
@@ -199,7 +206,9 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   
   Path to a properties file (relative to repository root) for defining variables used in your Checkstyle configuration.  
   
-  Use this to avoid repetition and centralize configuration values.
+  Use this to avoid repetition and centralize configuration values. The properties file should use standard Java properties format (`key=value`).
+
+  > **Note:** If the specified file is not found, the workflow will fail. Referenced properties in the config file must exist in the properties file, or Checkstyle will report an error.
 
   **Default:** `''` (empty)
 
