@@ -15,27 +15,67 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_shield)
 [![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
-A GitHub action that integrates [Checkstyle](https://github.com/checkstyle/checkstyle) with your pull request workflow to enforce Java code quality standards. Violations are automatically reported via [reviewdog](https://github.com/reviewdog/reviewdog), making code reviews more efficient and consistent.
+Enforce Java code quality standards in your pull requests with automated [Checkstyle](https://github.com/checkstyle/checkstyle) analysis.  
+Powered by [reviewdog](https://github.com/reviewdog/reviewdog), this action reports violations directly in your PR reviews, making it easy to maintain consistent code style across your team.
+
+## Features
+
+- **Zero Configuration** - Works out of the box with Google or Sun coding conventions
+- **Flexible Reporting** - Choose between PR comments, checks, or reviews
+- **Version Control** - Pin to any Checkstyle version for consistency
+- **Custom Rules** - Use your own Checkstyle configuration files
+- **Smart Filtering** - Only review changed lines or entire files
+- **GitHub Integration** - Native support for GitHub status checks and annotations
+
+## Quick Start
+
+Add this workflow to your repository at `.github/workflows/checkstyle.yml`:
+
+```yaml
+name: checkstyle
+on: [pull_request]
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+```
+
+That's it! The action will now analyze Java files in every pull request using Google's coding conventions.
 
 ## Table of Contents
 
-- [Checkstyle for Java GitHub Action](#checkstyle-for-java-github-action)
-  - [Table of Contents](#table-of-contents)
-  - [Example](#example)
-  - [Usage](#usage)
-    - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
-      - [Pinning by Tag](#pinning-by-tag)
-      - [Pinning by Commit SHA](#pinning-by-commit-sha)
-      - [Best Practice](#best-practice)
-  - [Input Parameters](#input-parameters)
-    - [Checkstyle Parameters](#checkstyle-parameters)
-    - [Reviewdog Parameters](#reviewdog-parameters)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Example](#example)
+- [Usage](#usage)
+  - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
+- [Input Parameters](#input-parameters)
+  - [Checkstyle Parameters](#checkstyle-parameters)
+    - [`checkstyle_config`](#checkstyle_config)
+    - [`checkstyle_version`](#checkstyle_version)
+    - [`workdir`](#workdir)
+    - [`properties_file`](#properties_file)
+  - [Reviewdog Parameters](#reviewdog-parameters)
+    - [`github_token`](#github_token)
+    - [`reporter`](#reporter)
+    - [`level`](#level)
+    - [`filter_mode`](#filter_mode)
+    - [`fail_level`](#fail_level)
+    - [`reviewdog_flags`](#reviewdog_flags)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Example
 
-An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9)):
+Checkstyle violations appear as inline comments on your pull request, making it easy to identify and fix issues:
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
+
+*[View complete example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9) with Checkstyle violations and comments*
 
 ## Usage
 
@@ -47,7 +87,7 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.github_token }}
@@ -66,7 +106,7 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 ```
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3.0.0 # pin to specific version tag
+- uses: dbelyaev/action-checkstyle@v3.4.1 # pin to specific version tag
 ```
 
 - **Pros**: Convenient, automatically receives updates
@@ -93,13 +133,15 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
 - ### `checkstyle_config`  
 
-  Checkstyle configuration specifies which ruleset to apply during the scan.  
+  Specifies which Checkstyle ruleset to apply during analysis.  
   
-  There are two built-in configurations:
-  - `google_checks.xml` - Configuration for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
-  - `sun_checks.xml` - Configuration for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+  Two built-in configurations are available:
+  - `google_checks.xml` - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) rules
+  - `sun_checks.xml` - [Sun Code Conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html) rules
 
-  It is also possible to supply your custom Checkstyle configuration file located in the same directory.
+  You can also supply a custom Checkstyle configuration file from your repository. Provide the path relative to the repository root. See the [Checkstyle configuration documentation](https://checkstyle.org/config.html) to learn how to create custom rules.
+
+  > **Note:** If the specified configuration file is not found or contains invalid XML, the workflow will fail with an error message.
 
   **Default:** `google_checks.xml`
 
@@ -113,7 +155,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
@@ -121,15 +163,20 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             checkstyle_config: sun_checks.xml
   ```
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10).
+  *[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10) demonstrating Sun code conventions configuration*
 
 - ### `checkstyle_version`
 
-  Checkstyle version to be used during analysis.  
+  Specifies which Checkstyle version to use for analysis.  
 
-  For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+  Browse available versions on the [Checkstyle releases page](https://github.com/checkstyle/checkstyle/releases/).
 
-  **Important:** This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default. If the default preference is not suitable for your project, please pin the needed version using this property.
+  > **Important:** By default, this action automatically uses the latest Checkstyle version. New Checkstyle releases may introduce:
+  > - New rules that flag previously accepted code
+  > - Modified rule behavior causing different violation counts
+  > - Deprecated configuration options
+  >
+  > **Recommended:** Pin to a specific version in production workflows to ensure consistent and reproducible builds. Update the version intentionally when you're ready to address any new violations.
 
   **Default:** Latest available version
 
@@ -143,25 +190,27 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
             reporter: github-pr-review
-            checkstyle_version: "9.0" # double quotes important here
+            checkstyle_version: "12.3.0" # use double quotes for version numbers
   ```
 
 - ### `workdir`
 
-  The working directory relative to the root directory.
+  Working directory for Checkstyle analysis, relative to the repository root.
 
   **Default:** `'.'` (root)
 
 - ### `properties_file`
   
-  Location of the properties file relative to the root directory.  
+  Path to a properties file (relative to repository root) for defining variables used in your Checkstyle configuration.  
   
-  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+  Use this to avoid repetition and centralize configuration values. The properties file should use standard [Java properties format](https://docs.oracle.com/javase/tutorial/essential/environment/properties.html) (`key=value`).
+
+  > **Note:** If the specified file is not found, the workflow will fail. Referenced properties in the config file must exist in the properties file, or Checkstyle will report an error.
 
   **Default:** `''` (empty)
 
@@ -175,7 +224,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
       name: runner / checkstyle
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
         - uses: dbelyaev/action-checkstyle@v3
           with:
             github_token: ${{ secrets.github_token }}
@@ -184,27 +233,47 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
             properties_file: ./properties_file/additional.properties
   ```
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
+  *[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) demonstrating properties file usage with custom configuration*
 
 ### Reviewdog Parameters
 
+- ### `github_token`
+
+  GitHub token for API authentication, required for reviewdog to post comments and annotations.
+
+  Use the automatically provided `secrets.github_token` or `secrets.GITHUB_TOKEN` in your workflow. This token is automatically created by GitHub for each workflow run with appropriate permissions.
+
+  > **Note:** For the `github-pr-review` and `github-pr-check` reporters to work properly, ensure your workflow has `pull-requests: write` permission. This is granted by default in most cases.
+
+  **Required:** Yes
+
+  **Example:**
+
+  ```yaml
+  - uses: dbelyaev/action-checkstyle@v3
+    with:
+      github_token: ${{ secrets.github_token }}
+  ```
+
+  For more information about GitHub tokens, see the [automatic token authentication documentation](https://docs.github.com/en/actions/security-guides/automatic-token-authentication).
+
 - ### `reporter`
 
-  Specific reporter to be used for the GitHub results reporting by reviewdog.  
+  Determines how reviewdog reports Checkstyle violations in GitHub.  
 
   **Values:** `github-pr-check`, `github-check`, `github-pr-review`
 
-  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation, which includes examples of GitHub reports and descriptions of possible limitations.
+  See the [reviewdog reporters documentation](https://github.com/reviewdog/reviewdog#reporters) for detailed examples, screenshots, and permission requirements for each reporter type.
 
   **Default:** `github-pr-check`
 
 - ### `level`
 
-  This flag is used to change report level for the chosen `reporter`.
+  Sets the severity level for reported violations, affecting GitHub status check results.
   
   **Values:** `info`, `warning`, `error`
   
-  You can control GitHub status check result with this feature:
+  Control GitHub status check behavior:
 
   | Level     | GitHub Status |
   | --------- | ------------- |
@@ -220,17 +289,17 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 
   **Values:** `added`, `diff_context`, `file`, `nofilter`
 
-  For more information, check [reviewdog / filter-mode](https://github.com/reviewdog/reviewdog#filter-mode) documentation.
+  See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for detailed explanations of when to use each filtering mode.
 
   **Default:** `added`
 
 - ### `fail_level`
 
-  Controls when reviewdog should return a non-zero exit code to fail your workflow.
+  Determines when reviewdog exits with a non-zero code, failing the workflow.
   
   **Values:** `none`, `any`, `info`, `warning`, `error`
   
-  By default (`none`), reviewdog will exit with code `0` even if it finds errors. Setting this to another value will cause reviewdog to exit with code `1` when it finds issues at or above the specified severity level, which can be used to fail the GitHub workflow.
+  By default (`none`), reviewdog exits with code `0` even when violations exist. Set this to fail your workflow when violations at or above the specified severity level are found.
 
   **Default:** `none`
 
@@ -239,3 +308,19 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   Additional reviewdog flags.
 
   **Default:** `""`
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to:
+
+- Report bugs and request features
+- Submit pull requests
+- Follow our code of conduct
+
+We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_large)
