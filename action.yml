@@ -27,7 +27,7 @@ inputs:
       Set to fail when violations at or above the specified severity are found. Default 'none' never fails.
     default: "none"
   reviewdog_flags:
-    description: "Additional flags to pass to reviewdog command."
+    description: "Additional flags to pass to the reviewdog command."
     default: ""
   ### Flags for checkstyle ###
   checkstyle_config:
