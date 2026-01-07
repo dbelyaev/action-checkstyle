@@ -40,7 +40,7 @@ inputs:
     description: |
       Checkstyle version to use for analysis. See https://github.com/checkstyle/checkstyle/releases/
       Default: latest version (automatically updated).
-      RECOMMENDED: Pin to specific version in production to ensure consistent builds.
+      RECOMMENDED: Pin to a specific version in production to ensure consistent builds.
     default: ""
   properties_file:
     description: |
