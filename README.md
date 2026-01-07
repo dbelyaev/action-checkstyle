@@ -1,4 +1,4 @@
-# Checkstyle for Java GitHub Action
+# Java Checkstyle Reviewer (GitHub Action)
 
 <!-- Release and Build Status -->
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
