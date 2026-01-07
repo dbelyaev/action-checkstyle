@@ -4,50 +4,48 @@ description: "Enforce Java code standards in PRs with inline feedback. Powered b
 author: "Dmitriy Belyaev"
 inputs:
   github_token:
-    description: "GITHUB_TOKEN"
+    description: "GitHub token for API authentication. Use secrets.GITHUB_TOKEN for automatic authentication."
     default: "${{ github.token }}"
   workdir:
-    description: "Working directory relative to the root directory."
+    description: "Working directory for Checkstyle analysis, relative to the repository root."
     default: "."
   ### Flags for reviewdog ###
   level:
-    description: "Report level for reviewdog [info, warning, error]"
+    description: "Severity level for reported violations [info, warning, error]. Affects GitHub status check results."
     default: "info"
   reporter:
-    description: "Reporter of reviewdog command [github-pr-check, github-pr-review]."
+    description: "How reviewdog reports violations [github-pr-check, github-check, github-pr-review]. See reviewdog documentation for details."
     default: "github-pr-check"
   filter_mode:
     description: |
-      Filtering mode for the reviewdog command [added, diff_context, file, nofilter].
-      Default is added.
+      Filtering mode for reviewdog [added, diff_context, file, nofilter].
+      Controls which files/lines are analyzed. See reviewdog documentation for details.
     default: "added"
   fail_level:
     description: |
-      Exits code 1 when errors are found at that level or above. Options are [none, any, error, warning, info]
-      Default is `none`.
+      When to fail the workflow [none, any, info, warning, error].
+      Set to fail when violations at or above specified severity are found. Default 'none' never fails.
     default: "none"
   reviewdog_flags:
-    description: "Additional reviewdog flags"
+    description: "Additional flags to pass to reviewdog command."
     default: ""
   ### Flags for checkstyle ###
   checkstyle_config:
     description: |
-      Checkstyle configuration specifies which ruleset to apply during scan.
-      There are two built-in configurations in checkstyle: [google_checks.xml, sun_checks.xml].
-      google_checks.xml configures Checkstyle for the Google coding conventions (https://google.github.io/styleguide/javaguide.html)
-      sun_checks.xml configures Checkstyle for the Sun coding conventions (https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+      Checkstyle ruleset to apply during analysis.
+      Built-in: google_checks.xml (Google Java Style), sun_checks.xml (Sun Code Conventions).
+      Or provide path to custom config file relative to repository root.
     default: "google_checks.xml"
   checkstyle_version:
     description: |
-      Checkstyle version to be used during analysis.
-      For a list of available version numbers go to [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
-      **IMPORTANT NOTE**
-      This field will always try to follow Checkstyle releases as close as possible and will use the latest available by default.
-      If it is not a default preference for your project, please, pin the needed version using this property.
+      Checkstyle version to use for analysis. See https://github.com/checkstyle/checkstyle/releases/
+      Default: latest version (automatically updated).
+      RECOMMENDED: Pin to specific version in production to ensure consistent builds.
     default: ""
   properties_file:
     description: |
-      Location of the properties file relative to the root directory. This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+      Path to properties file (relative to repository root) for defining variables in Checkstyle config.
+      Use standard Java properties format (key=value) to centralize configuration values.
     default: ""
 runs:
   using: "docker"
