@@ -24,7 +24,7 @@ inputs:
   fail_level:
     description: |
       When to fail the workflow [none, any, info, warning, error].
-      Set to fail when violations at or above specified severity are found. Default 'none' never fails.
+      Set to fail when violations at or above the specified severity are found. Default 'none' never fails.
     default: "none"
   reviewdog_flags:
     description: "Additional flags to pass to reviewdog command."
