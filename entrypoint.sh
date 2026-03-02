@@ -64,20 +64,34 @@ export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
 echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 { echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
-# disable pipefail for the final pipeline: checkstyle exits with the violation
-# count as its exit code, so pipefail would fail the action on any findings
-# regardless of the reviewdog fail-level setting
-# shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
-set +o pipefail
+# Run checkstyle and reviewdog in two stages so that:
+#  1. A hard checkstyle failure (invalid args, exception) is detected and surfaced.
+#  2. Normal violations (exit code = ERROR-level count) are forwarded to reviewdog
+#     which controls the final exit code via its fail-level setting.
+cs_output="$(mktemp)"
+trap 'rm -f "$cs_output"' EXIT
 
 # shellcheck disable=SC2086
-exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
-  | reviewdog -f=checkstyle \
-      -name="checkstyle" \
-      -reporter="${INPUT_REPORTER:-github-pr-check}" \
-      -filter-mode="${INPUT_FILTER_MODE:-added}" \
-      -fail-level="${INPUT_FAIL_LEVEL:-none}" \
-      -level="${INPUT_LEVEL}" \
-      ${INPUT_REVIEWDOG_FLAGS}
+java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
+  > "$cs_output" || cs_exit=$?
+cs_exit=${cs_exit:-0}
+
+# checkstyle exits with the number of ERROR-level violations on success.
+# Hard failures use special exit codes that appear as >= 128 in the shell
+# (-1 → 255 = invalid args, -2 → 254 = CheckstyleException, ≥128 = signal).
+if [ "$cs_exit" -ge 128 ]; then
+  echo "Checkstyle failed with exit code ${cs_exit}" >&2
+  exit "$cs_exit"
+fi
+
+# Feed checkstyle XML output into reviewdog; its exit code respects fail-level
+# shellcheck disable=SC2086
+reviewdog -f=checkstyle \
+    -name="checkstyle" \
+    -reporter="${INPUT_REPORTER:-github-pr-check}" \
+    -filter-mode="${INPUT_FILTER_MODE:-added}" \
+    -fail-level="${INPUT_FAIL_LEVEL:-none}" \
+    -level="${INPUT_LEVEL}" \
+    ${INPUT_REVIEWDOG_FLAGS} < "$cs_output"
 
 echo '::endgroup::'
