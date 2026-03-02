@@ -32,6 +32,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reviewdog_flags: -filter-mode=added -fail-level=none
+          exclude: "testdata/java/excluded"
 
   test-properties-file:
     if: github.event_name == 'pull_request'
@@ -52,6 +53,7 @@ jobs:
           workdir: ./testdata/java/
           checkstyle_config: ./testdata/properties_file/test_checks.xml
           properties_file: ./testdata/properties_file/additional.properties
+          exclude: "testdata/java/excluded"
 
   test-exclude:
     if: github.event_name == 'pull_request'

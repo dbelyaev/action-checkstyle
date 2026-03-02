@@ -33,6 +33,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "9.0"
+          exclude: "testdata/java/excluded"
 
   test-custom-checkstyle-version-10:
     if: github.event_name == 'pull_request'
@@ -52,6 +53,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "10.0"
+          exclude: "testdata/java/excluded"
 
   test-custom-checkstyle-version-11:
     if: github.event_name == 'pull_request'
@@ -71,6 +73,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "11.0.0"
+          exclude: "testdata/java/excluded"
 
   test-custom-checkstyle-version-12:
     if: github.event_name == 'pull_request'
@@ -90,6 +93,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "12.0.0"
+          exclude: "testdata/java/excluded"
 
   test-custom-checkstyle-version-13:
     if: github.event_name == 'pull_request'
@@ -109,3 +113,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
           checkstyle_version: "13.0.0"
+          exclude: "testdata/java/excluded"

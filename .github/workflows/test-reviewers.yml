@@ -32,6 +32,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: info
+          exclude: "testdata/java/excluded"
 
   test-pr-check:
     if: github.event_name == 'pull_request'
@@ -52,6 +53,7 @@ jobs:
           reporter: github-pr-check
           level: warning
           workdir: ./testdata/java/
+          exclude: "testdata/java/excluded"
 
   test-pr-review:
     if: github.event_name == 'pull_request'
@@ -71,3 +73,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error
+          exclude: "testdata/java/excluded"
