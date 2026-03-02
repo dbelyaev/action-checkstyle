@@ -76,10 +76,13 @@ java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONF
   > "$cs_output" || cs_exit=$?
 cs_exit=${cs_exit:-0}
 
-# checkstyle exits with the number of ERROR-level violations on success.
-# Hard failures use special exit codes that appear as >= 128 in the shell
-# (-1 → 255 = invalid args, -2 → 254 = CheckstyleException, ≥128 = signal).
-if [ "$cs_exit" -ge 128 ]; then
+# Checkstyle exits with the number of ERROR-level violations on success.
+# Non-zero special exit codes are:
+#   255 (-1) invalid arguments
+#   254 (-2) internal CheckstyleException
+# Treat only these as hard failures; all other non-zero codes (including large
+# error counts) are passed through to reviewdog.
+if [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; then
   echo "Checkstyle failed with exit code ${cs_exit}" >&2
   exit "$cs_exit"
 fi
