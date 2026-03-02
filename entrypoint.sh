@@ -14,7 +14,12 @@ fi
 
 # resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
 # produces clean paths (without "./") that match the exclude patterns exactly
-INPUT_WORKDIR="$(realpath "${INPUT_WORKDIR}")"
+if [ -n "${INPUT_WORKDIR}" ]; then
+  if ! INPUT_WORKDIR="$(realpath "${INPUT_WORKDIR}" 2>/dev/null)"; then
+    echo "workdir does not exist: ${INPUT_WORKDIR}" >&2
+    exit 1
+  fi
+fi
 
 # build optional checkstyle arguments safely using positional parameters
 set --
@@ -71,7 +76,6 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 cs_output="$(mktemp)"
 trap 'rm -f "$cs_output"' EXIT
 
-# shellcheck disable=SC2086
 java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   > "$cs_output" || cs_exit=$?
 cs_exit=${cs_exit:-0}
@@ -95,6 +99,8 @@ reviewdog -f=checkstyle \
     -filter-mode="${INPUT_FILTER_MODE:-added}" \
     -fail-level="${INPUT_FAIL_LEVEL:-none}" \
     -level="${INPUT_LEVEL}" \
-    ${INPUT_REVIEWDOG_FLAGS} < "$cs_output"
+    ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
+rd_exit=${rd_exit:-0}
 
 echo '::endgroup::'
+exit "$rd_exit"
