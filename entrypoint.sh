@@ -11,6 +11,10 @@ if [ -n "${GITHUB_WORKSPACE}" ]; then
   git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
 fi
 
+# resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
+# produces clean paths (without "./") that match the exclude patterns exactly
+INPUT_WORKDIR="$(realpath "${INPUT_WORKDIR}")"
+
 # build optional checkstyle arguments safely using positional parameters
 set --
 
@@ -24,7 +28,9 @@ if [ -n "${INPUT_EXCLUDE}" ]; then
   while IFS= read -r dir; do
     dir="$(printf '%s' "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     if [ -n "$dir" ]; then
-      set -- "$@" -e "$dir"
+      # resolve to absolute path for reliable matching; keep raw value as fallback
+      resolved="$(realpath "$dir" 2>/dev/null)" || resolved="$dir"
+      set -- "$@" -e "$resolved"
     fi
   done <<EOF
 ${INPUT_EXCLUDE}
