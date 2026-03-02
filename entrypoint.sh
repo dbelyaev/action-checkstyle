@@ -17,6 +17,19 @@ if [ -n "${INPUT_PROPERTIES_FILE}" ]; then
   OPTIONAL_PROPERTIES_FILE="-p ${INPUT_PROPERTIES_FILE}"
 fi
 
+# user supplied exclude paths, build -e flags for checkstyle
+OPTIONAL_EXCLUDES=""
+if [ -n "${INPUT_EXCLUDE}" ]; then
+  while IFS= read -r dir; do
+    dir="$(echo "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    if [ -n "$dir" ]; then
+      OPTIONAL_EXCLUDES="${OPTIONAL_EXCLUDES} -e ${dir}"
+    fi
+  done <<EOF
+${INPUT_EXCLUDE}
+EOF
+fi
+
 # user wants to use custom Checkstyle version, try to install it
 if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   echo '::group::📥 Installing user-defined Checkstyle version ... https://github.com/checkstyle/checkstyle'
@@ -38,7 +51,7 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 { echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
 # shellcheck disable=SC2086
-exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" ${OPTIONAL_PROPERTIES_FILE} -f xml \
+exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" ${OPTIONAL_PROPERTIES_FILE} ${OPTIONAL_EXCLUDES} -f xml \
   | reviewdog -f=checkstyle \
       -name="checkstyle" \
       -reporter="${INPUT_REPORTER:-github-pr-check}" \

@@ -47,6 +47,12 @@ inputs:
       Path to properties file (relative to repository root) for defining variables in Checkstyle config.
       Use standard Java properties format (key=value) to centralize configuration values.
     default: ""
+  exclude:
+    description: |
+      Newline-separated list of directories or files to exclude from Checkstyle analysis.
+      Paths are relative to the repository root. Uses Checkstyle's native -e flag.
+      Subdirectories of excluded paths are also excluded.
+    default: ""
 runs:
   using: "docker"
   image: "Dockerfile"
