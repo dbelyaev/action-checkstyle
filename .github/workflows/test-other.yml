@@ -32,7 +32,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reviewdog_flags: -filter-mode=added -fail-level=none
-          exclude: "testdata/java/excluded"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
 
   test-properties-file:
     if: github.event_name == 'pull_request'
@@ -53,7 +55,9 @@ jobs:
           workdir: ./testdata/java/
           checkstyle_config: ./testdata/properties_file/test_checks.xml
           properties_file: ./testdata/properties_file/additional.properties
-          exclude: "testdata/java/excluded"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
 
   test-exclude:
     if: github.event_name == 'pull_request'
@@ -73,7 +77,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
           fail_level: error
-          exclude: "testdata/java/excluded"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
 
   test-exclude-multi:
     if: github.event_name == 'pull_request'
@@ -95,4 +101,27 @@ jobs:
           fail_level: error
           exclude: |
             testdata/java/excluded
+            testdata/java/excluded dir
             .github
+
+  test-exclude-space:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (exclude-space)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check
+          fail_level: error
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
