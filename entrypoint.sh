@@ -57,6 +57,11 @@ export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
 echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 { echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
+# disable pipefail for the final pipeline: checkstyle exits with the violation
+# count as its exit code, so pipefail would fail the action on any findings
+# regardless of the reviewdog fail-level setting
+set +o pipefail
+
 # shellcheck disable=SC2086
 exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   | reviewdog -f=checkstyle \
