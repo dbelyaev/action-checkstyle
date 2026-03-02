@@ -15,10 +15,12 @@ fi
 # resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
 # produces clean paths (without "./") that match the exclude patterns exactly
 if [ -n "${INPUT_WORKDIR}" ]; then
-  if ! INPUT_WORKDIR="$(realpath "${INPUT_WORKDIR}" 2>/dev/null)"; then
-    echo "workdir does not exist: ${INPUT_WORKDIR}" >&2
+  orig_workdir="${INPUT_WORKDIR}"
+  if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
+    echo "workdir does not exist: ${orig_workdir}" >&2
     exit 1
   fi
+  INPUT_WORKDIR="${resolved_workdir}"
 fi
 
 # build optional checkstyle arguments safely using positional parameters
@@ -87,8 +89,13 @@ cs_exit=${cs_exit:-0}
 # Treat only these as hard failures; all other non-zero codes (including large
 # error counts) are passed through to reviewdog.
 if [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; then
-  echo "Checkstyle failed with exit code ${cs_exit}" >&2
-  exit "$cs_exit"
+  # Only treat as hard failure when Checkstyle produced no usable XML output.
+  # A repo with exactly 254/255 ERROR-level violations would hit these codes
+  # but still produce valid XML that should flow to reviewdog.
+  if [ ! -s "$cs_output" ] || ! head -n 1 "$cs_output" | grep -q '<'; then
+    echo "Checkstyle failed with exit code ${cs_exit}" >&2
+    exit "$cs_exit"
+  fi
 fi
 
 # Feed checkstyle XML output into reviewdog; its exit code respects fail-level
