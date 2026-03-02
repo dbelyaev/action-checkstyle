@@ -1,7 +1,7 @@
 #!/bin/sh
 command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 1; }
 
-set -e
+set -eo pipefail
 
 # output some information
 { echo "Pre-installed"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
@@ -11,19 +11,20 @@ if [ -n "${GITHUB_WORKSPACE}" ]; then
   git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
 fi
 
-# user supplied custom properties file parameter, define it
-OPTIONAL_PROPERTIES_FILE=""
+# build optional checkstyle arguments safely using positional parameters
+set --
+
+# user supplied custom properties file parameter
 if [ -n "${INPUT_PROPERTIES_FILE}" ]; then
-  OPTIONAL_PROPERTIES_FILE="-p ${INPUT_PROPERTIES_FILE}"
+  set -- "$@" -p "${INPUT_PROPERTIES_FILE}"
 fi
 
 # user supplied exclude paths, build -e flags for checkstyle
-OPTIONAL_EXCLUDES=""
 if [ -n "${INPUT_EXCLUDE}" ]; then
   while IFS= read -r dir; do
-    dir="$(echo "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    dir="$(printf '%s' "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     if [ -n "$dir" ]; then
-      OPTIONAL_EXCLUDES="${OPTIONAL_EXCLUDES} -e ${dir}"
+      set -- "$@" -e "$dir"
     fi
   done <<EOF
 ${INPUT_EXCLUDE}
@@ -51,7 +52,7 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 { echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
 # shellcheck disable=SC2086
-exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" ${OPTIONAL_PROPERTIES_FILE} ${OPTIONAL_EXCLUDES} -f xml \
+exec java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   | reviewdog -f=checkstyle \
       -name="checkstyle" \
       -reporter="${INPUT_REPORTER:-github-pr-check}" \
