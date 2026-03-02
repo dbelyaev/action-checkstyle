@@ -29,8 +29,14 @@ if [ -n "${INPUT_EXCLUDE}" ]; then
   while IFS= read -r dir; do
     dir="$(printf '%s' "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     if [ -n "$dir" ]; then
-      # resolve to absolute path for reliable matching; keep raw value as fallback
-      resolved="$(realpath "$dir" 2>/dev/null)" || resolved="$dir"
+      # resolve to absolute path for reliable matching
+      resolved="$(realpath "$dir" 2>/dev/null)" || {
+        # realpath failed (dir doesn't exist yet); build absolute path manually
+        case "$dir" in
+          /*) resolved="$dir" ;;
+          *)  resolved="${GITHUB_WORKSPACE:+${GITHUB_WORKSPACE%/}/}$dir" ;;
+        esac
+      }
       set -- "$@" -e "$resolved"
     fi
   done <<EOF
