@@ -1,6 +1,7 @@
 #!/bin/sh
 command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 1; }
 
+# shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
 set -eo pipefail
 
 # output some information
@@ -60,6 +61,7 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 # disable pipefail for the final pipeline: checkstyle exits with the violation
 # count as its exit code, so pipefail would fail the action on any findings
 # regardless of the reviewdog fail-level setting
+# shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
 set +o pipefail
 
 # shellcheck disable=SC2086
