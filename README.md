@@ -59,6 +59,7 @@ That's it! The action will now analyze Java files in every pull request using Go
     - [`checkstyle_version`](#checkstyle_version)
     - [`workdir`](#workdir)
     - [`properties_file`](#properties_file)
+    - [`exclude`](#exclude)
   - [Reviewdog Parameters](#reviewdog-parameters)
     - [`github_token`](#github_token)
     - [`reporter`](#reporter)
@@ -234,6 +235,55 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
   ```
 
   *[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) demonstrating properties file usage with custom configuration*
+
+- ### `exclude`
+
+  Newline-separated list of directories or files to exclude from Checkstyle analysis.  
+  
+  Paths are relative to the repository root. Uses Checkstyle's native `-e` flag, so subdirectories of excluded paths are also excluded automatically.
+
+  > **Note:** Paths are resolved relative to the repository root, not the `workdir` parameter.
+
+  **Default:** `''` (empty — all files are scanned)
+
+  **Example (single path):**
+
+  ```yaml
+  name: reviewdog
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v6
+        - uses: dbelyaev/action-checkstyle@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            reporter: github-pr-review
+            exclude: "build/generated"
+  ```
+
+  **Example (multiple paths):**
+
+  ```yaml
+  name: reviewdog
+  on: [pull_request]
+  jobs:
+    checkstyle:
+      name: runner / checkstyle
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v6
+        - uses: dbelyaev/action-checkstyle@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            reporter: github-pr-review
+            exclude: |
+              build/generated
+              src/main/java/legacy
+              third-party
+  ```
 
 ### Reviewdog Parameters
 
