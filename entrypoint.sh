@@ -71,6 +71,13 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
     exit 1
   fi
 
+  # Verify the downloaded JAR is valid by running a quick version check.
+  # This catches corrupt/truncated downloads and non-JAR responses (e.g. 404 HTML pages).
+  if ! java -jar /opt/lib/checkstyle.jar --version >/dev/null 2>&1; then
+    echo "Downloaded Checkstyle JAR for version ${INPUT_CHECKSTYLE_VERSION} appears to be corrupt or invalid" >&2
+    exit 1
+  fi
+
   echo '::endgroup::'
 fi
 
