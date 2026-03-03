@@ -86,7 +86,13 @@ export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
 
 # run check
 echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
-{ echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
+cs_version="$(java -jar /opt/lib/checkstyle.jar --version 2>&1)"
+echo "Run check with ${cs_version}"
+
+# Export the actual Checkstyle version used
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "checkstyle_version=${cs_version}" >> "$GITHUB_OUTPUT"
+fi
 
 # Run checkstyle and reviewdog in two stages so that:
 #  1. A hard checkstyle failure (invalid args, exception) is detected and surfaced.
@@ -125,6 +131,15 @@ reviewdog -f=checkstyle \
     -level="${INPUT_LEVEL}" \
     ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
 rd_exit=${rd_exit:-0}
+
+# Count violations from Checkstyle XML output (<error ... /> tags)
+violation_count=0
+if [ -s "$cs_output" ]; then
+  violation_count="$(grep -c '<error ' "$cs_output" 2>/dev/null || true)"
+fi
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "violation_count=${violation_count}" >> "$GITHUB_OUTPUT"
+fi
 
 echo '::endgroup::'
 exit "$rd_exit"
