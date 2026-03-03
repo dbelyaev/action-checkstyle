@@ -66,6 +66,7 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"
+  # -4 forces IPv4 to work around intermittent IPv6 routing issues on GitHub Actions runners
   if ! wget -4 -q --tries=3 --timeout=30 -O /opt/lib/checkstyle.jar "$url"; then
     echo "Failed to download Checkstyle version ${INPUT_CHECKSTYLE_VERSION}" >&2
     exit 1
