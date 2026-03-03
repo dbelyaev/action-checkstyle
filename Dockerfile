@@ -6,7 +6,7 @@ ENV CHECKSTYLE_VERSION=13.3.0
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # hadolint ignore=DL3018
-RUN apk --no-cache add curl git wget
+RUN apk --no-cache add git wget
 
 # pre-install reviewdog and checkstyle
 RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
