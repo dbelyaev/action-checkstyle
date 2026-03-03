@@ -15,7 +15,8 @@ RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master
 
 # Create a non-root user to run the container (Trivy DS-0002)
 RUN addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
-    chown -R checkstyle:checkstyle /opt/lib
+    mkdir -p /home/checkstyle && \
+    chown -R checkstyle:checkstyle /home/checkstyle /opt/lib
 
 ENV HOME=/home/checkstyle
 
