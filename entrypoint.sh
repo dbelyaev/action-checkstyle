@@ -41,7 +41,12 @@ if [ -n "${INPUT_EXCLUDE}" ]; then
         # realpath failed (dir doesn't exist yet); build absolute path manually
         case "$dir" in
           /*) resolved="$dir" ;;
-          *)  resolved="${GITHUB_WORKSPACE:+${GITHUB_WORKSPACE%/}/}$dir" ;;
+          *)
+            # normalize: strip leading "./" and collapse redundant slashes
+            normalized="$(printf '%s' "$dir" | sed -e 's#^\(\./\)*##' -e 's#/\+#/#g')"
+            resolved="${GITHUB_WORKSPACE:-$(pwd)}"
+            resolved="${resolved%/}/$normalized"
+            ;;
         esac
       }
       set -- "$@" -e "$resolved"
