@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25.0.1_8-jre-alpine@sha256:b51543f89580c1ba70e441cfbc0cfc1635c3c16d2e2d77fec9d890342a3a8687
+FROM eclipse-temurin:25.0.2_10-jre-alpine@sha256:f10d6259d0798c1e12179b6bf3b63cea0d6843f7b09c9f9c9c422c50e44379ec
 
 ENV REVIEWDOG_VERSION=v0.21.0
 ENV CHECKSTYLE_VERSION=13.3.0
@@ -13,6 +13,15 @@ RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master
     mkdir -p /opt/lib && \
     wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar
 
+# Create a non-root user to run the container (Trivy DS-0002)
+RUN addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
+    mkdir -p /home/checkstyle && \
+    chown -R checkstyle:checkstyle /home/checkstyle /opt/lib
+
+ENV HOME=/home/checkstyle
+
 COPY entrypoint.sh /entrypoint.sh
+
+USER checkstyle
 
 ENTRYPOINT ["/entrypoint.sh"]

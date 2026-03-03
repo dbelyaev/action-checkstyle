@@ -4,6 +4,10 @@ command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 
 # shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
 set -eo pipefail
 
+# GitHub Actions overrides HOME to /github/home (owned by root).
+# Restore the writable home directory created for our non-root user.
+export HOME=/home/checkstyle
+
 # output some information
 { echo "Pre-installed"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
