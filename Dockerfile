@@ -13,6 +13,14 @@ RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master
     mkdir -p /opt/lib && \
     wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar
 
+# Create a non-root user to run the container (Trivy DS-0002)
+RUN addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
+    chown -R checkstyle:checkstyle /opt/lib
+
+ENV HOME=/home/checkstyle
+
 COPY entrypoint.sh /entrypoint.sh
+
+USER checkstyle
 
 ENTRYPOINT ["/entrypoint.sh"]
