@@ -6,7 +6,7 @@ ENV CHECKSTYLE_VERSION=13.3.0
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # hadolint ignore=DL3018
-RUN apk --no-cache add git wget
+RUN apk --no-cache add git su-exec wget
 
 # Pre-install reviewdog and checkstyle.
 # Install script is pinned by commit SHA for supply-chain safety;
@@ -27,6 +27,6 @@ ENV HOME=/home/checkstyle
 
 COPY entrypoint.sh /entrypoint.sh
 
-USER checkstyle
-
+# root required at start; entrypoint drops to non-root via su-exec after detecting workspace owner UID.
+# hadolint ignore=DL3002
 ENTRYPOINT ["/entrypoint.sh"]

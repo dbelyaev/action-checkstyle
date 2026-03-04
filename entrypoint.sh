@@ -8,6 +8,29 @@ set -eo pipefail
 # Restore the writable home directory created for our non-root user.
 export HOME=/home/checkstyle
 
+# Drop root privileges by switching to the owner of the workspace.
+# The workspace is a bind mount from the GitHub runner; changing ownership
+# (via chown) would affect the host and break subsequent workflow steps.
+# Instead we detect the workspace owner's UID:GID and run as that user so
+# tools like reviewdog can write to .git/ without any chown.
+if [ "$(id -u)" -eq 0 ]; then
+  workspace="${GITHUB_WORKSPACE:-.}"
+  if owner_uidgid="$(stat -c '%u:%g' "$workspace" 2>/dev/null)"; then
+    owner_uid="${owner_uidgid%%:*}"
+    if [ "$owner_uid" != "0" ]; then
+      # Make container-internal writable dirs accessible to the detected UID
+      chown -R "$owner_uidgid" /home/checkstyle /opt/lib
+      exec su-exec "$owner_uidgid" "$0" "$@"
+    else
+      # Workspace owned by root (UID 0:*); fall back to non-root default user
+      exec su-exec checkstyle "$0" "$@"
+    fi
+  else
+    # stat failed; fall back to non-root default user
+    exec su-exec checkstyle "$0" "$@"
+  fi
+fi
+
 # output some information
 { echo "Pre-installed"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
