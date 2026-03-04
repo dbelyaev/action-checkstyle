@@ -53,6 +53,7 @@ That's it! The action will now analyze Java files in every pull request using Go
 - [Example](#example)
 - [Usage](#usage)
   - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
+- [Required Permissions](#required-permissions)
 - [Input Parameters](#input-parameters)
   - [Checkstyle Parameters](#checkstyle-parameters)
     - [`checkstyle_config`](#checkstyle_config)
@@ -127,6 +128,57 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 GitHub [officially recommends](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions) pinning actions to a full length commit SHA for production workflows and 3rd party actions to ensure security. For non-critical workflows, major version tags provide a reasonable balance between convenience and safety.
 
 For automated SHA updates, consider using tools like [Dependabot (owned by GitHub)](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) or [Renovate (owned by mend.io)](https://github.com/apps/renovate) to keep your actions current while maintaining security.
+
+## Required Permissions
+
+This action requires specific GitHub token permissions depending on the reporter you choose. Set these in your workflow's `permissions` block:
+
+| Reporter | Required Permissions |
+|---|---|
+| `github-pr-check` | `checks: write`, `contents: read` |
+| `github-check` | `checks: write`, `contents: read` |
+| `github-pr-review` | `pull-requests: write`, `contents: read` |
+
+**Example — `github-pr-check` (default reporter):**
+
+```yaml
+name: checkstyle
+on: [pull_request]
+permissions: {}
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**Example — `github-pr-review` reporter:**
+
+```yaml
+name: checkstyle
+on: [pull_request]
+permissions: {}
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+```
+
+> **Best Practice:** Define empty default permissions at the workflow level (`permissions: {}`) and grant only the minimum required permissions per job. See [GitHub's security hardening guide](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-githubs-security-features) for details.
 
 ## Input Parameters
 

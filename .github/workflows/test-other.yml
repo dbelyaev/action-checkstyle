@@ -125,3 +125,59 @@ jobs:
           exclude: |
             testdata/java/excluded
             testdata/java/excluded dir
+
+  test-invalid-config:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (invalid-config)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run with invalid config (expect failure)
+        id: invalid_config
+        continue-on-error: true
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: nonexistent_config.xml
+
+      - name: Verify failure
+        if: steps.invalid_config.outcome != 'failure'
+        run: |
+          echo "Expected failure but got: ${{ steps.invalid_config.outcome }}"
+          exit 1
+
+  test-invalid-version:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (invalid-version)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run with invalid version (expect failure)
+        id: invalid_version
+        continue-on-error: true
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_version: "999.0.0"
+
+      - name: Verify failure
+        if: steps.invalid_version.outcome != 'failure'
+        run: |
+          echo "Expected failure but got: ${{ steps.invalid_version.outcome }}"
+          exit 1

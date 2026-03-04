@@ -8,10 +8,10 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # hadolint ignore=DL3018
 RUN apk --no-cache add git wget
 
-# Pin install script to a specific commit to prevent supply chain attacks
-# via a compromised master-branch install.sh (binary version is still controlled
-# by REVIEWDOG_VERSION).
-# pre-install reviewdog and checkstyle
+# Pre-install reviewdog and checkstyle.
+# Install script is pinned by commit SHA for supply-chain safety;
+# the binary version is controlled separately via REVIEWDOG_VERSION.
+# -4 forces IPv4 to avoid IPv6 routing issues on GitHub Actions runners.
 RUN wget -4 -q -O /tmp/reviewdog_install.sh https://raw.githubusercontent.com/reviewdog/reviewdog/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/install.sh && \
     sh /tmp/reviewdog_install.sh -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
     rm /tmp/reviewdog_install.sh && \
