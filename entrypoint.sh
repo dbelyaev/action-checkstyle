@@ -15,12 +15,18 @@ export HOME=/home/checkstyle
 # tools like reviewdog can write to .git/ without any chown.
 if [ "$(id -u)" -eq 0 ]; then
   workspace="${GITHUB_WORKSPACE:-.}"
-  if owner_uidgid="$(stat -c '%u:%g' "$workspace" 2>/dev/null)" && [ "$owner_uidgid" != "0:0" ]; then
-    # Make container-internal writable dirs accessible to the detected UID
-    chown -R "$owner_uidgid" /home/checkstyle /opt/lib
-    exec su-exec "$owner_uidgid" "$0" "$@"
+  if owner_uidgid="$(stat -c '%u:%g' "$workspace" 2>/dev/null)"; then
+    owner_uid="${owner_uidgid%%:*}"
+    if [ "$owner_uid" != "0" ]; then
+      # Make container-internal writable dirs accessible to the detected UID
+      chown -R "$owner_uidgid" /home/checkstyle /opt/lib
+      exec su-exec "$owner_uidgid" "$0" "$@"
+    else
+      # Workspace owned by root (UID 0:*); fall back to non-root default user
+      exec su-exec checkstyle "$0" "$@"
+    fi
   else
-    # Workspace owned by root or stat failed; fall back to non-root default user
+    # stat failed; fall back to non-root default user
     exec su-exec checkstyle "$0" "$@"
   fi
 fi
