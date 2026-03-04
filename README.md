@@ -139,7 +139,7 @@ This action requires specific GitHub token permissions depending on the reporter
 | `github-check` | `checks: write`, `contents: read` |
 | `github-pr-review` | `pull-requests: write`, `contents: read` |
 
-**Example with explicit permissions:**
+**Example — `github-pr-check` (default reporter):**
 
 ```yaml
 name: checkstyle
@@ -151,6 +151,24 @@ jobs:
     permissions:
       contents: read
       checks: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**Example — `github-pr-review` reporter:**
+
+```yaml
+name: checkstyle
+on: [pull_request]
+permissions: {}
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
