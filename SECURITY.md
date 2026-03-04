@@ -10,6 +10,6 @@ Avoid putting sensitive information in the issue.
 - **Alternative B:**  
 Send an email to the projects maintainer at <opensource+dbelyaev/action-checkstyle@16bit.no> describing the issue.
 
-## Preffered languages
+## Preferred languages
 
 We prefer all communications to be in English.
