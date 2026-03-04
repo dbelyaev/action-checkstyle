@@ -14,7 +14,7 @@ export HOME=/home/checkstyle
 # git-fetch for large PRs (300+ changed files) and must write to .git/.
 if [ "$(id -u)" -eq 0 ]; then
   if [ -d "${GITHUB_WORKSPACE:-.}/.git" ]; then
-    chown -R checkstyle:checkstyle "${GITHUB_WORKSPACE:-.}/.git"
+    chown -hR checkstyle:checkstyle "${GITHUB_WORKSPACE:-.}/.git"
   fi
   exec su-exec checkstyle "$0" "$@"
 fi
