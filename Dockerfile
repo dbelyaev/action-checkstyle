@@ -27,8 +27,7 @@ ENV HOME=/home/checkstyle
 
 COPY entrypoint.sh /entrypoint.sh
 
-# hadolint ignore=DL3002 -- root required at start; 
-# entrypoint drops to non-root 'checkstyle' via su-exec
-# root is needed at start to fix .git/ ownership for reviewdog's git-fetch fallback on large PRs with 300+ files changed.
+# hadolint ignore=DL3002 -- root required at start;
+# entrypoint drops to non-root via su-exec after detecting workspace owner UID.
 
 ENTRYPOINT ["/entrypoint.sh"]

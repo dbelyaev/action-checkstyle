@@ -8,15 +8,20 @@ set -eo pipefail
 # Restore the writable home directory created for our non-root user.
 export HOME=/home/checkstyle
 
-# Fix .git ownership and drop root privileges.
-# The container starts as root so we can chown the workspace .git/ directory
-# (owned by the runner host UID). This is needed when reviewdog falls back to
-# git-fetch for large PRs (300+ changed files) and must write to .git/.
+# Drop root privileges by switching to the owner of the workspace.
+# The workspace is a bind mount from the GitHub runner; changing ownership
+# (via chown) would affect the host and break subsequent workflow steps.
+# Instead we detect the workspace owner's UID:GID and run as that user so
+# tools like reviewdog can write to .git/ without any chown.
 if [ "$(id -u)" -eq 0 ]; then
-  if [ -d "${GITHUB_WORKSPACE:-.}/.git" ]; then
-    chown -hR checkstyle:checkstyle "${GITHUB_WORKSPACE:-.}/.git"
+  workspace="${GITHUB_WORKSPACE:-.}"
+  if owner_uidgid="$(stat -c '%u:%g' "$workspace" 2>/dev/null)"; then
+    # Make container-internal writable dirs accessible to the detected UID
+    chown -R "$owner_uidgid" /home/checkstyle /opt/lib
+    exec su-exec "$owner_uidgid" "$0" "$@"
+  else
+    exec su-exec checkstyle "$0" "$@"
   fi
-  exec su-exec checkstyle "$0" "$@"
 fi
 
 # output some information
