@@ -12,7 +12,9 @@ RUN apk --no-cache add git wget
 # via a compromised master-branch install.sh (binary version is still controlled
 # by REVIEWDOG_VERSION).
 # pre-install reviewdog and checkstyle
-RUN wget -4 -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/install.sh | sh -s -- -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
+RUN wget -4 -q -O /tmp/reviewdog_install.sh https://raw.githubusercontent.com/reviewdog/reviewdog/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/install.sh && \
+    sh /tmp/reviewdog_install.sh -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
+    rm /tmp/reviewdog_install.sh && \
     mkdir -p /opt/lib && \
     wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar
 
