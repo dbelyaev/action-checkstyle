@@ -66,8 +66,15 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"
-  if ! wget -q -O /opt/lib/checkstyle.jar "$url"; then
+  if ! wget -4 -q --tries=3 --timeout=30 -O /opt/lib/checkstyle.jar "$url"; then
     echo "Failed to download Checkstyle version ${INPUT_CHECKSTYLE_VERSION}" >&2
+    exit 1
+  fi
+
+  # Verify the downloaded JAR is valid by running a quick version check.
+  # This catches corrupt/truncated downloads and non-JAR responses (e.g. 404 HTML pages).
+  if ! java -jar /opt/lib/checkstyle.jar --version >/dev/null 2>&1; then
+    echo "Downloaded Checkstyle JAR for version ${INPUT_CHECKSTYLE_VERSION} appears to be corrupt or invalid" >&2
     exit 1
   fi
 
