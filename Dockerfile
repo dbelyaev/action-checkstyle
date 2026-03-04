@@ -27,7 +27,6 @@ ENV HOME=/home/checkstyle
 
 COPY entrypoint.sh /entrypoint.sh
 
-# hadolint ignore=DL3002 -- root required at start;
-# entrypoint drops to non-root via su-exec after detecting workspace owner UID.
-
+# root required at start; entrypoint drops to non-root via su-exec after detecting workspace owner UID.
+# hadolint ignore=DL3002
 ENTRYPOINT ["/entrypoint.sh"]
