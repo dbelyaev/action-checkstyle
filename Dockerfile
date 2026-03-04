@@ -27,7 +27,8 @@ ENV HOME=/home/checkstyle
 
 COPY entrypoint.sh /entrypoint.sh
 
-# No USER directive — entrypoint drops to 'checkstyle' user via su-exec
-# after fixing .git/ ownership (needed when reviewdog falls back to git-fetch on large PRs with 300+ files changed).
+# hadolint ignore=DL3002 -- root required at start; 
+# entrypoint drops to non-root 'checkstyle' via su-exec
+# root is needed at start to fix .git/ ownership for reviewdog's git-fetch fallback on large PRs with 300+ files changed.
 
 ENTRYPOINT ["/entrypoint.sh"]
