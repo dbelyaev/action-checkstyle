@@ -8,6 +8,17 @@ set -eo pipefail
 # Restore the writable home directory created for our non-root user.
 export HOME=/home/checkstyle
 
+# Fix .git ownership and drop root privileges.
+# The container starts as root so we can chown the workspace .git/ directory
+# (owned by the runner host UID). This is needed when reviewdog falls back to
+# git-fetch for large PRs (300+ changed files) and must write to .git/.
+if [ "$(id -u)" -eq 0 ]; then
+  if [ -d "${GITHUB_WORKSPACE:-.}/.git" ]; then
+    chown -R checkstyle:checkstyle "${GITHUB_WORKSPACE:-.}/.git"
+  fi
+  exec su-exec checkstyle "$0" "$@"
+fi
+
 # output some information
 { echo "Pre-installed"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
