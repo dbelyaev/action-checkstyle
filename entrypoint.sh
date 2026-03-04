@@ -1,15 +1,4 @@
 #!/bin/sh
-
-# Drop privileges: container starts as root so we can fix runner-created file
-# permissions (e.g. GITHUB_OUTPUT), then re-exec as the non-root user.
-if [ "$(id -u)" = "0" ]; then
-  # Make GitHub Actions file-command files writable for the non-root user
-  for f in "${GITHUB_OUTPUT:-}" "${GITHUB_STATE:-}" "${GITHUB_ENV:-}" "${GITHUB_PATH:-}"; do
-    [ -n "$f" ] && [ -e "$f" ] && chmod 666 "$f"
-  done
-  exec su-exec checkstyle "$0" "$@"
-fi
-
 command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 1; }
 
 # shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
@@ -97,13 +86,7 @@ export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
 
 # run check
 echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
-cs_version="$(java -jar /opt/lib/checkstyle.jar --version 2>&1)"
-echo "Run check with ${cs_version}"
-
-# Export the actual Checkstyle version used
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
-  echo "checkstyle_version=${cs_version}" >> "$GITHUB_OUTPUT"
-fi
+{ echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
 # Run checkstyle and reviewdog in two stages so that:
 #  1. A hard checkstyle failure (invalid args, exception) is detected and surfaced.
@@ -142,15 +125,6 @@ reviewdog -f=checkstyle \
     -level="${INPUT_LEVEL}" \
     ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
 rd_exit=${rd_exit:-0}
-
-# Count violations from Checkstyle XML output (<error ... /> tags)
-violation_count=0
-if [ -s "$cs_output" ]; then
-  violation_count="$(grep -c '<error ' "$cs_output" 2>/dev/null || true)"
-fi
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
-  echo "violation_count=${violation_count}" >> "$GITHUB_OUTPUT"
-fi
 
 echo '::endgroup::'
 exit "$rd_exit"

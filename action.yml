@@ -53,11 +53,6 @@ inputs:
       Paths are relative to the repository root. Uses Checkstyle's native -e flag.
       Subdirectories of excluded paths are also excluded.
     default: ""
-outputs:
-  checkstyle_version:
-    description: "The actual Checkstyle version used for analysis."
-  violation_count:
-    description: "The total number of violations (error-level) found by Checkstyle."
 runs:
   using: "docker"
   image: "Dockerfile"
