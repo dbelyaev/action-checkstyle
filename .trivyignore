@@ -1,0 +1,5 @@
+# AVD-DS-0026: No HEALTHCHECK instruction defined.
+# Suppressed intentionally — this is a one-shot CLI container used inside
+# GitHub Actions jobs, not a long-running service. A HEALTHCHECK instruction
+# is meaningless for a container that executes a single command and exits.
+AVD-DS-0026
