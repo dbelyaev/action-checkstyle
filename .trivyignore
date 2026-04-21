@@ -3,3 +3,13 @@
 # GitHub Actions jobs, not a long-running service. A HEALTHCHECK instruction
 # is meaningless for a container that executes a single command and exits.
 AVD-DS-0026
+
+# AVD-DS-0002: Image user should not be 'root'.
+# Suppressed intentionally — the container must start as root so that
+# entrypoint.sh can detect the GitHub Actions workspace bind-mount owner
+# UID/GID, chown internal directories accordingly, and then drop privileges
+# via `exec su-exec <uid:gid>` before doing any real work. No workload code
+# ever runs as root: every code path calls su-exec or falls back to the
+# non-root 'checkstyle' user. Adding a USER instruction would break the
+# bind-mount UID matching. See also: # hadolint ignore=DL3002 in Dockerfile.
+AVD-DS-0002
