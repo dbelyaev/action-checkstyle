@@ -161,12 +161,12 @@ jobs:
           checkstyle_config: nonexistent_config.xml
 
       - name: Verify failure
+        env:
+          STEPS_INVALID_CONFIG_OUTCOME: ${{ steps.invalid_config.outcome }}
         if: steps.invalid_config.outcome != 'failure'
         run: |
           echo "Expected failure but got: ${STEPS_INVALID_CONFIG_OUTCOME}"
           exit 1
-        env:
-          STEPS_INVALID_CONFIG_OUTCOME: ${{ steps.invalid_config.outcome }}
 
   test-invalid-version:
     if: github.event_name == 'pull_request'
@@ -193,9 +193,9 @@ jobs:
           checkstyle_version: "999.0.0"
 
       - name: Verify failure
+        env:
+          STEPS_INVALID_VERSION_OUTCOME: ${{ steps.invalid_version.outcome }}
         if: steps.invalid_version.outcome != 'failure'
         run: |
           echo "Expected failure but got: ${STEPS_INVALID_VERSION_OUTCOME}"
           exit 1
-        env:
-          STEPS_INVALID_VERSION_OUTCOME: ${{ steps.invalid_version.outcome }}
