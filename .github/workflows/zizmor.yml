@@ -3,7 +3,7 @@ name: Zizmor # Analyze GitHub Actions workflow security with Zizmor
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 concurrency:
   group: ${{ github.ref }}-zizmor
