@@ -28,6 +28,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -49,6 +51,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +76,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -94,6 +100,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -117,6 +125,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -139,6 +149,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Run with invalid config (expect failure)
         id: invalid_config
@@ -151,8 +163,10 @@ jobs:
       - name: Verify failure
         if: steps.invalid_config.outcome != 'failure'
         run: |
-          echo "Expected failure but got: ${{ steps.invalid_config.outcome }}"
+          echo "Expected failure but got: ${STEPS_INVALID_CONFIG_OUTCOME}"
           exit 1
+        env:
+          STEPS_INVALID_CONFIG_OUTCOME: ${{ steps.invalid_config.outcome }}
 
   test-invalid-version:
     if: github.event_name == 'pull_request'
@@ -167,6 +181,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Run with invalid version (expect failure)
         id: invalid_version
@@ -179,5 +195,7 @@ jobs:
       - name: Verify failure
         if: steps.invalid_version.outcome != 'failure'
         run: |
-          echo "Expected failure but got: ${{ steps.invalid_version.outcome }}"
+          echo "Expected failure but got: ${STEPS_INVALID_VERSION_OUTCOME}"
           exit 1
+        env:
+          STEPS_INVALID_VERSION_OUTCOME: ${{ steps.invalid_version.outcome }}
