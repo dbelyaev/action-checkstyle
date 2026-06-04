@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      actions: read # to query workflow runs for the repository
       contents: read # to checkout repository and action files for security scanning
       security-events: write # to upload SARIF results to GitHub security dashboard
-      actions: read # to query workflow runs for the repository
 
     steps:
       - name: Harden Runner
