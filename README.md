@@ -340,7 +340,7 @@ Use `${{ secrets.GITHUB_TOKEN }}` (automatically provided by GitHub Actions) or 
 > - `github-pr-check` and `github-check` require `checks: write`
 > - `github-pr-review` requires `pull-requests: write`
 >
-> These are granted by default in most repositories.
+> You may need to grant these permissions explicitly in your workflow (recommended), depending on your repository's default `GITHUB_TOKEN` permissions.
 
 **Default:** `${{ github.token }}`
 
