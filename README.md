@@ -184,7 +184,7 @@ jobs:
 
 Quick reference for all inputs. Click a name to jump to its detailed description.
 
-**Checkstyle Parameters**
+Checkstyle inputs:
 
 | Name | Required | Default | Description |
 |---|---|---|---|
@@ -194,7 +194,7 @@ Quick reference for all inputs. Click a name to jump to its detailed description
 | [`properties_file`](#properties_file) | No | `''` | Path to a properties file defining variables for the config. |
 | [`exclude`](#exclude) | No | `''` | Newline-separated directories/files to exclude. |
 
-**Reviewdog Parameters**
+Reviewdog inputs:
 
 | Name | Required | Default | Description |
 |---|---|---|---|
@@ -207,13 +207,14 @@ Quick reference for all inputs. Click a name to jump to its detailed description
 
 The examples below show only the `with:` block. Place it under the `dbelyaev/action-checkstyle` step shown in [Usage](#usage).
 
-### Checkstyle Parameters
+### Checkstyle Inputs
 
 #### `checkstyle_config`
 
 Specifies which Checkstyle ruleset to apply during analysis.
 
 Two built-in configurations are available:
+
 - `google_checks.xml` - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) rules
 - `sun_checks.xml` - [Sun Code Conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html) rules
 
@@ -243,6 +244,7 @@ Specifies which Checkstyle version to use for analysis.
 Browse available versions on the [Checkstyle releases page](https://github.com/checkstyle/checkstyle/releases/).
 
 > **Important:** By default, this action automatically uses the latest Checkstyle version. New Checkstyle releases may introduce:
+>
 > - New rules that flag previously accepted code
 > - Modified rule behavior causing different violation counts
 > - Deprecated configuration options
@@ -325,7 +327,7 @@ with:
     third-party
 ```
 
-### Reviewdog Parameters
+### Reviewdog Inputs
 
 #### `github_token`
 
