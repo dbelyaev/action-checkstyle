@@ -336,6 +336,7 @@ GitHub token for API authentication, used by reviewdog to post comments and anno
 Use `${{ secrets.GITHUB_TOKEN }}` (automatically provided by GitHub Actions) or `${{ github.token }}` in your workflow.
 
 > **Note:** The required permissions depend on the reporter used:
+>
 > - `github-pr-check` and `github-check` require `checks: write`
 > - `github-pr-review` requires `pull-requests: write`
 >
