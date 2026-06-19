@@ -16,12 +16,12 @@
 [![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
 Enforce Java code quality standards in your pull requests with automated [Checkstyle](https://github.com/checkstyle/checkstyle) analysis.  
-Powered by [reviewdog](https://github.com/reviewdog/reviewdog), this action reports violations as inline comments in your PRs, helping your team keep a consistent code style.
+Powered by [reviewdog](https://github.com/reviewdog/reviewdog), this action reports violations as check annotations or inline PR review comments, helping your team keep a consistent code style.
 
 ## Features
 
 - **Zero configuration** — works out of the box with Google or Sun coding conventions
-- **Flexible reporting** — report as PR comments, checks, or reviews
+- **Flexible reporting** — report as check annotations (`github-pr-check`, `github-check`) or PR review comments (`github-pr-review`)
 - **Version control** — pin to any Checkstyle version for reproducible builds
 - **Custom rules** — bring your own Checkstyle configuration files
 - **Smart filtering** — review only changed lines or entire files
@@ -198,7 +198,7 @@ Reviewdog inputs:
 
 | Name | Required | Default | Description |
 |---|---|---|---|
-| [`github_token`](#github_token) | Yes | `${{ github.token }}` | GitHub token for API authentication. |
+| [`github_token`](#github_token) | No | `${{ github.token }}` | GitHub token for API authentication. |
 | [`reporter`](#reporter) | No | `github-pr-check` | How reviewdog reports violations. |
 | [`level`](#level) | No | `info` | Severity level for reported violations. |
 | [`filter_mode`](#filter_mode) | No | `added` | Which files/lines reviewdog reports on. |
@@ -207,7 +207,7 @@ Reviewdog inputs:
 
 The examples below show only the `with:` block. Place it under the `dbelyaev/action-checkstyle` step shown in [Usage](#usage).
 
-### Checkstyle Inputs
+### Checkstyle Parameters
 
 #### `checkstyle_config`
 
@@ -327,17 +327,21 @@ with:
     third-party
 ```
 
-### Reviewdog Inputs
+### Reviewdog Parameters
 
 #### `github_token`
 
-GitHub token for API authentication, required for reviewdog to post comments and annotations.
+GitHub token for API authentication, used by reviewdog to post comments and annotations.
 
-Use the automatically provided `secrets.github_token` or `secrets.GITHUB_TOKEN` in your workflow. This token is automatically created by GitHub for each workflow run with appropriate permissions.
+Use `${{ secrets.GITHUB_TOKEN }}` (automatically provided by GitHub Actions) or `${{ github.token }}` in your workflow.
 
-> **Note:** For the `github-pr-review` and `github-pr-check` reporters to work properly, ensure your workflow has `pull-requests: write` permission. This is granted by default in most cases.
+> **Note:** The required permissions depend on the reporter used:
+> - `github-pr-check` and `github-check` require `checks: write`
+> - `github-pr-review` requires `pull-requests: write`
+>
+> These are granted by default in most repositories.
 
-**Required:** Yes
+**Default:** `${{ github.token }}`
 
 **Example:**
 
@@ -408,7 +412,7 @@ By default (`none`), reviewdog exits with code `0` even when violations exist. S
 
 Additional reviewdog flags.
 
-**Default:** `""`
+**Default:** `''`
 
 ## Contributing
 
