@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
-      - uses: reviewdog/action-depup@94a1aaf4e4923064019214b48a43276218af7ad5 # v1.6.4
+      - uses: reviewdog/action-depup@99f7aecf3e4d06d5a3faf190dae5dc79ac530b5a # v1.6.5
         id: depup
         with:
           file: Dockerfile
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
-      - uses: reviewdog/action-depup@94a1aaf4e4923064019214b48a43276218af7ad5 # v1.6.4
+      - uses: reviewdog/action-depup@99f7aecf3e4d06d5a3faf190dae5dc79ac530b5a # v1.6.5
         id: depup-checkstyle
         with:
           file: Dockerfile
