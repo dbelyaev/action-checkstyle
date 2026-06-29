@@ -70,7 +70,7 @@ jobs:
           cond: ${{ github.event_name == 'pull_request' }}
           if_true: "github-pr-review"
           if_false: "github-check"
-      - uses: reviewdog/action-hadolint@d76e28404b1d5fc19bfaa1f1d9a97dbfffe47032 # v1.50.6
+      - uses: reviewdog/action-hadolint@1b2cfa6ba72072ad35158d7ff3aa49bbdc03506d # v1.51.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: ${{ steps.reporter.outputs.value }}
