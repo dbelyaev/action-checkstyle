@@ -144,7 +144,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: reviewdog/action-alex@b6673b547eeb6d430c87ef02dc3524bdf34e324d # v1.16.1
+      - uses: reviewdog/action-alex@347481655add010a2ae302df34b57c9bcfa0d6e4 # v1.17.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
