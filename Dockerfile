@@ -9,22 +9,31 @@ ENV CHECKSTYLE_SHA256=4aa042449984e3f2ea670b039e39b29e116a037e823c32f59b84d04739
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-# hadolint ignore=DL3018
-RUN apk --no-cache add git su-exec wget
-
-# Pre-install reviewdog and checkstyle.
+# Single RUN: packages, downloads and the runtime user in one layer.
+# Splitting them buys no build-cache benefit here anyway - the ENV lines above
+# are what change, and they invalidate everything below regardless.
+#
+# curl rather than wget: it is the only one of the two that can pin the scheme
+# across redirects (--proto/--proto-redir). Both downloads below are redirected
+# by GitHub, so following them without that guarantee would allow a downgrade
+# to plain http. curl is also what the reviewdog install script prefers.
+#
 # Install script is pinned by commit SHA for supply-chain safety;
 # the binary version is controlled separately via REVIEWDOG_VERSION.
 # -4 forces IPv4 to avoid IPv6 routing issues on GitHub Actions runners.
-RUN wget -4 -q -O /tmp/reviewdog_install.sh https://raw.githubusercontent.com/reviewdog/reviewdog/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/install.sh && \
+# hadolint ignore=DL3018
+RUN apk --no-cache add git su-exec curl && \
+    curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
+      -o /tmp/reviewdog_install.sh \
+      https://raw.githubusercontent.com/reviewdog/reviewdog/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/install.sh && \
     sh /tmp/reviewdog_install.sh -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
     rm /tmp/reviewdog_install.sh && \
     mkdir -p /opt/lib && \
-    wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar && \
-    echo "${CHECKSTYLE_SHA256}  /opt/lib/checkstyle.jar" | sha256sum -c -
-
-# Create a non-root user to run the container (Trivy DS-0002)
-RUN addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
+    curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
+      -o /opt/lib/checkstyle.jar \
+      https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar && \
+    echo "${CHECKSTYLE_SHA256}  /opt/lib/checkstyle.jar" | sha256sum -c - && \
+    addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
     mkdir -p /home/checkstyle && \
     chown -R checkstyle:checkstyle /home/checkstyle /opt/lib
 

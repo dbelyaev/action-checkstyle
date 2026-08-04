@@ -107,8 +107,16 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"
-  # -4 forces IPv4 to work around intermittent IPv6 routing issues on GitHub Actions runners
-  if ! wget -4 -q --tries=3 --timeout=30 -O /opt/lib/checkstyle.jar "$url"; then
+  # -4 forces IPv4 to work around intermittent IPv6 routing issues on GitHub Actions runners.
+  # --proto/--proto-redir pin the scheme to HTTPS for the request AND every
+  # redirect: GitHub redirects release downloads, and this JAR is executed by
+  # `java -jar` afterwards, so a downgrade to plain http on that hop would let
+  # whoever controls it decide what code runs. wget offers no equivalent
+  # guarantee (--https-only only governs recursive mode), which is why this
+  # uses curl. --connect-timeout rather than --max-time: the latter caps the
+  # whole transfer and a 17 MB JAR on a slow runner would hit it.
+  if ! curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
+      -o /opt/lib/checkstyle.jar "$url"; then
     echo "Failed to download Checkstyle version ${INPUT_CHECKSTYLE_VERSION}" >&2
     exit 1
   fi
@@ -146,14 +154,13 @@ cs_exit=${cs_exit:-0}
 #   254 (-2) internal CheckstyleException
 # Treat only these as hard failures; all other non-zero codes (including large
 # error counts) are passed through to reviewdog.
-if [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; then
-  # Only treat as hard failure when Checkstyle produced no usable XML output.
-  # A repo with exactly 254/255 ERROR-level violations would hit these codes
-  # but still produce valid XML that should flow to reviewdog.
-  if [ ! -s "$cs_output" ] || ! head -n 1 "$cs_output" | grep -q '<'; then
-    echo "Checkstyle failed with exit code ${cs_exit}" >&2
-    exit "$cs_exit"
-  fi
+# Hard failure only when one of those codes came WITHOUT usable XML output:
+# a repo with exactly 254/255 ERROR-level violations hits the same codes but
+# still produces valid XML, which should flow to reviewdog instead of aborting.
+if { [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; } &&
+   { [ ! -s "$cs_output" ] || ! head -n 1 "$cs_output" | grep -q '<'; }; then
+  echo "Checkstyle failed with exit code ${cs_exit}" >&2
+  exit "$cs_exit"
 fi
 
 # Feed checkstyle XML output into reviewdog; its exit code respects fail-level
