@@ -138,9 +138,58 @@ testdata/java/excluded dir"
   [[ "$output" == *"workdir does not exist"* ]]
 }
 
-@test "invalid checkstyle version fails instead of silently using the bundled jar" {
+# --- checkstyle_version validation --------------------------------------
+
+@test "version validation: path traversal in the version is rejected" {
+  # Without validation this rewrites the download URL to an arbitrary path on
+  # github.com, and the fetched JAR is then executed by `java -jar`.
+  run run_action "INPUT_CHECKSTYLE_VERSION=../../../../../../attacker/repo/releases/download/v1/evil.jar?"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+  # must be rejected before any download is attempted
+  [[ "$output" != *"Failed to download"* ]]
+}
+
+@test "version validation: shell metacharacters are rejected" {
+  run run_action 'INPUT_CHECKSTYLE_VERSION=10.0;id'
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+}
+
+@test "version validation: whitespace-bearing values are rejected" {
+  run run_action "INPUT_CHECKSTYLE_VERSION=10.0 --no-check-certificate"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+}
+
+@test "version validation: a leading, trailing or doubled dot is rejected" {
+  run run_action "INPUT_CHECKSTYLE_VERSION=.10.0"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+
+  run run_action "INPUT_CHECKSTYLE_VERSION=10.0."
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+
+  run run_action "INPUT_CHECKSTYLE_VERSION=10..0"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_version"* ]]
+}
+
+@test "version validation: a well-formed version passes validation and downloads" {
+  # Guards against the pattern being so strict it rejects real versions.
+  run run_action "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Invalid checkstyle_version"* ]]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "version validation: a well-formed but nonexistent version fails at download" {
+  # 999.0.0 is valid syntax, so it must pass validation and fail later -
+  # proving the check rejects shape, not existence.
   run run_action "INPUT_CHECKSTYLE_VERSION=999.0.0"
   [ "$status" -ne 0 ]
+  [[ "$output" != *"Invalid checkstyle_version"* ]]
   [[ "$output" == *"Failed to download Checkstyle version"* ]]
 }
 

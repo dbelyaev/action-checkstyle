@@ -86,6 +86,24 @@ fi
 # user wants to use custom Checkstyle version, try to install it
 if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   echo '::group::📥 Installing user-defined Checkstyle version ... https://github.com/checkstyle/checkstyle'
+
+  # The version is interpolated into a download URL, so it must be a plain
+  # version number and nothing else. Without this check, path traversal in the
+  # value rewrites the URL to any path on github.com - "../../../owner/repo/
+  # releases/download/v1/evil.jar" resolves to an attacker-controlled artifact
+  # that is then executed by `java -jar`.
+  case "${INPUT_CHECKSTYLE_VERSION}" in
+    *[!0-9.]* | .* | *. | *..*)
+      echo "Invalid checkstyle_version: '${INPUT_CHECKSTYLE_VERSION}'. Expected a version number such as 10.21.0" >&2
+      exit 1
+      ;;
+    *)
+      # Digits and dots only, no leading/trailing/doubled dot: accepted.
+      # Spelled out rather than left to fall through, so the accept path is
+      # visible and cannot be mistaken for an oversight.
+      ;;
+  esac
+
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"

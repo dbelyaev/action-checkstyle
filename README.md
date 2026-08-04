@@ -253,6 +253,8 @@ Browse available versions on the [Checkstyle releases page](https://github.com/c
 
 **Default:** Latest available version
 
+**Accepted format:** digits and dots only (for example `10.21.0`). Anything else is rejected before any download, because the value is interpolated into the release download URL. Note that a custom version is fetched at runtime and is *not* checksum-verified — only the version bundled in the image is pinned by sha256.
+
 **Example:**
 
 ```yaml
