@@ -147,9 +147,23 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
-@test "fail_level=error fails when error-level violations are reported" {
-  run run_action "INPUT_FAIL_LEVEL=error" "INPUT_LEVEL=error"
+@test "fail_level=warning fails when warning-level violations are reported" {
+  # google_checks.xml reports at severity "warning" (its Checker sets
+  # severity=warning globally), so this - not fail_level=error - is what
+  # actually trips on this fixture. See the note above test-exclude in
+  # .github/workflows/test-other.yml: a fail_level of "error" cannot fire
+  # with this ruleset no matter what the analysis finds.
+  run run_action "INPUT_FAIL_LEVEL=warning"
   [ "$status" -ne 0 ]
+}
+
+@test "fail_level=error does not fire on a warning-severity ruleset" {
+  # Documents the trap rather than asserting a desirable behaviour: with
+  # google_checks.xml every violation is a warning, so fail_level=error
+  # passes even though the code is full of findings.
+  run run_action "INPUT_FAIL_LEVEL=error"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
 }
 
 # --- privilege drop -----------------------------------------------------
