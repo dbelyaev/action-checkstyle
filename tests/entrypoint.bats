@@ -132,6 +132,32 @@ testdata/java/excluded dir"
   [ "$status" -ne 0 ]
 }
 
+# --- Checkstyle exit-code handling --------------------------------------
+# Checkstyle exits with the NUMBER of error-severity violations, which
+# collides with 254 (internal exception) and 255 (invalid arguments). The
+# entrypoint distinguishes the two cases by whether usable XML was produced;
+# nothing tested that branch until now.
+
+@test "exit code 254 with valid XML is forwarded, not treated as a hard failure" {
+  # The fixture is generated to produce exactly 254 error-severity violations,
+  # so Checkstyle exits 254 while writing a perfectly good report. Aborting
+  # here would drop a full set of findings on the floor.
+  run run_action \
+    "INPUT_WORKDIR=/github/workspace/testdata/exit_codes/src" \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/exit_codes/checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Checkstyle failed with exit code"* ]]
+  [[ "$output" == *"ExactlyTwoFiftyFour.java"* ]]
+}
+
+@test "a Checkstyle failure without usable XML aborts with its exit code" {
+  # The other side of the same branch: a missing config makes Checkstyle exit
+  # 255 and write a plain-text error where the XML would be, which must abort.
+  run run_action "INPUT_CHECKSTYLE_CONFIG=/github/workspace/no-such-config.xml"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Checkstyle failed with exit code"* ]]
+}
+
 @test "nonexistent workdir fails with a clear message" {
   run run_action "INPUT_WORKDIR=/github/workspace/no/such/dir"
   [ "$status" -ne 0 ]

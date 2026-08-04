@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+  "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!--
+  Fixture config for the exit-code tests. A single check at severity "error",
+  so the number of violations - and therefore Checkstyle's exit code - is
+  exactly the number of over-long lines in src/, with nothing else counted.
+-->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <module name="LineLength">
+    <property name="max" value="20"/>
+  </module>
+</module>
