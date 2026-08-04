@@ -2,6 +2,10 @@ FROM eclipse-temurin:25.0.3_9-jre-alpine@sha256:c707c0d18cb9e8556380719f80d96a75
 
 ENV REVIEWDOG_VERSION=v0.21.0
 ENV CHECKSTYLE_VERSION=13.9.0
+# sha256 of checkstyle-${CHECKSTYLE_VERSION}-all.jar.
+# Kept in step with CHECKSTYLE_VERSION by scripts/update-checkstyle-checksum.sh,
+# which the depup workflow runs when it bumps the version.
+ENV CHECKSTYLE_SHA256=4aa042449984e3f2ea670b039e39b29e116a037e823c32f59b84d04739a8a94c
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -16,7 +20,8 @@ RUN wget -4 -q -O /tmp/reviewdog_install.sh https://raw.githubusercontent.com/re
     sh /tmp/reviewdog_install.sh -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
     rm /tmp/reviewdog_install.sh && \
     mkdir -p /opt/lib && \
-    wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar
+    wget -4 -q -O /opt/lib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar && \
+    echo "${CHECKSTYLE_SHA256}  /opt/lib/checkstyle.jar" | sha256sum -c -
 
 # Create a non-root user to run the container (Trivy DS-0002)
 RUN addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
