@@ -1,3 +1,12 @@
+# Pinned by BOTH tag and digest, deliberately. The digest is what Docker
+# enforces; the tag is what tells Renovate which release line to follow and
+# what makes an update PR readable ("update ... tag to v25.0.3_9-jre-alpine"
+# rather than an opaque hex change). Dropping the tag would leave Renovate
+# tracking `latest` by default - silently drifting off the pinned JRE 25
+# Alpine line, which is the opposite of what pinning is for.
+#
+# SonarQube docker:S8431 flags this combination; it is accepted here for the
+# reasons above. Please do not "simplify" this line.
 FROM eclipse-temurin:25.0.3_9-jre-alpine@sha256:c707c0d18cb9e8556380719f80d96a7529d0746fbb42143893949b98ed2f8943
 
 ENV REVIEWDOG_VERSION=v0.21.0
