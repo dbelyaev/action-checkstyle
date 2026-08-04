@@ -1,0 +1,65 @@
+name: Test - Entrypoint
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  bats:
+    name: runner / bats (entrypoint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends bats
+
+      # Container-level assertions on what the action actually reports.
+      # Unlike the workflow-level tests these do not touch the GitHub API:
+      # they use reviewdog's local reporter with -filter-mode=nofilter.
+      - name: Run entrypoint tests
+        id: bats
+        run: |
+          set -o pipefail
+          bats --formatter tap tests/entrypoint.bats 2>&1 | tee bats.tap
+
+      # Surface each failing test as a PR annotation instead of leaving the
+      # detail buried in the raw log.
+      - name: Annotate failures
+        if: failure() && steps.bats.outcome == 'failure'
+        run: |
+          python3 - <<'PY'
+          import re
+          lines = open('bats.tap', errors='replace').read().splitlines()
+          for i, line in enumerate(lines):
+              m = re.match(r'not ok \d+ (.*)', line)
+              if not m:
+                  continue
+              name = m.group(1)
+              detail = []
+              for nxt in lines[i + 1:]:
+                  if not nxt.startswith('#'):
+                      break
+                  detail.append(nxt.lstrip('# ').rstrip())
+              msg = '%0A'.join(detail) or 'no detail captured'
+              print(f"::error file=tests/entrypoint.bats,title=bats: {name}::{msg}")
+          PY
