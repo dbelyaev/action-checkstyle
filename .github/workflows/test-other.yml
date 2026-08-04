@@ -47,6 +47,7 @@ jobs:
           exclude: |
             testdata/java/excluded
             testdata/java/excluded dir
+            testdata/exit_codes
 
   test-properties-file:
     if: github.event_name == 'pull_request'
