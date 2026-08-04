@@ -97,6 +97,11 @@ if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
       echo "Invalid checkstyle_version: '${INPUT_CHECKSTYLE_VERSION}'. Expected a version number such as 10.21.0" >&2
       exit 1
       ;;
+    *)
+      # Digits and dots only, no leading/trailing/doubled dot: accepted.
+      # Spelled out rather than left to fall through, so the accept path is
+      # visible and cannot be mistaken for an oversight.
+      ;;
   esac
 
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"

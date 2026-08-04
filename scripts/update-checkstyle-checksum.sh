@@ -14,7 +14,7 @@ set -euo pipefail
 dockerfile="$(dirname "$0")/../Dockerfile"
 
 version="$(grep -oP '^ENV CHECKSTYLE_VERSION=\K.*' "$dockerfile")"
-if [ -z "$version" ]; then
+if [[ -z "$version" ]]; then
   echo "could not read CHECKSTYLE_VERSION from $dockerfile" >&2
   exit 1
 fi
