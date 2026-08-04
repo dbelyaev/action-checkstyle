@@ -1,11 +1,8 @@
 name: reviewdog
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
-    types: [ opened, synchronize ]
+    types: [ opened, synchronize, reopened ]
 
 # set empty default permissions and define them explicitly in each job for security
 permissions: {}
