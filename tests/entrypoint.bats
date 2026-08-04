@@ -10,6 +10,11 @@
 # -filter-mode=nofilter with the local reporter, so every violation surfaces
 # on stdout and can be grepped.
 #
+# Scope boundary: these drive the container by setting INPUT_* directly, so
+# they do NOT exercise the action.yml input wiring - a renamed input would
+# leave this suite green. The remaining jobs in .github/workflows/test-other.yml
+# cover that mapping through `uses: ./`.
+#
 # Requires: docker, bats. The image is built once (see setup_file).
 
 setup_file() {
@@ -162,6 +167,21 @@ testdata/java/excluded dir"
   # google_checks.xml every violation is a warning, so fail_level=error
   # passes even though the code is full of findings.
   run run_action "INPUT_FAIL_LEVEL=error"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+# --- reviewdog_flags ----------------------------------------------------
+
+@test "reviewdog_flags: extra flags reach reviewdog and take effect" {
+  # The flags are expanded unquoted on purpose (word splitting is required to
+  # pass several flags); this pins that the expansion actually works.
+  run run_action "INPUT_REVIEWDOG_FLAGS=-fail-level=warning"
+  [ "$status" -ne 0 ]
+}
+
+@test "reviewdog_flags: empty by default and harmless" {
+  run run_action "INPUT_REVIEWDOG_FLAGS="
   [ "$status" -eq 0 ]
   [[ "$output" == *"Application.java"* ]]
 }
