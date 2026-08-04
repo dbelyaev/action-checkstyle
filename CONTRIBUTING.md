@@ -47,6 +47,12 @@ Here's a quick guide:
     git commit -m "conventional commit formatted message"
     ```
 
+1. Run the entrypoint tests locally (requires Docker and [bats](https://github.com/bats-core/bats-core)). They build the image and assert on what the action actually reports, so they catch regressions the workflow-level tests cannot.
+
+    ```shell
+    bats tests/entrypoint.bats
+    ```
+
 1. Before sending the pull request, make sure to rebase onto the upstream source. This ensures your code is based on the latest available code.
 
     ```shell
