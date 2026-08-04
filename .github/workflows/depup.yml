@@ -79,7 +79,7 @@ jobs:
       # version so the bump lands complete instead of failing the build.
       - name: Update pinned JAR checksum
         if: steps.depup-checkstyle.outputs.latest != steps.depup-checkstyle.outputs.current
-        run: ./scripts/update-checkstyle-checksum.sh
+        run: bash ./scripts/update-checkstyle-checksum.sh
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1

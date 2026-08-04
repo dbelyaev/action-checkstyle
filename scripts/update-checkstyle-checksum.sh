@@ -7,7 +7,7 @@
 # a broken build and an unverified download. Run it manually after editing the
 # version by hand:
 #
-#   ./scripts/update-checkstyle-checksum.sh
+#   bash scripts/update-checkstyle-checksum.sh
 #
 set -euo pipefail
 
@@ -24,7 +24,12 @@ tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
 echo "Fetching ${url}"
-curl -fsSL --retry 3 --max-time 300 -o "$tmp" "$url"
+# --proto/--proto-redir pin the scheme to HTTPS for the initial request AND for
+# every redirect. -L is required (GitHub redirects release downloads to
+# release-assets.githubusercontent.com), and without these flags curl follows a
+# redirect to plain http - letting whoever can influence that hop supply the
+# JAR whose checksum we are about to bless as the pinned value.
+curl -fsSL --proto '=https' --proto-redir '=https' --retry 3 --max-time 300 -o "$tmp" "$url"
 
 # Guard against a 404 page or a truncated download being hashed happily.
 if ! unzip -qql "$tmp" >/dev/null 2>&1; then
