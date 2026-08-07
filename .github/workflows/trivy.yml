@@ -46,7 +46,7 @@ jobs:
           trivyignores: '.trivyignore'
 
       - name: Upload Trivy Dockerfile Lint results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
         if: always()
         with:
           sarif_file: 'trivy-dockerfile-lint-results.sarif'
@@ -86,7 +86,7 @@ jobs:
           trivyignores: '.trivyignore'
 
       - name: Upload Trivy image results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
         if: always()
         with:
           sarif_file: 'trivy-image-vuln-scan-results.sarif'
