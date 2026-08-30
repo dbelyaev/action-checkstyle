@@ -10,11 +10,11 @@
 FROM eclipse-temurin:25.0.4_7-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
 
 ENV REVIEWDOG_VERSION=v0.21.0
-ENV CHECKSTYLE_VERSION=14.0.0
+ENV CHECKSTYLE_VERSION=14.1.0
 # sha256 of checkstyle-${CHECKSTYLE_VERSION}-all.jar.
 # Kept in step with CHECKSTYLE_VERSION by scripts/update-checkstyle-checksum.sh,
 # which the depup workflow runs when it bumps the version.
-ENV CHECKSTYLE_SHA256=f3845df27df6a03e0b533fcc10bd5e4beab495b7a0d21c36b43ef243f6bf678f
+ENV CHECKSTYLE_SHA256=51e2bc7fed1bb56808aa39045f655a316194997acd24bac5195253dcf342b380
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
