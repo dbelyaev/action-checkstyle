@@ -9,7 +9,7 @@
 # reasons above. Please do not "simplify" this line.
 FROM eclipse-temurin:25.0.4_7-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
 
-ENV REVIEWDOG_VERSION=v0.21.0
+ENV REVIEWDOG_VERSION=v0.21.1
 ENV CHECKSTYLE_VERSION=14.1.0
 # sha256 of checkstyle-${CHECKSTYLE_VERSION}-all.jar.
 # Kept in step with CHECKSTYLE_VERSION by scripts/update-checkstyle-checksum.sh,
