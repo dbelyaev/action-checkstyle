@@ -92,7 +92,7 @@ jobs:
         with:
           persist-credentials: false
       - name: markdown-lint
-        uses: reviewdog/action-markdownlint@6f0e0e8703a9e840ffefa37a2775832c51c1c640 # v0.28.0
+        uses: reviewdog/action-markdownlint@d7862f0a8dbbee78e016f527260747a4f2bb2a64 # v0.30.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: reviewdog/action-misspell@d6429416b12b09b4e2768307d53bef58d172e962 # v1.27.0
+      - uses: reviewdog/action-misspell@da40ce414be6ce320a9322aa2bae10bd3b9e6ef3 # v1.29.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
