@@ -19,7 +19,7 @@ jobs:
   # suite drives the container by setting INPUT_* variables directly, so it
   # cannot catch a break in the action.yml wiring (a renamed or removed input
   # would leave bats green while the action stops working). These exercise
-  # that mapping end to end through `uses: ./`.
+  # that mapping end to end through `uses: $/`.
   #
   # Behavioural assertions on exclude, properties_file, fail_level and the
   # failure modes live in the bats suite, which can assert on what the action
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: ./
+      - uses: $/
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reviewdog_flags: -filter-mode=added -fail-level=none
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: ./
+      - uses: $/
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./testdata/java/
