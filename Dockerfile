@@ -5,8 +5,14 @@
 # tracking `latest` by default - silently drifting off the pinned JRE 25
 # Alpine line, which is the opposite of what pinning is for.
 #
-# SonarQube docker:S8431 flags this combination; it is accepted here for the
-# reasons above. Please do not "simplify" this line.
+# This is exactly the `docker:pinDigests` preset that .github/renovate.json
+# pulls in via `config:best-practices`, so Renovate rewrites tag and digest
+# together and the two cannot drift apart.
+#
+# SonarQube docker:S8431 flags this combination; it is accepted for the reasons
+# above. Dockerfiles have no inline NOSONAR, so the rule is suppressed
+# server-side in SonarQube Cloud (Analysis Scope > Ignore Issues on Multiple
+# Criteria). Please do not "simplify" this line.
 FROM eclipse-temurin:25.0.4_7-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
 
 ENV REVIEWDOG_VERSION=v0.21.1
