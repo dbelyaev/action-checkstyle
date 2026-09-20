@@ -253,7 +253,7 @@ Browse available versions on the [Checkstyle releases page](https://github.com/c
 
 **Default:** Latest available version
 
-**Accepted format:** digits and dots only (for example `10.21.0`). Anything else is rejected before any download, because the value is interpolated into the release download URL. Note that a custom version is fetched at runtime and is *not* checksum-verified — only the version bundled in the image is pinned by sha256.
+**Accepted format:** digits and dots only (for example `10.21.0`). Any other non-empty value is rejected before any download, because the value is interpolated into the release download URL. Note that a custom version is fetched at runtime and is *not* checksum-verified — only the version bundled in the image is pinned by sha256.
 
 **Example:**
 
@@ -375,7 +375,7 @@ Sets the severity level for reported violations, affecting GitHub status check r
 
 **Values:** `info`, `warning`, `error`
 
-> Any other value fails the step with an error naming the offending value.
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
 
 Control GitHub status check behavior:
 
@@ -395,7 +395,7 @@ Filtering mode for the reviewdog command.
 
 **Values:** `added`, `diff_context`, `file`, `nofilter`
 
-> Any other value fails the step with an error naming the offending value.
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
 
 See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for detailed explanations of when to use each filtering mode.
 
@@ -409,7 +409,7 @@ Determines when reviewdog exits with a non-zero code, failing the workflow.
 
 **Values:** `none`, `any`, `info`, `warning`, `error`
 
-> Any other value fails the step with an error naming the offending value.
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
 
 By default (`none`), reviewdog exits with code `0` even when violations exist. Set this to fail your workflow when violations at or above the specified severity level are found.
 
