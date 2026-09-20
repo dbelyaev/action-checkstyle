@@ -212,6 +212,13 @@ if { [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; } &&
 fi
 
 # Feed checkstyle XML output into reviewdog; its exit code respects fail-level
+#
+# `set -f` disables pathname expansion for the unquoted INPUT_REVIEWDOG_FLAGS
+# below. The word splitting is wanted - that is how several flags are passed -
+# but globbing is not: the cwd is GITHUB_WORKSPACE, whose contents a pull
+# request author controls, so a flag value containing * or ? would expand
+# against repository files and silently become different arguments.
+set -f
 # shellcheck disable=SC2086
 reviewdog -f=checkstyle \
     -name="checkstyle" \
@@ -220,6 +227,7 @@ reviewdog -f=checkstyle \
     -fail-level="${INPUT_FAIL_LEVEL}" \
     -level="${INPUT_LEVEL}" \
     ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
+set +f
 rd_exit=${rd_exit:-0}
 
 echo '::endgroup::'

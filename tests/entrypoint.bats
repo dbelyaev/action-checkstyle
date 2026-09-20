@@ -397,6 +397,37 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
+@test "reviewdog_flags: several flags are split into separate arguments" {
+  # The test above passes a SINGLE flag, so it would stay green if someone
+  # "fixed" SC2086 by quoting the expansion. Two flags actually pin splitting:
+  # collapsed into one word, reviewdog sees a -fail-level value of
+  # "none -filter-mode=nofilter" and rejects it.
+  run run_action "INPUT_REVIEWDOG_FLAGS=-fail-level=none -filter-mode=nofilter"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "reviewdog_flags: the glob guard is present" {
+  # The expansion is unquoted so several flags can be passed, but the cwd is
+  # GITHUB_WORKSPACE, whose contents a PR author controls, so a standalone
+  # pattern would expand against repository files. `set -f` keeps it literal:
+  # measured at argv level, "-tee *.md" reaches reviewdog as 2 arguments with
+  # the guard and as 4 without it (CONTRIBUTING.md, README.md, SECURITY.md).
+  #
+  # This is asserted structurally rather than behaviourally on purpose. A
+  # behavioural probe was written first and measured against the unpatched
+  # entrypoint: it passed there too, because reviewdog silently ignores the
+  # stray positional arguments the expansion produces. It proved nothing, so
+  # it was dropped rather than shipped green. This check cannot go vacuous -
+  # it fails the moment `set -f` stops guarding the expansion.
+  #
+  # (A pattern must also be its OWN word to expand at all: globbing applies to
+  # the whole word, so "-name=*.md" only matches a file literally called that.)
+  run grep -c '^set -f$' "$BATS_TEST_DIRNAME/../entrypoint.sh"
+  [ "$status" -eq 0 ]
+  [ "$output" -eq 1 ]
+}
+
 # --- privilege drop -----------------------------------------------------
 
 @test "drops root: analysis runs as the workspace owner (non-root workspace)" {
