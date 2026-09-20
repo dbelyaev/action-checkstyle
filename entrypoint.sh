@@ -54,6 +54,14 @@ if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
 fi
 INPUT_WORKDIR="${resolved_workdir}"
 
+# Resolve the reviewdog inputs to their documented defaults once, here, rather
+# than inline at the call site. Keeping a single source of truth is what lets
+# the validation below check the values that are actually used.
+INPUT_LEVEL="${INPUT_LEVEL:-info}"
+INPUT_REPORTER="${INPUT_REPORTER:-github-pr-check}"
+INPUT_FILTER_MODE="${INPUT_FILTER_MODE:-added}"
+INPUT_FAIL_LEVEL="${INPUT_FAIL_LEVEL:-none}"
+
 # build optional checkstyle arguments safely using positional parameters
 set --
 
@@ -171,9 +179,9 @@ fi
 # shellcheck disable=SC2086
 reviewdog -f=checkstyle \
     -name="checkstyle" \
-    -reporter="${INPUT_REPORTER:-github-pr-check}" \
-    -filter-mode="${INPUT_FILTER_MODE:-added}" \
-    -fail-level="${INPUT_FAIL_LEVEL:-none}" \
+    -reporter="${INPUT_REPORTER}" \
+    -filter-mode="${INPUT_FILTER_MODE}" \
+    -fail-level="${INPUT_FAIL_LEVEL}" \
     -level="${INPUT_LEVEL}" \
     ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
 rd_exit=${rd_exit:-0}

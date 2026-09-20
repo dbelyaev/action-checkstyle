@@ -214,6 +214,21 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
+# --- reviewdog input defaults -------------------------------------------
+
+@test "defaults: an empty level falls back to info" {
+  # Previously emitted a bare `-level=` to reviewdog.
+  run run_action "INPUT_LEVEL="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "defaults: an empty fail_level falls back to none" {
+  run run_action "INPUT_FAIL_LEVEL="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
 # --- checkstyle_version validation --------------------------------------
 
 @test "version validation: path traversal in the version is rejected" {
