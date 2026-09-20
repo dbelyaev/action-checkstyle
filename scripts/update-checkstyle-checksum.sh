@@ -25,7 +25,8 @@ fi
 
 url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${version}/checkstyle-${version}-all.jar"
 tmp="$(mktemp)"
-trap 'rm -f "$tmp"' EXIT
+tmp_dockerfile="$(mktemp)"
+trap 'rm -f "$tmp" "$tmp_dockerfile"' EXIT
 
 echo "Fetching ${url}"
 # --proto/--proto-redir pin the scheme to HTTPS for the initial request AND for
@@ -44,8 +45,10 @@ fi
 sha="$(sha256sum "$tmp" | cut -d' ' -f1)"
 echo "checkstyle ${version} sha256=${sha}"
 
-tmp_dockerfile="$(mktemp)"
 sed "s|^ENV CHECKSTYLE_SHA256=.*|ENV CHECKSTYLE_SHA256=${sha}|" "$dockerfile" > "$tmp_dockerfile"
-mv "$tmp_dockerfile" "$dockerfile"
+# Copy the contents back rather than `mv` the temp file over the Dockerfile:
+# mktemp creates 0600, and mv would carry that mode across, silently tightening
+# the working copy. Git does not track the bit, so CI never noticed.
+cat "$tmp_dockerfile" > "$dockerfile"
 
 grep -n '^ENV CHECKSTYLE_\(VERSION\|SHA256\)=' "$dockerfile"
