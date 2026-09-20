@@ -41,14 +41,62 @@ fi
 
 # resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
 # produces clean paths (without "./") that match the exclude patterns exactly
-if [ -n "${INPUT_WORKDIR}" ]; then
-  orig_workdir="${INPUT_WORKDIR}"
-  if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
-    echo "workdir does not exist: ${orig_workdir}" >&2
-    exit 1
-  fi
-  INPUT_WORKDIR="${resolved_workdir}"
+#
+# The default is applied here rather than left to action.yml: GitHub only
+# substitutes a default for an OMITTED input, so an explicit `workdir: ""`
+# arrives as an empty string. That used to skip resolution entirely while the
+# value was still passed to Checkstyle below, handing it an empty argument.
+INPUT_WORKDIR="${INPUT_WORKDIR:-.}"
+orig_workdir="${INPUT_WORKDIR}"
+if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
+  echo "workdir does not exist: ${orig_workdir}" >&2
+  exit 1
 fi
+INPUT_WORKDIR="${resolved_workdir}"
+
+# Resolve the reviewdog inputs to their documented defaults once, here, rather
+# than inline at the call site. Keeping a single source of truth is what lets
+# the validation below check the values that are actually used.
+INPUT_LEVEL="${INPUT_LEVEL:-info}"
+INPUT_REPORTER="${INPUT_REPORTER:-github-pr-check}"
+INPUT_FILTER_MODE="${INPUT_FILTER_MODE:-added}"
+INPUT_FAIL_LEVEL="${INPUT_FAIL_LEVEL:-none}"
+
+# Validate the enum-valued inputs here, above the custom-version download and
+# the Checkstyle run below, so a typo costs nothing instead of a ~17 MB JAR
+# fetch and a full analysis before reviewdog rejects it.
+#
+# reporter is deliberately NOT validated. reviewdog's reporter list grows with
+# its releases (github-annotations, gitlab-*, gerrit-*, ...), so an allowlist
+# here would break valid configurations on every upgrade; narrowing it to the
+# three values README documents would additionally break this repo's own bats
+# suite, which drives the container with reporter=local. reviewdog's own
+# "unknown -reporter" error is clear, it just arrives later.
+#
+# Matching is exact and lowercase, which is what reviewdog expects.
+case "${INPUT_LEVEL}" in
+  info | warning | error) ;;
+  *)
+    echo "Invalid level: '${INPUT_LEVEL}'. Expected one of: info, warning, error" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FILTER_MODE}" in
+  added | diff_context | file | nofilter) ;;
+  *)
+    echo "Invalid filter_mode: '${INPUT_FILTER_MODE}'. Expected one of: added, diff_context, file, nofilter" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FAIL_LEVEL}" in
+  none | any | info | warning | error) ;;
+  *)
+    echo "Invalid fail_level: '${INPUT_FAIL_LEVEL}'. Expected one of: none, any, info, warning, error" >&2
+    exit 1
+    ;;
+esac
 
 # build optional checkstyle arguments safely using positional parameters
 set --
@@ -164,14 +212,22 @@ if { [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; } &&
 fi
 
 # Feed checkstyle XML output into reviewdog; its exit code respects fail-level
+#
+# `set -f` disables pathname expansion for the unquoted INPUT_REVIEWDOG_FLAGS
+# below. The word splitting is wanted - that is how several flags are passed -
+# but globbing is not: the cwd is GITHUB_WORKSPACE, whose contents a pull
+# request author controls, so a flag value containing * or ? would expand
+# against repository files and silently become different arguments.
+set -f
 # shellcheck disable=SC2086
 reviewdog -f=checkstyle \
     -name="checkstyle" \
-    -reporter="${INPUT_REPORTER:-github-pr-check}" \
-    -filter-mode="${INPUT_FILTER_MODE:-added}" \
-    -fail-level="${INPUT_FAIL_LEVEL:-none}" \
+    -reporter="${INPUT_REPORTER}" \
+    -filter-mode="${INPUT_FILTER_MODE}" \
+    -fail-level="${INPUT_FAIL_LEVEL}" \
     -level="${INPUT_LEVEL}" \
     ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
+set +f
 rd_exit=${rd_exit:-0}
 
 echo '::endgroup::'

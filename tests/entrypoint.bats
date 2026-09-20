@@ -190,6 +190,132 @@ testdata/java/excluded dir"
   [[ "$output" == *"workdir does not exist"* ]]
 }
 
+# --- workdir defaulting -------------------------------------------------
+# action.yml declares default "." but GitHub only substitutes a default for an
+# OMITTED input, so an explicit `workdir: ""` reaches the script. Every other
+# test here passes an absolute path, so neither the documented default nor the
+# relative form had any container-level coverage.
+
+@test "workdir: an empty value falls back to the workspace root" {
+  run run_action "INPUT_WORKDIR="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "workdir: the action.yml default '.' resolves to the workspace root" {
+  run run_action "INPUT_WORKDIR=."
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "workdir: a relative sub-path resolves against the workspace" {
+  run run_action "INPUT_WORKDIR=testdata/java"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+# --- reviewdog input defaults -------------------------------------------
+
+@test "defaults: an empty level falls back to info" {
+  # Previously emitted a bare `-level=` to reviewdog.
+  run run_action "INPUT_LEVEL="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "defaults: an empty fail_level falls back to none" {
+  run run_action "INPUT_FAIL_LEVEL="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "defaults: an empty filter_mode falls back to added" {
+  # Non-vacuous: the default is applied BEFORE the enum check below, so without
+  # it the empty value falls through to `*)` and is rejected by name.
+  #
+  # Unlike the two tests above this one does not end in a clean run: `added` is
+  # diff-based, and the local reporter has no diff command here, so reviewdog
+  # stops with "diff command is empty". That message is the assertion - it is
+  # what a diff-based filter mode does and what `nofilter` would NOT do, so it
+  # pins the applied default rather than merely "some accepted value". An
+  # explicit INPUT_FILTER_MODE=added produces the identical output.
+  run run_action "INPUT_FILTER_MODE="
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Invalid filter_mode"* ]]
+  [[ "$output" == *"reviewdog: diff command is empty"* ]]
+}
+
+# --- enum input validation ----------------------------------------------
+# Asserting only a non-zero status would pass WITHOUT the guard: reviewdog
+# already rejects a bogus value, just later and far less clearly. The message
+# assertion is what proves the entrypoint rejected it up front.
+#
+# reporter is not validated - see the comment in entrypoint.sh - so there is
+# deliberately no test for it here.
+
+@test "input validation: an unknown level is rejected" {
+  run run_action "INPUT_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid level: 'bogus'"* ]]
+}
+
+@test "input validation: an unknown filter_mode is rejected" {
+  run run_action "INPUT_FILTER_MODE=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid filter_mode: 'bogus'"* ]]
+}
+
+@test "input validation: an unknown fail_level is rejected" {
+  run run_action "INPUT_FAIL_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid fail_level: 'bogus'"* ]]
+}
+
+@test "input validation: enum matching is case-sensitive" {
+  # reviewdog wants lowercase; accepting INFO would mean deciding whether to
+  # fold case, which this guard deliberately does not do.
+  run run_action "INPUT_LEVEL=INFO"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid level: 'INFO'"* ]]
+}
+
+@test "input validation: a valid level is accepted" {
+  # Guards against an allowlist so strict it rejects documented values.
+  run run_action "INPUT_LEVEL=warning"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Invalid level"* ]]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "input validation: a valid filter_mode is accepted" {
+  run run_action "INPUT_FILTER_MODE=nofilter"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Invalid filter_mode"* ]]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "input validation: a valid fail_level is accepted" {
+  # fail_level=any fires on the warnings google_checks reports, so a non-zero
+  # status here is the ACCEPTED path, not a rejection.
+  run run_action "INPUT_FAIL_LEVEL=any"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Invalid fail_level"* ]]
+}
+
+@test "input validation: rejection happens before Checkstyle runs" {
+  run run_action "INPUT_FAIL_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Run check with"* ]]
+}
+
+@test "input validation: rejection happens before a custom version downloads" {
+  # Pins the placement decision: the guards sit above the custom-version
+  # block, so a typo costs nothing instead of a ~17 MB JAR fetch.
+  run run_action "INPUT_FAIL_LEVEL=bogus" "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Installing user-defined Checkstyle version"* ]]
+}
+
 # --- checkstyle_version validation --------------------------------------
 
 @test "version validation: path traversal in the version is rejected" {
@@ -285,6 +411,44 @@ testdata/java/excluded dir"
   run run_action "INPUT_REVIEWDOG_FLAGS="
   [ "$status" -eq 0 ]
   [[ "$output" == *"Application.java"* ]]
+}
+
+@test "reviewdog_flags: several flags are split into separate arguments" {
+  # The test above passes a SINGLE flag, so it would stay green if someone
+  # "fixed" SC2086 by quoting the expansion. Two flags actually pin splitting:
+  # collapsed into one word, reviewdog sees a -fail-level value of
+  # "none -filter-mode=nofilter" and rejects it.
+  run run_action "INPUT_REVIEWDOG_FLAGS=-fail-level=none -filter-mode=nofilter"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "reviewdog_flags: globbing stays disabled across the flags expansion" {
+  # The expansion is unquoted so several flags can be passed, but the cwd is
+  # GITHUB_WORKSPACE, whose contents a PR author controls, so a standalone
+  # pattern would otherwise expand against repository files. `set -f` keeps it
+  # literal.
+  #
+  # Both runs fail - reviewdog rejects the unknown flag either way - but the
+  # flag NAME in its error says which word it actually received:
+  #   guard present: "flag provided but not defined: -*"
+  #   guard removed: "flag provided but not defined: -globbed"
+  #
+  # An earlier probe used "-tee *.md". Its expansion lands in POSITIONAL
+  # arguments, which reviewdog silently ignores, so it passed against the
+  # unpatched entrypoint and proved nothing. A pattern that expands into a
+  # FLAG does not have that problem.
+  #
+  # (A pattern must be its OWN word to expand at all: globbing applies to the
+  # whole word, so "-name=*.md" only matches a file literally called that.)
+  touch "$WORKSPACE/-globbed"
+
+  run run_action "INPUT_REVIEWDOG_FLAGS=-*"
+
+  rm -f "$WORKSPACE/-globbed"
+
+  [[ "$output" != *"-globbed"* ]]
+  [[ "$output" == *"flag provided but not defined: -*"* ]]
 }
 
 # --- privilege drop -----------------------------------------------------
