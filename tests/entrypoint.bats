@@ -190,6 +190,30 @@ testdata/java/excluded dir"
   [[ "$output" == *"workdir does not exist"* ]]
 }
 
+# --- workdir defaulting -------------------------------------------------
+# action.yml declares default "." but GitHub only substitutes a default for an
+# OMITTED input, so an explicit `workdir: ""` reaches the script. Every other
+# test here passes an absolute path, so neither the documented default nor the
+# relative form had any container-level coverage.
+
+@test "workdir: an empty value falls back to the workspace root" {
+  run run_action "INPUT_WORKDIR="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "workdir: the action.yml default '.' resolves to the workspace root" {
+  run run_action "INPUT_WORKDIR=."
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "workdir: a relative sub-path resolves against the workspace" {
+  run run_action "INPUT_WORKDIR=testdata/java"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
 # --- checkstyle_version validation --------------------------------------
 
 @test "version validation: path traversal in the version is rejected" {

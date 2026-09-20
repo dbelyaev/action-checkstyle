@@ -41,14 +41,18 @@ fi
 
 # resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
 # produces clean paths (without "./") that match the exclude patterns exactly
-if [ -n "${INPUT_WORKDIR}" ]; then
-  orig_workdir="${INPUT_WORKDIR}"
-  if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
-    echo "workdir does not exist: ${orig_workdir}" >&2
-    exit 1
-  fi
-  INPUT_WORKDIR="${resolved_workdir}"
+#
+# The default is applied here rather than left to action.yml: GitHub only
+# substitutes a default for an OMITTED input, so an explicit `workdir: ""`
+# arrives as an empty string. That used to skip resolution entirely while the
+# value was still passed to Checkstyle below, handing it an empty argument.
+INPUT_WORKDIR="${INPUT_WORKDIR:-.}"
+orig_workdir="${INPUT_WORKDIR}"
+if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
+  echo "workdir does not exist: ${orig_workdir}" >&2
+  exit 1
 fi
+INPUT_WORKDIR="${resolved_workdir}"
 
 # build optional checkstyle arguments safely using positional parameters
 set --
