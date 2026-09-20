@@ -15,14 +15,40 @@
 # leave this suite green. The remaining jobs in .github/workflows/test-other.yml
 # cover that mapping through `uses: ./`.
 #
-# Requires: docker, bats. The image is built once (see setup_file).
+# Requires: docker, bats, and host tar and git. The image is built once and
+# the workspace copy is made once, both in setup_file: tar copies the checkout
+# and `git init` re-initialises the copy as a repository of its own.
 
 setup_file() {
   export IMAGE="action-checkstyle-test:bats"
   docker build -q -t "$IMAGE" "$BATS_TEST_DIRNAME/.." >/dev/null
+
+  # The container is given a self-contained COPY of the checkout, not the
+  # checkout itself.
+  #
+  # Mounting the checkout directly only works when .git is a real directory.
+  # In a git worktree it is a FILE holding "gitdir: <absolute path>" that
+  # points outside the mounted tree, so inside the container the pointer
+  # dangles, `git config --global --add safe.directory` aborts with
+  # "fatal: not a git repository: (null)", and every test that expects a
+  # successful run fails - for a reason that has nothing to do with the code
+  # under test. Reviewing a branch from a worktree is ordinary, so the suite
+  # should not fall over on it.
+  #
+  # Bind-mounting the real git directory as well would fix the pointer, but it
+  # would expose the developer's actual repository - shared by every worktree -
+  # read-write to a container. A copy costs ~200 KB, removes the dependency on
+  # how the checkout is laid out, and keeps the container from writing to the
+  # working copy at all.
+  export WORKSPACE="$BATS_FILE_TMPDIR/workspace"
+  mkdir -p "$WORKSPACE"
+  tar -C "$BATS_TEST_DIRNAME/.." --exclude=.git -cf - . | tar -C "$WORKSPACE" -xf -
+  # Re-initialise as a repo of its own: the real workspace on a runner is a git
+  # repository, so the tests should exercise that shape too.
+  git -C "$WORKSPACE" init -q
 }
 
-# Runs the action in the container against the repo checkout.
+# Runs the action in the container against the workspace copy.
 # Usage: run_action [ENV=VALUE ...]
 run_action() {
   local -a env_args=()
@@ -31,7 +57,7 @@ run_action() {
     env_args+=(-e "$kv")
   done
   docker run --rm \
-    -v "$BATS_TEST_DIRNAME/..:/github/workspace" \
+    -v "$WORKSPACE:/github/workspace" \
     -e GITHUB_WORKSPACE=/github/workspace \
     -e INPUT_REPORTER=local \
     -e INPUT_FILTER_MODE=nofilter \
@@ -281,7 +307,7 @@ testdata/java/excluded dir"
   docker volume create "$vol" >/dev/null
   run docker run --rm \
     -v "$vol:/github/workspace" \
-    -v "$BATS_TEST_DIRNAME/..:/repo:ro" \
+    -v "$WORKSPACE:/repo:ro" \
     -e GITHUB_WORKSPACE=/github/workspace \
     -e INPUT_REPORTER=local \
     -e INPUT_FILTER_MODE=nofilter \
