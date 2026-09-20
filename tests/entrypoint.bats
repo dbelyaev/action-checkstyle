@@ -229,6 +229,77 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
+# --- enum input validation ----------------------------------------------
+# Asserting only a non-zero status would pass WITHOUT the guard: reviewdog
+# already rejects a bogus value, just later and far less clearly. The message
+# assertion is what proves the entrypoint rejected it up front.
+#
+# reporter is not validated - see the comment in entrypoint.sh - so there is
+# deliberately no test for it here.
+
+@test "input validation: an unknown level is rejected" {
+  run run_action "INPUT_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid level: 'bogus'"* ]]
+}
+
+@test "input validation: an unknown filter_mode is rejected" {
+  run run_action "INPUT_FILTER_MODE=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid filter_mode: 'bogus'"* ]]
+}
+
+@test "input validation: an unknown fail_level is rejected" {
+  run run_action "INPUT_FAIL_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid fail_level: 'bogus'"* ]]
+}
+
+@test "input validation: enum matching is case-sensitive" {
+  # reviewdog wants lowercase; accepting INFO would mean deciding whether to
+  # fold case, which this guard deliberately does not do.
+  run run_action "INPUT_LEVEL=INFO"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid level: 'INFO'"* ]]
+}
+
+@test "input validation: a valid level is accepted" {
+  # Guards against an allowlist so strict it rejects documented values.
+  run run_action "INPUT_LEVEL=warning"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Invalid level"* ]]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "input validation: a valid filter_mode is accepted" {
+  run run_action "INPUT_FILTER_MODE=nofilter"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Invalid filter_mode"* ]]
+  [[ "$output" == *"Application.java"* ]]
+}
+
+@test "input validation: a valid fail_level is accepted" {
+  # fail_level=any fires on the warnings google_checks reports, so a non-zero
+  # status here is the ACCEPTED path, not a rejection.
+  run run_action "INPUT_FAIL_LEVEL=any"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Invalid fail_level"* ]]
+}
+
+@test "input validation: rejection happens before Checkstyle runs" {
+  run run_action "INPUT_FAIL_LEVEL=bogus"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Run check with"* ]]
+}
+
+@test "input validation: rejection happens before a custom version downloads" {
+  # Pins the placement decision: the guards sit above the custom-version
+  # block, so a typo costs nothing instead of a ~17 MB JAR fetch.
+  run run_action "INPUT_FAIL_LEVEL=bogus" "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Installing user-defined Checkstyle version"* ]]
+}
+
 # --- checkstyle_version validation --------------------------------------
 
 @test "version validation: path traversal in the version is rejected" {

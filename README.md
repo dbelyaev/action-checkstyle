@@ -375,6 +375,8 @@ Sets the severity level for reported violations, affecting GitHub status check r
 
 **Values:** `info`, `warning`, `error`
 
+> Any other value fails the step with an error naming the offending value.
+
 Control GitHub status check behavior:
 
 | Level     | GitHub Status |
@@ -393,6 +395,8 @@ Filtering mode for the reviewdog command.
 
 **Values:** `added`, `diff_context`, `file`, `nofilter`
 
+> Any other value fails the step with an error naming the offending value.
+
 See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for detailed explanations of when to use each filtering mode.
 
 **Default:** `added`
@@ -404,6 +408,8 @@ See the [reviewdog filter-mode documentation](https://github.com/reviewdog/revie
 Determines when reviewdog exits with a non-zero code, failing the workflow.
 
 **Values:** `none`, `any`, `info`, `warning`, `error`
+
+> Any other value fails the step with an error naming the offending value.
 
 By default (`none`), reviewdog exits with code `0` even when violations exist. Set this to fail your workflow when violations at or above the specified severity level are found.
 

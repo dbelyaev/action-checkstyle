@@ -62,6 +62,42 @@ INPUT_REPORTER="${INPUT_REPORTER:-github-pr-check}"
 INPUT_FILTER_MODE="${INPUT_FILTER_MODE:-added}"
 INPUT_FAIL_LEVEL="${INPUT_FAIL_LEVEL:-none}"
 
+# Validate the enum-valued inputs here, above the custom-version download and
+# the Checkstyle run below, so a typo costs nothing instead of a ~17 MB JAR
+# fetch and a full analysis before reviewdog rejects it.
+#
+# reporter is deliberately NOT validated. reviewdog's reporter list grows with
+# its releases (github-annotations, gitlab-*, gerrit-*, ...), so an allowlist
+# here would break valid configurations on every upgrade; narrowing it to the
+# three values README documents would additionally break this repo's own bats
+# suite, which drives the container with reporter=local. reviewdog's own
+# "unknown -reporter" error is clear, it just arrives later.
+#
+# Matching is exact and lowercase, which is what reviewdog expects.
+case "${INPUT_LEVEL}" in
+  info | warning | error) ;;
+  *)
+    echo "Invalid level: '${INPUT_LEVEL}'. Expected one of: info, warning, error" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FILTER_MODE}" in
+  added | diff_context | file | nofilter) ;;
+  *)
+    echo "Invalid filter_mode: '${INPUT_FILTER_MODE}'. Expected one of: added, diff_context, file, nofilter" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FAIL_LEVEL}" in
+  none | any | info | warning | error) ;;
+  *)
+    echo "Invalid fail_level: '${INPUT_FAIL_LEVEL}'. Expected one of: none, any, info, warning, error" >&2
+    exit 1
+    ;;
+esac
+
 # build optional checkstyle arguments safely using positional parameters
 set --
 
