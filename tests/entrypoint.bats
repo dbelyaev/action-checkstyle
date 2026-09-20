@@ -229,6 +229,22 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
+@test "defaults: an empty filter_mode falls back to added" {
+  # Non-vacuous: the default is applied BEFORE the enum check below, so without
+  # it the empty value falls through to `*)` and is rejected by name.
+  #
+  # Unlike the two tests above this one does not end in a clean run: `added` is
+  # diff-based, and the local reporter has no diff command here, so reviewdog
+  # stops with "diff command is empty". That message is the assertion - it is
+  # what a diff-based filter mode does and what `nofilter` would NOT do, so it
+  # pins the applied default rather than merely "some accepted value". An
+  # explicit INPUT_FILTER_MODE=added produces the identical output.
+  run run_action "INPUT_FILTER_MODE="
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Invalid filter_mode"* ]]
+  [[ "$output" == *"reviewdog: diff command is empty"* ]]
+}
+
 # --- enum input validation ----------------------------------------------
 # Asserting only a non-zero status would pass WITHOUT the guard: reviewdog
 # already rejects a bogus value, just later and far less clearly. The message
@@ -407,25 +423,32 @@ testdata/java/excluded dir"
   [[ "$output" == *"Application.java"* ]]
 }
 
-@test "reviewdog_flags: the glob guard is present" {
+@test "reviewdog_flags: globbing stays disabled across the flags expansion" {
   # The expansion is unquoted so several flags can be passed, but the cwd is
   # GITHUB_WORKSPACE, whose contents a PR author controls, so a standalone
-  # pattern would expand against repository files. `set -f` keeps it literal:
-  # measured at argv level, "-tee *.md" reaches reviewdog as 2 arguments with
-  # the guard and as 4 without it (CONTRIBUTING.md, README.md, SECURITY.md).
+  # pattern would otherwise expand against repository files. `set -f` keeps it
+  # literal.
   #
-  # This is asserted structurally rather than behaviourally on purpose. A
-  # behavioural probe was written first and measured against the unpatched
-  # entrypoint: it passed there too, because reviewdog silently ignores the
-  # stray positional arguments the expansion produces. It proved nothing, so
-  # it was dropped rather than shipped green. This check cannot go vacuous -
-  # it fails the moment `set -f` stops guarding the expansion.
+  # Both runs fail - reviewdog rejects the unknown flag either way - but the
+  # flag NAME in its error says which word it actually received:
+  #   guard present: "flag provided but not defined: -*"
+  #   guard removed: "flag provided but not defined: -globbed"
   #
-  # (A pattern must also be its OWN word to expand at all: globbing applies to
-  # the whole word, so "-name=*.md" only matches a file literally called that.)
-  run grep -c '^set -f$' "$BATS_TEST_DIRNAME/../entrypoint.sh"
-  [ "$status" -eq 0 ]
-  [ "$output" -eq 1 ]
+  # An earlier probe used "-tee *.md". Its expansion lands in POSITIONAL
+  # arguments, which reviewdog silently ignores, so it passed against the
+  # unpatched entrypoint and proved nothing. A pattern that expands into a
+  # FLAG does not have that problem.
+  #
+  # (A pattern must be its OWN word to expand at all: globbing applies to the
+  # whole word, so "-name=*.md" only matches a file literally called that.)
+  touch "$WORKSPACE/-globbed"
+
+  run run_action "INPUT_REVIEWDOG_FLAGS=-*"
+
+  rm -f "$WORKSPACE/-globbed"
+
+  [[ "$output" != *"-globbed"* ]]
+  [[ "$output" == *"flag provided but not defined: -*"* ]]
 }
 
 # --- privilege drop -----------------------------------------------------
