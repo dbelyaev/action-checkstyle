@@ -13,7 +13,11 @@ set -euo pipefail
 
 dockerfile="$(dirname "$0")/../Dockerfile"
 
-version="$(grep -oP '^ENV CHECKSTYLE_VERSION=\K.*' "$dockerfile")"
+# sed rather than `grep -oP`: -P is a GNU extension and BSD grep (macOS) exits
+# 2 on it, so the by-hand run the usage note above invites did not work there.
+# It also makes the emptiness check below reachable: under `set -e` a
+# non-matching grep aborts the assignment outright, whereas sed exits 0.
+version="$(sed -n 's/^ENV CHECKSTYLE_VERSION=//p' "$dockerfile")"
 if [[ -z "$version" ]]; then
   echo "could not read CHECKSTYLE_VERSION from $dockerfile" >&2
   exit 1
