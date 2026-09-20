@@ -24,9 +24,17 @@ if [[ -z "$version" ]]; then
 fi
 
 url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${version}/checkstyle-${version}-all.jar"
-tmp="$(mktemp)"
-tmp_dockerfile="$(mktemp)"
-trap 'rm -f "$tmp" "$tmp_dockerfile"' EXIT
+
+# One temp directory rather than two mktemp calls, so there is a single
+# acquisition to guard and the trap can be armed immediately after it - with
+# two, a failure of the second call leaked the file from the first. The
+# template is spelled out because BSD mktemp documents one as required; `-t`
+# is not the portable shorthand it looks like, since GNU reads it as a
+# directory and BSD as a filename prefix.
+tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/checkstyle-checksum.XXXXXXXXXX")"
+trap 'rm -rf "$tmpdir"' EXIT
+tmp="$tmpdir/checkstyle.jar"
+tmp_dockerfile="$tmpdir/Dockerfile"
 
 echo "Fetching ${url}"
 # --proto/--proto-redir pin the scheme to HTTPS for the initial request AND for
@@ -42,13 +50,21 @@ if ! unzip -qql "$tmp" >/dev/null 2>&1; then
   exit 1
 fi
 
-sha="$(sha256sum "$tmp" | cut -d' ' -f1)"
+# sha256sum reached macOS only recently (/sbin/sha256sum), while shasum has
+# shipped with every release; try sha256sum first so CI keeps using the binary
+# it uses today. Both print "<hex>  <path>", so one trim serves either.
+if command -v sha256sum >/dev/null 2>&1; then
+  sha="$(sha256sum "$tmp")"
+else
+  sha="$(shasum -a 256 "$tmp")"
+fi
+sha="${sha%% *}"
 echo "checkstyle ${version} sha256=${sha}"
 
 sed "s|^ENV CHECKSTYLE_SHA256=.*|ENV CHECKSTYLE_SHA256=${sha}|" "$dockerfile" > "$tmp_dockerfile"
 # Copy the contents back rather than `mv` the temp file over the Dockerfile:
-# mktemp creates 0600, and mv would carry that mode across, silently tightening
-# the working copy. Git does not track the bit, so CI never noticed.
+# mv replaces the inode, taking the mode, the owner and any symlink with it,
+# whereas cat writes through the existing file and preserves all three.
 cat "$tmp_dockerfile" > "$dockerfile"
 
 grep -n '^ENV CHECKSTYLE_\(VERSION\|SHA256\)=' "$dockerfile"
