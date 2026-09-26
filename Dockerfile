@@ -13,7 +13,7 @@
 # above. Dockerfiles have no inline NOSONAR, so the rule is suppressed
 # server-side in SonarQube Cloud (Analysis Scope > Ignore Issues on Multiple
 # Criteria). Please do not "simplify" this line.
-FROM eclipse-temurin:25.0.4_7-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
+FROM eclipse-temurin:25.0.4_7-jre-alpine@sha256:2ca9adf44f5c29d28ecd26cf92d75cc0c66b7f32bfd839a4439e363a8b428af8
 
 ENV REVIEWDOG_VERSION=v0.21.2
 ENV CHECKSTYLE_VERSION=14.1.0
