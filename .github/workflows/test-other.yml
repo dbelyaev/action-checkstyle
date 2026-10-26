@@ -30,6 +30,9 @@ jobs:
     name: runner / checkstyle (reviewdog-flags)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -54,6 +57,9 @@ jobs:
     name: runner / checkstyle (properties_file)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner

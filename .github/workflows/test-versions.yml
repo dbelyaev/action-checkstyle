@@ -20,6 +20,9 @@ jobs:
     name: runner / checkstyle (v9.0)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -44,6 +47,9 @@ jobs:
     name: runner / checkstyle (v10.0)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -68,6 +74,9 @@ jobs:
     name: runner / checkstyle (v11.0.0)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -92,6 +101,9 @@ jobs:
     name: runner / checkstyle (v12.0.0)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -116,6 +128,9 @@ jobs:
     name: runner / checkstyle (v13.0.0)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Harden Runner
