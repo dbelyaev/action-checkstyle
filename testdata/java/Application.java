@@ -5,15 +5,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+/** Sample application used as a Checkstyle fixture. */
 @SpringBootApplication
 public class Application {
 
+  /**
+   * Starts the application.
+   *
+   * @param args command line arguments
+   */
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
   }
 
   /**
-   * some java doc.
+   * Prints the bean names provided by Spring Boot.
    *
    * @param ctx application contexxt
    * @return some return
