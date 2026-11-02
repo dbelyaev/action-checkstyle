@@ -38,8 +38,8 @@ jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -89,8 +89,8 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
@@ -104,11 +104,11 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 #### Pinning by Tag
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3 # pin to the latest major tag
+- uses: dbelyaev/action-checkstyle@v4 # pin to the latest major tag
 ```
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3.4.1 # pin to specific version tag
+- uses: dbelyaev/action-checkstyle@v4.4.1 # pin to specific version tag
 ```
 
 - **Pros**: Convenient, automatically receives updates
@@ -117,7 +117,7 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 #### Pinning by Commit SHA
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@0babcc5b0e55e5a8ab6f8a17134f2d613e2bcdda # v3.0.0
+- uses: dbelyaev/action-checkstyle@53cc62a6210f59d6424ef3cc9a34091ad497af29 # v4.0.0
 ```
 
 - **Pros**: Maximum security, guarantees the exact same code runs every time
@@ -152,8 +152,8 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -171,8 +171,8 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
