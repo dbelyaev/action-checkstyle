@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
@@ -104,11 +104,11 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 #### Pinning by Tag
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3 # pin to the latest major tag
+- uses: dbelyaev/action-checkstyle@v4 # pin to the latest major tag
 ```
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@v3.4.1 # pin to specific version tag
+- uses: dbelyaev/action-checkstyle@v4.4.1 # pin to specific version tag
 ```
 
 - **Pros**: Convenient, automatically receives updates
@@ -153,7 +153,7 @@ jobs:
       checks: write
     steps:
       - uses: actions/checkout@v7
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -172,7 +172,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
-      - uses: dbelyaev/action-checkstyle@v3
+      - uses: dbelyaev/action-checkstyle@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
