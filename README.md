@@ -38,7 +38,7 @@ jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -152,7 +152,7 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -171,7 +171,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
