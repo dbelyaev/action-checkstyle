@@ -117,7 +117,7 @@ When using GitHub Actions, you can pin to a specific version in two ways:
 #### Pinning by Commit SHA
 
 ```yaml
-- uses: dbelyaev/action-checkstyle@0babcc5b0e55e5a8ab6f8a17134f2d613e2bcdda # v3.0.0
+- uses: dbelyaev/action-checkstyle@53cc62a6210f59d6424ef3cc9a34091ad497af29 # v4.0.0
 ```
 
 - **Pros**: Maximum security, guarantees the exact same code runs every time
