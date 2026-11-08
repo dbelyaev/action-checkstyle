@@ -1,0 +1,38 @@
+name: Zizmor # Analyze GitHub Actions workflow security with Zizmor
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.ref }}-zizmor
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  zizmor:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read # to query workflow runs for the repository
+      contents: read # to checkout repository and action files for security scanning
+      security-events: write # to upload SARIF results to GitHub security dashboard
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          advanced-security: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }} # do not use advanced security for PRs from forks

@@ -1,23 +1,83 @@
-# Checkstyle for Java GitHub Action
+# Java Checkstyle Reviewer (GitHub Action)
 
-[![Test](https://github.com/dbelyaev/action-checkstyle/workflows/Test/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3ATest)
-[![reviewdog](https://github.com/dbelyaev/action-checkstyle/workflows/reviewdog/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Areviewdog)
-[![depup](https://github.com/dbelyaev/action-checkstyle/workflows/depup/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Adepup)
-[![release](https://github.com/dbelyaev/action-checkstyle/workflows/release/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Arelease)
-[![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
-
+<!-- Release and Build Status -->
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dbelyaev/action-checkstyle?logo=github&sort=semver)](https://github.com/dbelyaev/action-checkstyle/releases)
+[![reviewdog](https://github.com/dbelyaev/action-checkstyle/workflows/reviewdog/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Areviewdog)
+[![release](https://github.com/dbelyaev/action-checkstyle/workflows/release/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Arelease)
+[![depup](https://github.com/dbelyaev/action-checkstyle/workflows/depup/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions?query=workflow%3Adepup)
+<!-- Test Status -->
+[![Test - Reviewers](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-reviewers.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-reviewers.yml)
+[![Test - Versions](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-versions.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-versions.yml)
+[![Test - Other](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-other.yml/badge.svg)](https://github.com/dbelyaev/action-checkstyle/actions/workflows/test-other.yml)
+<!-- Project Quality and Community -->
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/dbelyaev/action-checkstyle/badge)](https://securityscorecards.dev/viewer/?uri=github.com/dbelyaev/action-checkstyle)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_shield)
+[![action-bumpr supported](https://img.shields.io/badge/bumpr-supported-ff69b4?logo=github&link=https://github.com/haya14busa/action-bumpr)](https://github.com/haya14busa/action-bumpr)
 
-This is a GitHub action to run [Checkstyle](https://github.com/checkstyle/checkstyle) checks on your Java code and report the status via [reviewdog](https://github.com/reviewdog/reviewdog) on pull requests.
+Enforce Java code quality standards in your pull requests with automated [Checkstyle](https://github.com/checkstyle/checkstyle) analysis.  
+Powered by [reviewdog](https://github.com/reviewdog/reviewdog), this action reports violations as check annotations or inline PR review comments, helping your team keep a consistent code style.
+
+## Features
+
+- **Zero configuration** — works out of the box with Google or Sun coding conventions
+- **Flexible reporting** — report as check annotations (`github-pr-check`, `github-check`) or PR review comments (`github-pr-review`)
+- **Version control** — pin to any Checkstyle version for reproducible builds
+- **Custom rules** — bring your own Checkstyle configuration files
+- **Smart filtering** — review only changed lines or entire files
+- **Native GitHub integration** — status checks and annotations
+
+## Quick Start
+
+Add this workflow to your repository at `.github/workflows/checkstyle.yml`:
+
+```yaml
+name: checkstyle
+on: [pull_request]
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+That's it! The action will now analyze Java files in every pull request using Google's coding conventions.
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Example](#example)
+- [Usage](#usage)
+  - [Security Note: Pin by Tag or by Hash?](#security-note-pin-by-tag-or-by-hash)
+- [Required Permissions](#required-permissions)
+- [Input Parameters](#input-parameters)
+  - [Checkstyle Parameters](#checkstyle-parameters)
+    - [`checkstyle_config`](#checkstyle_config)
+    - [`checkstyle_version`](#checkstyle_version)
+    - [`workdir`](#workdir)
+    - [`properties_file`](#properties_file)
+    - [`exclude`](#exclude)
+  - [Reviewdog Parameters](#reviewdog-parameters)
+    - [`github_token`](#github_token)
+    - [`reporter`](#reporter)
+    - [`level`](#level)
+    - [`filter_mode`](#filter_mode)
+    - [`fail_level`](#fail_level)
+    - [`reviewdog_flags`](#reviewdog_flags)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Example
 
-An example of how the reported Checkstyle violations will look on a pull request is shown below ([link to example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9)):
+Checkstyle violations appear as inline comments on your pull request, making it easy to identify and fix issues:
 
 ![PR comment with violation](https://user-images.githubusercontent.com/6915328/149333188-4600a75d-5670-4013-9395-d5852e3c7839.png)
+
+*[View complete example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/9) with Checkstyle violations and comments*
 
 ## Usage
 
@@ -29,169 +89,352 @@ jobs:
     name: runner / checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@master
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
 ```
 
-## Input parameters
+### Security Note: Pin by Tag or by Hash?
 
-### Checkstyle parameters
+When using GitHub Actions, you can pin to a specific version in two ways:
 
-* ### `checkstyle_config`  
+#### Pinning by Tag
 
-  Checkstyle configuration specifies which ruleset to apply during the scan.  
-  There are two built-in configurations:
-  * `google_checks.xml`
-config for the [Google coding conventions](https://google.github.io/styleguide/javaguide.html)
-  * `sun_checks.xml`
-config for the [Sun coding conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html)
+```yaml
+- uses: dbelyaev/action-checkstyle@v4 # pin to the latest major tag
+```
 
-  It is also possible to supply your custom Checkstyle configuration file located in the same directory.
+```yaml
+- uses: dbelyaev/action-checkstyle@v4.4.1 # pin to specific version tag
+```
 
-  **`Default:`**  `google_checks.xml`
+- **Pros**: Convenient, automatically receives updates
+- **Cons**: Less secure, as tags can be modified to point to different commits
 
-  **`Example:`**
+#### Pinning by Commit SHA
 
-  ```yaml
-  name: reviewdog
-  on: [pull_request]
-  jobs:
-    checkstyle:
-      name: runner / checkstyle
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
-          with:
-            github_token: ${{ secrets.github_token }}
-            reporter: github-pr-review
-            checkstyle_config: sun_checks.xml
-  ```
+```yaml
+- uses: dbelyaev/action-checkstyle@53cc62a6210f59d6424ef3cc9a34091ad497af29 # v4.0.0
+```
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10).
+- **Pros**: Maximum security, guarantees the exact same code runs every time
+- **Cons**: Requires manual updates when new versions are released
 
-* ### `checkstyle_version`
+#### Best Practice
 
-  Checkstyle version to be used during analysis.  
+GitHub [officially recommends](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions) pinning actions to a full length commit SHA for production workflows and 3rd party actions to ensure security. For non-critical workflows, major version tags provide a reasonable balance between convenience and safety.
 
-  For a list of available version numbers, go to the [Checkstyle release page](https://github.com/checkstyle/checkstyle/releases/).
+For automated SHA updates, consider using tools like [Dependabot (owned by GitHub)](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) or [Renovate (owned by mend.io)](https://github.com/apps/renovate) to keep your actions current while maintaining security.
 
-  >[!IMPORTANT]
-  > This field will always try to follow Checkstyle releases as closely as possible and will use the latest available version by default.  
-  >
-  > If the default preference is not suitable for your project, please pin the needed version using this property.
+## Required Permissions
 
-  **`Default:`** latest available
+This action requires specific GitHub token permissions depending on the reporter you choose. Set these in your workflow's `permissions` block:
 
-  **`Example:`**
+| Reporter | Required Permissions |
+|---|---|
+| `github-pr-check` | `checks: write`, `contents: read` |
+| `github-check` | `checks: write`, `contents: read` |
+| `github-pr-review` | `pull-requests: write`, `contents: read` |
 
-  ```yaml
-  name: reviewdog
-  on: [pull_request]
-  jobs:
-    checkstyle:
-      name: runner / checkstyle
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
-          with:
-            github_token: ${{ secrets.github_token }}
-            reporter: github-pr-review
-            checkstyle_version: "9.0" # double quotes important here
-  ```
+**Example — `github-pr-check` (default reporter):**
 
-* ### `workdir`
+```yaml
+name: checkstyle
+on: [pull_request]
+permissions: {}
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
 
-  The working directory relative to the root directory.
+**Example — `github-pr-review` reporter:**
 
-  **`Default:`** `'.'` (root)
+```yaml
+name: checkstyle
+on: [pull_request]
+permissions: {}
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dbelyaev/action-checkstyle@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+```
 
-* ### `properties_file`
-  
-  Location of the properties file relative to the root directory.  
-  
-  This file serves as a means to resolve repetitive or predefined values within the checkstyle configuration file.
+> **Best Practice:** Define empty default permissions at the workflow level (`permissions: {}`) and grant only the minimum required permissions per job. See [GitHub's security hardening guide](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-githubs-security-features) for details.
 
-  **`Default:`** `''` (empty)
+## Input Parameters
 
-  **`Example:`**
+Quick reference for all inputs. Click a name to jump to its detailed description.
 
-  ```yaml
-  name: reviewdog
-  on: [pull_request]
-  jobs:
-    checkstyle:
-      name: runner / checkstyle
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: dbelyaev/action-checkstyle@master
-          with:
-            github_token: ${{ secrets.github_token }}
-            reporter: github-pr-review
-            checkstyle_config: ./properties_file/test_checks.xml
-            properties_file: ./properties_file/additional.properties
-  ```
+Checkstyle inputs:
 
-  Link to [example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11).
+| Name | Required | Default | Description |
+|---|---|---|---|
+| [`checkstyle_config`](#checkstyle_config) | No | `google_checks.xml` | Checkstyle ruleset to apply (built-in or custom path). |
+| [`checkstyle_version`](#checkstyle_version) | No | Latest | Checkstyle version to use for analysis. |
+| [`workdir`](#workdir) | No | `.` | Working directory for analysis, relative to repository root. |
+| [`properties_file`](#properties_file) | No | `''` | Path to a properties file defining variables for the config. |
+| [`exclude`](#exclude) | No | `''` | Newline-separated directories/files to exclude. |
 
-### Reviewdog parameters
+Reviewdog inputs:
 
-* ### `level`
+| Name | Required | Default | Description |
+|---|---|---|---|
+| [`github_token`](#github_token) | No | `${{ github.token }}` | GitHub token for API authentication. |
+| [`reporter`](#reporter) | No | `github-pr-check` | How reviewdog reports violations. |
+| [`level`](#level) | No | `info` | Severity level for reported violations. |
+| [`filter_mode`](#filter_mode) | No | `added` | Which files/lines reviewdog reports on. |
+| [`fail_level`](#fail_level) | No | `none` | When reviewdog fails the workflow. |
+| [`reviewdog_flags`](#reviewdog_flags) | No | `''` | Additional flags passed to reviewdog. |
 
-  Report level for the reviewdog command.
-  
-  **`Values:`** `[info, warning, error]`
-  
-  You can control GitHub status check result with this feature.
+The examples below show only the `with:` block. Place it under the `dbelyaev/action-checkstyle` step shown in [Usage](#usage).
 
-  | Level     | GitHub Status |
-  | --------- | ------------- |
-  | `info`    | neutral       |
-  | `warning` | neutral       |
-  | `error`   | failure       |
+### Checkstyle Parameters
 
-  **`Default:`** `info`
+#### `checkstyle_config`
 
-* ### `reporter`
+Specifies which Checkstyle ruleset to apply during analysis.
 
-  Reporter for the reviewdog command.  
+Two built-in configurations are available:
 
-  For more information, check [reviewdog / reporters](https://github.com/reviewdog/reviewdog#reporters) documentation.
+- `google_checks.xml` - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) rules
+- `sun_checks.xml` - [Sun Code Conventions](https://www.oracle.com/java/technologies/javase/codeconventions-contents.html) rules
 
-  **`Values:`** `[github-pr-check, github-check, github-pr-review]`
+You can also supply a custom Checkstyle configuration file from your repository. Provide the path relative to the repository root. See the [Checkstyle configuration documentation](https://checkstyle.org/config.html) to learn how to create custom rules.
 
-  **`Default:`** `github-pr-check`
+> **Note:** If the specified configuration file is not found or contains invalid XML, the workflow will fail with an error message.
 
-* ### `filter_mode`
+**Default:** `google_checks.xml`
 
-  Filtering mode for the reviewdog command.  
+**Example:**
 
-  For more information, check [reviewdog / filter-mode](https://github.com/reviewdog/reviewdog#filter-mode) documentation.
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  checkstyle_config: sun_checks.xml
+```
 
-  **`Values:`** `[added, diff_context, file, nofilter]`
+*[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/10) demonstrating Sun code conventions configuration*
 
-  **`Default:`** `added`
+---
 
-* ### `fail_level`
+#### `checkstyle_version`
 
-  The reviewdog tool gives you a way to tell your automated system (like a CI pipeline) if it has found any errors in your code. This is done using something known as an exit code.
+Specifies which Checkstyle version to use for analysis.
 
-  By default (`-fail-level=none`), reviewdog will finish its run and give an exit code of `0`, which means everything is fine, even if it actually found some errors.
+Browse available versions on the [Checkstyle releases page](https://github.com/checkstyle/checkstyle/releases/).
 
-  But you can change this. If you use the `-fail-level` flag with `any`, `info`, `warning`, or `error`, reviewdog will finish with an exit code of `1` if it finds at least one problem with severity greater than or equal to the given level. This tells your automated system that there's something that needs attention (and you can trigger some actions, rules or events based on it).
+> **Important:** By default, this action automatically uses the latest Checkstyle version. New Checkstyle releases may introduce:
+>
+> - New rules that flag previously accepted code
+> - Modified rule behavior causing different violation counts
+> - Deprecated configuration options
+>
+> **Recommended:** Pin to a specific version in production workflows to ensure consistent and reproducible builds. Update the version intentionally when you're ready to address any new violations.
 
-  **`Values:`** `[none, any, info, warning, error]`
+**Default:** Latest available version
 
-  **`Default:`** `none`
+**Accepted format:** digits and dots only (for example `10.21.0`). Any other non-empty value is rejected before any download, because the value is interpolated into the release download URL. Note that a custom version is fetched at runtime and is *not* checksum-verified — only the version bundled in the image is pinned by sha256.
 
-* ### `reviewdog_flags`
+**Example:**
 
-  Additional reviewdog flags.
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  checkstyle_version: "12.3.0" # use double quotes for version numbers
+```
 
-  **`Default:`** ``
+---
+
+#### `workdir`
+
+Working directory for Checkstyle analysis, relative to the repository root.
+
+**Default:** `'.'` (root)
+
+---
+
+#### `properties_file`
+
+Path to a properties file (relative to repository root) for defining variables used in your Checkstyle configuration.
+
+Use this to avoid repetition and centralize configuration values. The properties file should use standard [Java properties format](https://docs.oracle.com/javase/tutorial/essential/environment/properties.html) (`key=value`).
+
+> **Note:** If the specified file is not found, the workflow will fail. Referenced properties in the config file must exist in the properties file, or Checkstyle will report an error.
+
+**Default:** `''` (empty)
+
+**Example:**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  checkstyle_config: ./properties_file/test_checks.xml
+  properties_file: ./properties_file/additional.properties
+```
+
+*[Example PR](https://github.com/dbelyaev/action-checkstyle-tester/pull/11) demonstrating properties file usage with custom configuration*
+
+---
+
+#### `exclude`
+
+Newline-separated list of directories or files to exclude from Checkstyle analysis.
+
+Paths are relative to the repository root. Uses Checkstyle's native `-e` flag, so subdirectories of excluded paths are also excluded automatically.
+
+> **Note:** Paths are resolved relative to the repository root, not the `workdir` parameter.
+
+**Default:** `''` (empty — all files are scanned)
+
+**Example (single path):**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  exclude: "build/generated"
+```
+
+**Example (multiple paths):**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  exclude: |
+    build/generated
+    src/main/java/legacy
+    third-party
+```
+
+### Reviewdog Parameters
+
+#### `github_token`
+
+GitHub token for API authentication, used by reviewdog to post comments and annotations.
+
+Use `${{ secrets.GITHUB_TOKEN }}` (automatically provided by GitHub Actions) or `${{ github.token }}` in your workflow.
+
+> **Note:** The required permissions depend on the reporter used:
+>
+> - `github-pr-check` and `github-check` require `checks: write`
+> - `github-pr-review` requires `pull-requests: write`
+>
+> You may need to grant these permissions explicitly in your workflow (recommended), depending on your repository's default `GITHUB_TOKEN` permissions.
+
+**Default:** `${{ github.token }}`
+
+**Example:**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+For more information about GitHub tokens, see the [automatic token authentication documentation](https://docs.github.com/en/actions/security-guides/automatic-token-authentication).
+
+---
+
+#### `reporter`
+
+Determines how reviewdog reports Checkstyle violations in GitHub.
+
+**Values:** `github-pr-check`, `github-check`, `github-pr-review`
+
+See the [reviewdog reporters documentation](https://github.com/reviewdog/reviewdog#reporters) for detailed examples, screenshots, and permission requirements for each reporter type.
+
+**Default:** `github-pr-check`
+
+---
+
+#### `level`
+
+Sets the severity level for reported violations, affecting GitHub status check results.
+
+**Values:** `info`, `warning`, `error`
+
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
+
+Control GitHub status check behavior:
+
+| Level     | GitHub Status |
+| --------- | ------------- |
+| `info`    | neutral       |
+| `warning` | neutral       |
+| `error`   | failure       |
+
+**Default:** `info`
+
+---
+
+#### `filter_mode`
+
+Filtering mode for the reviewdog command.
+
+**Values:** `added`, `diff_context`, `file`, `nofilter`
+
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
+
+See the [reviewdog filter-mode documentation](https://github.com/reviewdog/reviewdog#filter-mode) for detailed explanations of when to use each filtering mode.
+
+**Default:** `added`
+
+---
+
+#### `fail_level`
+
+Determines when reviewdog exits with a non-zero code, failing the workflow.
+
+**Values:** `none`, `any`, `info`, `warning`, `error`
+
+> Any other non-empty value fails the step with an error naming the offending value; an empty value falls back to the default.
+
+By default (`none`), reviewdog exits with code `0` even when violations exist. Set this to fail your workflow when violations at or above the specified severity level are found.
+
+**Default:** `none`
+
+---
+
+#### `reviewdog_flags`
+
+Additional reviewdog flags.
+
+**Default:** `''`
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to:
+
+- Report bugs and request features
+- Submit pull requests
+- Follow our code of conduct
+
+We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdbelyaev%2Faction-checkstyle?ref=badge_large)

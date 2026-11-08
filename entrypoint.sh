@@ -1,7 +1,35 @@
 #!/bin/sh
 command -v reviewdog >/dev/null 2>&1 || { echo >&2 "reviewdog: not found"; exit 1; }
 
-set -e
+# shellcheck disable=SC3040 # pipefail is supported by Alpine ash used in this Docker image
+set -eo pipefail
+
+# GitHub Actions overrides HOME to /github/home (owned by root).
+# Restore the writable home directory created for our non-root user.
+export HOME=/home/checkstyle
+
+# Drop root privileges by switching to the owner of the workspace.
+# The workspace is a bind mount from the GitHub runner; changing ownership
+# (via chown) would affect the host and break subsequent workflow steps.
+# Instead we detect the workspace owner's UID:GID and run as that user so
+# tools like reviewdog can write to .git/ without any chown.
+if [ "$(id -u)" -eq 0 ]; then
+  workspace="${GITHUB_WORKSPACE:-.}"
+  if owner_uidgid="$(stat -c '%u:%g' "$workspace" 2>/dev/null)"; then
+    owner_uid="${owner_uidgid%%:*}"
+    if [ "$owner_uid" != "0" ]; then
+      # Make container-internal writable dirs accessible to the detected UID
+      chown -R "$owner_uidgid" /home/checkstyle /opt/lib
+      exec su-exec "$owner_uidgid" "$0" "$@"
+    else
+      # Workspace owned by root (UID 0:*); fall back to non-root default user
+      exec su-exec checkstyle "$0" "$@"
+    fi
+  else
+    # stat failed; fall back to non-root default user
+    exec su-exec checkstyle "$0" "$@"
+  fi
+fi
 
 # output some information
 { echo "Pre-installed"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
@@ -11,10 +39,96 @@ if [ -n "${GITHUB_WORKSPACE}" ]; then
   git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
 fi
 
-# user supplied custom properties file parameter, define it
-OPTIONAL_PROPERTIES_FILE=""
+# resolve workdir to canonical absolute path so that Java's File.getAbsolutePath()
+# produces clean paths (without "./") that match the exclude patterns exactly
+#
+# The default is applied here rather than left to action.yml: GitHub only
+# substitutes a default for an OMITTED input, so an explicit `workdir: ""`
+# arrives as an empty string. That used to skip resolution entirely while the
+# value was still passed to Checkstyle below, handing it an empty argument.
+INPUT_WORKDIR="${INPUT_WORKDIR:-.}"
+orig_workdir="${INPUT_WORKDIR}"
+if ! resolved_workdir="$(realpath "${orig_workdir}" 2>/dev/null)"; then
+  echo "workdir does not exist: ${orig_workdir}" >&2
+  exit 1
+fi
+INPUT_WORKDIR="${resolved_workdir}"
+
+# Resolve the reviewdog inputs to their documented defaults once, here, rather
+# than inline at the call site. Keeping a single source of truth is what lets
+# the validation below check the values that are actually used.
+INPUT_LEVEL="${INPUT_LEVEL:-info}"
+INPUT_REPORTER="${INPUT_REPORTER:-github-pr-check}"
+INPUT_FILTER_MODE="${INPUT_FILTER_MODE:-added}"
+INPUT_FAIL_LEVEL="${INPUT_FAIL_LEVEL:-none}"
+
+# Validate the enum-valued inputs here, above the custom-version download and
+# the Checkstyle run below, so a typo costs nothing instead of a ~17 MB JAR
+# fetch and a full analysis before reviewdog rejects it.
+#
+# reporter is deliberately NOT validated. reviewdog's reporter list grows with
+# its releases (github-annotations, gitlab-*, gerrit-*, ...), so an allowlist
+# here would break valid configurations on every upgrade; narrowing it to the
+# three values README documents would additionally break this repo's own bats
+# suite, which drives the container with reporter=local. reviewdog's own
+# "unknown -reporter" error is clear, it just arrives later.
+#
+# Matching is exact and lowercase, which is what reviewdog expects.
+case "${INPUT_LEVEL}" in
+  info | warning | error) ;;
+  *)
+    echo "Invalid level: '${INPUT_LEVEL}'. Expected one of: info, warning, error" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FILTER_MODE}" in
+  added | diff_context | file | nofilter) ;;
+  *)
+    echo "Invalid filter_mode: '${INPUT_FILTER_MODE}'. Expected one of: added, diff_context, file, nofilter" >&2
+    exit 1
+    ;;
+esac
+
+case "${INPUT_FAIL_LEVEL}" in
+  none | any | info | warning | error) ;;
+  *)
+    echo "Invalid fail_level: '${INPUT_FAIL_LEVEL}'. Expected one of: none, any, info, warning, error" >&2
+    exit 1
+    ;;
+esac
+
+# build optional checkstyle arguments safely using positional parameters
+set --
+
+# user supplied custom properties file parameter
 if [ -n "${INPUT_PROPERTIES_FILE}" ]; then
-  OPTIONAL_PROPERTIES_FILE="-p ${INPUT_PROPERTIES_FILE}"
+  set -- "$@" -p "${INPUT_PROPERTIES_FILE}"
+fi
+
+# user supplied exclude paths, build -e flags for checkstyle
+if [ -n "${INPUT_EXCLUDE}" ]; then
+  while IFS= read -r dir; do
+    dir="$(printf '%s' "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    if [ -n "$dir" ]; then
+      # resolve to absolute path for reliable matching
+      resolved="$(realpath "$dir" 2>/dev/null)" || {
+        # realpath failed (dir doesn't exist yet); build absolute path manually
+        case "$dir" in
+          /*) resolved="$dir" ;;
+          *)
+            # normalize: strip leading "./" and collapse redundant slashes
+            normalized="$(printf '%s' "$dir" | sed -e 's#^\(\./\)*##' -e 's#/\+#/#g')"
+            resolved="${GITHUB_WORKSPACE:-$(pwd)}"
+            resolved="${resolved%/}/$normalized"
+            ;;
+        esac
+      }
+      set -- "$@" -e "$resolved"
+    fi
+  done <<EOF
+${INPUT_EXCLUDE}
+EOF
 fi
 
 CHECKSTYLE_CLASSPATH="/opt/lib/checkstyle.jar"
@@ -25,11 +139,45 @@ fi
 # user wants to use custom Checkstyle version, try to install it
 if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   echo '::group::📥 Installing user-defined Checkstyle version ... https://github.com/checkstyle/checkstyle'
+
+  # The version is interpolated into a download URL, so it must be a plain
+  # version number and nothing else. Without this check, path traversal in the
+  # value rewrites the URL to any path on github.com - "../../../owner/repo/
+  # releases/download/v1/evil.jar" resolves to an attacker-controlled artifact
+  # that is then executed by `java -jar`.
+  case "${INPUT_CHECKSTYLE_VERSION}" in
+    *[!0-9.]* | .* | *. | *..*)
+      echo "Invalid checkstyle_version: '${INPUT_CHECKSTYLE_VERSION}'. Expected a version number such as 10.21.0" >&2
+      exit 1
+      ;;
+    *)
+      # Digits and dots only, no leading/trailing/doubled dot: accepted.
+      # Spelled out rather than left to fall through, so the accept path is
+      # visible and cannot be mistaken for an oversight.
+      ;;
+  esac
+
   url="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${INPUT_CHECKSTYLE_VERSION}/checkstyle-${INPUT_CHECKSTYLE_VERSION}-all.jar"
 
   echo "Custom Checkstyle version has been configured: 'v${INPUT_CHECKSTYLE_VERSION}', try to download from ${url}"
-  if ! wget -q -O /opt/lib/checkstyle.jar "$url"; then
+  # -4 forces IPv4 to work around intermittent IPv6 routing issues on GitHub Actions runners.
+  # --proto/--proto-redir pin the scheme to HTTPS for the request AND every
+  # redirect: GitHub redirects release downloads, and this JAR is executed by
+  # `java -jar` afterwards, so a downgrade to plain http on that hop would let
+  # whoever controls it decide what code runs. wget offers no equivalent
+  # guarantee (--https-only only governs recursive mode), which is why this
+  # uses curl. --connect-timeout rather than --max-time: the latter caps the
+  # whole transfer and a 17 MB JAR on a slow runner would hit it.
+  if ! curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
+      -o /opt/lib/checkstyle.jar "$url"; then
     echo "Failed to download Checkstyle version ${INPUT_CHECKSTYLE_VERSION}" >&2
+    exit 1
+  fi
+
+  # Verify the downloaded JAR is valid by running a quick version check.
+  # This catches corrupt/truncated downloads and non-JAR responses (e.g. 404 HTML pages).
+  if ! java -jar /opt/lib/checkstyle.jar --version >/dev/null 2>&1; then
+    echo "Downloaded Checkstyle JAR for version ${INPUT_CHECKSTYLE_VERSION} appears to be corrupt or invalid" >&2
     exit 1
   fi
 
@@ -42,18 +190,50 @@ export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
 echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 { echo "Run check with"; java -jar /opt/lib/checkstyle.jar --version; } | sed ':a;N;s/\n/ /;ba'
 
+# Run checkstyle and reviewdog in two stages so that:
+#  1. A hard checkstyle failure (invalid args, exception) is detected and surfaced.
+#  2. Normal violations (exit code = ERROR-level count) are forwarded to reviewdog
+#     which controls the final exit code via its fail-level setting.
+cs_output="$(mktemp)"
+trap 'rm -f "$cs_output"' EXIT
+
+java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
+  > "$cs_output" || cs_exit=$?
+cs_exit=${cs_exit:-0}
+
+# Checkstyle exits with the number of ERROR-level violations on success.
+# Non-zero special exit codes are:
+#   255 (-1) invalid arguments
+#   254 (-2) internal CheckstyleException
+# Treat only these as hard failures; all other non-zero codes (including large
+# error counts) are passed through to reviewdog.
+# Hard failure only when one of those codes came WITHOUT usable XML output:
+# a repo with exactly 254/255 ERROR-level violations hits the same codes but
+# still produces valid XML, which should flow to reviewdog instead of aborting.
+if { [ "$cs_exit" -eq 255 ] || [ "$cs_exit" -eq 254 ]; } &&
+   { [ ! -s "$cs_output" ] || ! head -n 1 "$cs_output" | grep -q '<'; }; then
+  echo "Checkstyle failed with exit code ${cs_exit}" >&2
+  exit "$cs_exit"
+fi
+
+# Feed checkstyle XML output into reviewdog; its exit code respects fail-level
+#
+# `set -f` disables pathname expansion for the unquoted INPUT_REVIEWDOG_FLAGS
+# below. The word splitting is wanted - that is how several flags are passed -
+# but globbing is not: the cwd is GITHUB_WORKSPACE, whose contents a pull
+# request author controls, so a flag value containing * or ? would expand
+# against repository files and silently become different arguments.
+set -f
 # shellcheck disable=SC2086
-exec \
-  java \
-    -cp ${CHECKSTYLE_CLASSPATH} \
-    com.puppycrawl.tools.checkstyle.Main "${INPUT_WORKDIR}" \
-    -c "${INPUT_CHECKSTYLE_CONFIG}" ${OPTIONAL_PROPERTIES_FILE} -f xml \
-  | reviewdog -f=checkstyle \
-      -name="checkstyle" \
-      -reporter="${INPUT_REPORTER:-github-pr-check}" \
-      -filter-mode="${INPUT_FILTER_MODE:-added}" \
-      -fail-level="${INPUT_FAIL_LEVEL:-none}" \
-      -level="${INPUT_LEVEL}" \
-      ${INPUT_REVIEWDOG_FLAGS}
+reviewdog -f=checkstyle \
+    -name="checkstyle" \
+    -reporter="${INPUT_REPORTER}" \
+    -filter-mode="${INPUT_FILTER_MODE}" \
+    -fail-level="${INPUT_FAIL_LEVEL}" \
+    -level="${INPUT_LEVEL}" \
+    ${INPUT_REVIEWDOG_FLAGS} < "$cs_output" || rd_exit=$?
+set +f
+rd_exit=${rd_exit:-0}
 
 echo '::endgroup::'
+exit "$rd_exit"

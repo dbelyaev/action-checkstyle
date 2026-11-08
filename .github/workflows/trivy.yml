@@ -1,0 +1,93 @@
+name: Trivy
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
+
+jobs:
+
+  trivy-dockerfile-lint:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read # to checkout repository and access Dockerfile for security scanning
+      security-events: write # to upload SARIF results to GitHub security dashboard (github/codeql-action)
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run Trivy Dockerfile Lint
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: 'config'
+          scan-ref: 'Dockerfile'
+          format: 'sarif'
+          output: 'trivy-dockerfile-lint-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+          ignore-unfixed: false
+          trivyignores: '.trivyignore'
+
+      - name: Upload Trivy Dockerfile Lint results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
+        if: always()
+        with:
+          sarif_file: 'trivy-dockerfile-lint-results.sarif'
+          category: 'trivy-dockerfile-lint'
+
+  trivy-image-scan:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read # to checkout repository and build Docker image for security scanning
+      security-events: write # to upload SARIF results to GitHub security dashboard (github/codeql-action)
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build Docker image for scanning
+        run: docker build -t docker-image:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner on Docker image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: 'image'
+          image-ref: 'docker-image:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-image-vuln-scan-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+          ignore-unfixed: false
+          trivyignores: '.trivyignore'
+
+      - name: Upload Trivy image results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
+        if: always()
+        with:
+          sarif_file: 'trivy-image-vuln-scan-results.sarif'
+          category: 'trivy-image-vuln-scan'

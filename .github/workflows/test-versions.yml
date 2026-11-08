@@ -1,0 +1,151 @@
+name: Test - Versions
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  test-custom-checkstyle-version-9:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v9.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "9.0"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+
+  test-custom-checkstyle-version-10:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v10.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "10.0"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+
+  test-custom-checkstyle-version-11:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v11.0.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "11.0.0"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+
+  test-custom-checkstyle-version-12:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v12.0.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "12.0.0"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+
+  test-custom-checkstyle-version-13:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (v13.0.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_version: "13.0.0"
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir

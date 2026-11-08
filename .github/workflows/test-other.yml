@@ -1,0 +1,82 @@
+name: Test - Other
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # The two jobs below are NOT duplicates of tests/entrypoint.bats. The bats
+  # suite drives the container by setting INPUT_* variables directly, so it
+  # cannot catch a break in the action.yml wiring (a renamed or removed input
+  # would leave bats green while the action stops working). These exercise
+  # that mapping end to end through `uses: $/`.
+  #
+  # Behavioural assertions on exclude, properties_file, fail_level and the
+  # failure modes live in the bats suite, which can assert on what the action
+  # actually reports; the jobs that used to do that here could not fail (see
+  # PR #550) and were removed.
+  test-reviewdog-flags:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (reviewdog-flags)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reviewdog_flags: -filter-mode=added -fail-level=none
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+            testdata/exit_codes
+
+  test-properties-file:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (properties_file)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./testdata/java/
+          checkstyle_config: ./testdata/properties_file/test_checks.xml
+          properties_file: ./testdata/properties_file/additional.properties
+          exclude: |
+            testdata/java/excluded
+            testdata/java/excluded dir
+

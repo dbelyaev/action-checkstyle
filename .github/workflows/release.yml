@@ -10,37 +10,39 @@ on:
     types:
       - labeled
 
-# only allow minimum required permissions at top-level
-permissions:
-  contents: read
+# set empty default permissions and define them explicitly in each job for security
+permissions: {}
 
 jobs:
 
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: write # hay14busa/action-* to create releases, push tags
-      pull-requests: read # hay14busa/action-* to list pull requests
+      contents: write # to create GitHub releases, push version tags, and update semver tags (action-bumpr, action-update-semver)
+      pull-requests: read # to read PR labels and determine version bump type (action-bumpr)
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - id: bumpr
         if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: haya14busa/action-bumpr@78ab5a104d20896c9c9122c64221b3aecf1a8cbb # v1.10.0
+        uses: haya14busa/action-bumpr@faf6f474bcb6174125cfc569f0b2e24cbf03d496 # v1.11.4
 
       # Update corresponding major and minor tag.
       # e.g. Update v1 and v1.2 when releasing v1.2.3
-      - uses: haya14busa/action-update-semver@fb48464b2438ae82cc78237be61afb4f461265a1 # v1.2.1
+      - uses: haya14busa/action-update-semver@7d2c558640ea49e798d46539536190aff8c18715 # v1.5.1
         if: "!steps.bumpr.outputs.skip"
         with:
           tag: ${{ steps.bumpr.outputs.next_version }}
@@ -66,17 +68,20 @@ jobs:
   release-check:
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     permissions:
-      contents: read
-      pull-requests: write # hay14busa/action-* to add changelog comment to PR
+      contents: read # to checkout repository and read version information
+      pull-requests: write # to post version bump preview comments on PRs (action-bumpr)
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Post bumpr status comment
-        uses: haya14busa/action-bumpr@78ab5a104d20896c9c9122c64221b3aecf1a8cbb # v1.10.0
+        uses: haya14busa/action-bumpr@faf6f474bcb6174125cfc569f0b2e24cbf03d496 # v1.11.4
