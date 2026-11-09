@@ -45,7 +45,7 @@ inputs:
   checkstyle_classpath:
     description: |
       Classpath for checkstyle. This is needed when your checkstyle configuration uses custom checks that are not included in the default checkstyle distribution.
-      You can specify either a single jar file or a directory with multiple jar files. In the latter case, all jar files in the directory will be added to the classpath.
+      Use Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory.
     default: ""
   properties_file:
     description: |

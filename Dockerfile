@@ -36,6 +36,8 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Install script is pinned by commit SHA for supply-chain safety;
 # the binary version is controlled separately via REVIEWDOG_VERSION.
 # -4 forces IPv4 to avoid IPv6 routing issues on GitHub Actions runners.
+# Retry failed Checkstyle release downloads through a separate cache key;
+# both URLs are verified against the same pinned checksum below.
 # hadolint ignore=DL3018
 RUN apk --no-cache add git su-exec curl && \
     curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
@@ -44,9 +46,12 @@ RUN apk --no-cache add git su-exec curl && \
     sh /tmp/reviewdog_install.sh -b /usr/local/bin/ ${REVIEWDOG_VERSION} && \
     rm /tmp/reviewdog_install.sh && \
     mkdir -p /opt/lib && \
+    (curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
+      -o /opt/lib/checkstyle.jar \
+      https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar || \
     curl -4 -fsSL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 30 \
       -o /opt/lib/checkstyle.jar \
-      https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar && \
+      "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${CHECKSTYLE_VERSION}/checkstyle-${CHECKSTYLE_VERSION}-all.jar?download=1") && \
     echo "${CHECKSTYLE_SHA256}  /opt/lib/checkstyle.jar" | sha256sum -c - && \
     addgroup -S checkstyle && adduser -S checkstyle -G checkstyle && \
     mkdir -p /home/checkstyle && \

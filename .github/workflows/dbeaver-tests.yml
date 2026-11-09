@@ -1,0 +1,26 @@
+name: DBeaver action tests
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  entrypoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install test tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends bats shellcheck
+      - name: Check shell syntax and lint
+        run: |
+          sh -n entrypoint.sh
+          shellcheck entrypoint.sh
+      - name: Run container regression tests
+        run: bats --formatter tap tests/entrypoint.bats

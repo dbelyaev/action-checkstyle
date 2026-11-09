@@ -197,7 +197,8 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 cs_output="$(mktemp)"
 trap 'rm -f "$cs_output"' EXIT
 
-java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
+java -cp "${CHECKSTYLE_CLASSPATH}" com.puppycrawl.tools.checkstyle.Main \
+  "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   > "$cs_output" || cs_exit=$?
 cs_exit=${cs_exit:-0}
 

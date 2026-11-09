@@ -15,13 +15,13 @@
 # leave this suite green. The remaining jobs in .github/workflows/test-other.yml
 # cover that mapping through `uses: ./`.
 #
-# Requires: docker, bats, and host tar and git. The image is built once and
+# Requires: docker, bats, and host tar, git and jar. The image is built once and
 # the workspace copy is made once, both in setup_file: tar copies the checkout
 # and `git init` re-initialises the copy as a repository of its own.
 
 setup_file() {
   export IMAGE="action-checkstyle-test:bats"
-  docker build -q -t "$IMAGE" "$BATS_TEST_DIRNAME/.." >/dev/null
+  docker build --progress=plain -t "$IMAGE" "$BATS_TEST_DIRNAME/.." >/dev/null
 
   # The container is given a self-contained COPY of the checkout, not the
   # checkout itself.
@@ -46,6 +46,11 @@ setup_file() {
   # Re-initialise as a repo of its own: the real workspace on a runner is a git
   # repository, so the tests should exercise that shape too.
   git -C "$WORKSPACE" init -q
+
+  # Keep the ruleset exclusively inside a JAR to verify Java actually uses the
+  # custom classpath. The space also guards against unquoted classpath values.
+  jar --create --file "$WORKSPACE/testdata/custom classpath/checks.jar" \
+    -C "$WORKSPACE/testdata/custom classpath" custom_checks.xml
 }
 
 # Runs the action in the container against the workspace copy.
@@ -152,6 +157,19 @@ testdata/java/excluded dir"
 }
 
 # --- failure modes ------------------------------------------------------
+
+@test "custom classpath: a ruleset in an external JAR is loaded" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/checks.jar" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom classpath rule was loaded"* ]]
+}
+
+@test "custom classpath: a JAR-only ruleset cannot load without its classpath" {
+  run run_action "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
+  [ "$status" -ne 0 ]
+}
 
 @test "invalid checkstyle config fails with a non-zero exit code" {
   run run_action "INPUT_CHECKSTYLE_CONFIG=nonexistent_config.xml"
