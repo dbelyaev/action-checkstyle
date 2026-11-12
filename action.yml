@@ -44,8 +44,9 @@ inputs:
     default: ""
   checkstyle_classpath:
     description: |
-      Classpath for checkstyle. This is needed when your checkstyle configuration uses custom checks that are not included in the default checkstyle distribution.
-      Use Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory.
+      Extra classpath entries for Checkstyle, needed when your configuration uses custom checks that are not part of the Checkstyle distribution.
+      Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory. Relative paths resolve from the repository root.
+      WARNING: classes on this classpath are executed. Do not point it at files a pull request can modify when running on pull_request_target or with write-scoped tokens.
     default: ""
   properties_file:
     description: |

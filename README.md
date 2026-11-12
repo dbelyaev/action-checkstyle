@@ -58,6 +58,7 @@ That's it! The action will now analyze Java files in every pull request using Go
   - [Checkstyle Parameters](#checkstyle-parameters)
     - [`checkstyle_config`](#checkstyle_config)
     - [`checkstyle_version`](#checkstyle_version)
+    - [`checkstyle_classpath`](#checkstyle_classpath)
     - [`workdir`](#workdir)
     - [`properties_file`](#properties_file)
     - [`exclude`](#exclude)
@@ -190,6 +191,7 @@ Checkstyle inputs:
 |---|---|---|---|
 | [`checkstyle_config`](#checkstyle_config) | No | `google_checks.xml` | Checkstyle ruleset to apply (built-in or custom path). |
 | [`checkstyle_version`](#checkstyle_version) | No | Latest | Checkstyle version to use for analysis. |
+| [`checkstyle_classpath`](#checkstyle_classpath) | No | `''` | Extra classpath entries for custom checks. |
 | [`workdir`](#workdir) | No | `.` | Working directory for analysis, relative to repository root. |
 | [`properties_file`](#properties_file) | No | `''` | Path to a properties file defining variables for the config. |
 | [`exclude`](#exclude) | No | `''` | Newline-separated directories/files to exclude. |
@@ -262,6 +264,28 @@ with:
   github_token: ${{ secrets.GITHUB_TOKEN }}
   reporter: github-pr-review
   checkstyle_version: "12.3.0" # use double quotes for version numbers
+```
+
+---
+
+#### `checkstyle_classpath`
+
+Extra classpath entries for Checkstyle. Use this when your configuration references custom checks (your own `Check` classes or third-party check libraries) that are not part of the Checkstyle distribution.
+
+Uses Java classpath syntax: colon-separated JAR files or class directories, or `directory/*` for every JAR in a directory. The entries are appended after the bundled Checkstyle JAR. Relative paths resolve from the repository root, not the `workdir` parameter. Build the JAR in an earlier workflow step if it is not committed to the repository.
+
+> **Security:** Classes on this classpath are executed inside the action container, which has access to `github_token`. If the classpath points at files a pull request can change, the pull request author controls that code. Do not do this in `pull_request_target` workflows or with write-scoped tokens.
+
+**Default:** `''` (empty — only the bundled Checkstyle JAR)
+
+**Example:**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  checkstyle_config: config/checkstyle.xml
+  checkstyle_classpath: build/libs/custom-checks.jar:lib/*
 ```
 
 ---

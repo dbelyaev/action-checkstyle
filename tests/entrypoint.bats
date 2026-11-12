@@ -15,7 +15,7 @@
 # leave this suite green. The remaining jobs in .github/workflows/test-other.yml
 # cover that mapping through `uses: ./`.
 #
-# Requires: docker, bats, and host tar, git and jar. The image is built once and
+# Requires: docker, bats, and host tar and git. The image is built once and
 # the workspace copy is made once, both in setup_file: tar copies the checkout
 # and `git init` re-initialises the copy as a repository of its own.
 
@@ -46,11 +46,6 @@ setup_file() {
   # Re-initialise as a repo of its own: the real workspace on a runner is a git
   # repository, so the tests should exercise that shape too.
   git -C "$WORKSPACE" init -q
-
-  # Keep the ruleset exclusively inside a JAR to verify Java actually uses the
-  # custom classpath. The space also guards against unquoted classpath values.
-  jar --create --file "$WORKSPACE/testdata/custom classpath/checks.jar" \
-    -C "$WORKSPACE/testdata/custom classpath" custom_checks.xml
 }
 
 # Runs the action in the container against the workspace copy.
@@ -156,20 +151,27 @@ testdata/java/excluded dir"
   [ "$status" -ne 0 ]
 }
 
-# --- failure modes ------------------------------------------------------
+# --- checkstyle_classpath -----------------------------------------------
+# custom_checks.xml is not at the workspace root, so Checkstyle can only find
+# it through the classpath resource lookup - seeing its custom message proves
+# the input reached the JVM. The space in the directory name guards against
+# an unquoted classpath.
 
-@test "custom classpath: a ruleset in an external JAR is loaded" {
+@test "checkstyle_classpath: a ruleset on the extra classpath is loaded" {
   run run_action \
-    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/checks.jar" \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath" \
     "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Custom classpath rule was loaded"* ]]
 }
 
-@test "custom classpath: a JAR-only ruleset cannot load without its classpath" {
+@test "checkstyle_classpath: the same ruleset is not found without it" {
   run run_action "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
   [ "$status" -ne 0 ]
+  [[ "$output" != *"Custom classpath rule was loaded"* ]]
 }
+
+# --- failure modes ------------------------------------------------------
 
 @test "invalid checkstyle config fails with a non-zero exit code" {
   run run_action "INPUT_CHECKSTYLE_CONFIG=nonexistent_config.xml"
