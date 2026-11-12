@@ -131,6 +131,11 @@ ${INPUT_EXCLUDE}
 EOF
 fi
 
+CHECKSTYLE_CLASSPATH="/opt/lib/checkstyle.jar"
+if [ -n "${INPUT_CHECKSTYLE_CLASSPATH}" ]; then
+  CHECKSTYLE_CLASSPATH="${CHECKSTYLE_CLASSPATH}:${INPUT_CHECKSTYLE_CLASSPATH}"
+fi
+
 # user wants to use custom Checkstyle version, try to install it
 if [ -n "${INPUT_CHECKSTYLE_VERSION}" ]; then
   echo '::group::📥 Installing user-defined Checkstyle version ... https://github.com/checkstyle/checkstyle'
@@ -192,7 +197,8 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 cs_output="$(mktemp)"
 trap 'rm -f "$cs_output"' EXIT
 
-java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
+java -cp "${CHECKSTYLE_CLASSPATH}" com.puppycrawl.tools.checkstyle.Main \
+  "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   > "$cs_output" || cs_exit=$?
 cs_exit=${cs_exit:-0}
 

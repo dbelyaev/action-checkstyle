@@ -42,6 +42,11 @@ inputs:
       Default: latest version (automatically updated).
       RECOMMENDED: Pin to a specific version in production to ensure consistent builds.
     default: ""
+  checkstyle_classpath:
+    description: |
+      Classpath for checkstyle. This is needed when your checkstyle configuration uses custom checks that are not included in the default checkstyle distribution.
+      Use Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory.
+    default: ""
   properties_file:
     description: |
       Path to properties file (relative to repository root) for defining variables in Checkstyle config.
