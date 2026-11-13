@@ -15,7 +15,7 @@
 # Criteria). Please do not "simplify" this line.
 FROM eclipse-temurin:25.0.5_8-jre-alpine@sha256:e1898fd6a11fc965a994d8ace186fd3585aeb636cf8f05f47a723fcfee0b0918
 
-ENV REVIEWDOG_VERSION=v0.21.2
+ENV REVIEWDOG_VERSION=v0.21.3
 ENV CHECKSTYLE_VERSION=14.4.0
 # sha256 of checkstyle-${CHECKSTYLE_VERSION}-all.jar.
 # Kept in step with CHECKSTYLE_VERSION by scripts/update-checkstyle-checksum.sh,
