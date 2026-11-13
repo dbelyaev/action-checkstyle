@@ -135,7 +135,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 This action requires specific GitHub token permissions depending on the reporter you choose. Set these in your workflow's `permissions` block:
 
 | Reporter | Required Permissions |
-|---|---|
+| --- | --- |
 | `github-pr-check` | `checks: write`, `contents: read` |
 | `github-check` | `checks: write`, `contents: read` |
 | `github-pr-review` | `pull-requests: write`, `contents: read` |
@@ -188,7 +188,7 @@ Quick reference for all inputs. Click a name to jump to its detailed description
 Checkstyle inputs:
 
 | Name | Required | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [`checkstyle_config`](#checkstyle_config) | No | `google_checks.xml` | Checkstyle ruleset to apply (built-in or custom path). |
 | [`checkstyle_version`](#checkstyle_version) | No | Latest | Checkstyle version to use for analysis. |
 | [`checkstyle_classpath`](#checkstyle_classpath) | No | `''` | Extra classpath entries for custom checks. |
@@ -199,7 +199,7 @@ Checkstyle inputs:
 Reviewdog inputs:
 
 | Name | Required | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [`github_token`](#github_token) | No | `${{ github.token }}` | GitHub token for API authentication. |
 | [`reporter`](#reporter) | No | `github-pr-check` | How reviewdog reports violations. |
 | [`level`](#level) | No | `info` | Severity level for reported violations. |
@@ -279,9 +279,9 @@ Uses Java classpath syntax: colon-separated JAR files or class directories, or `
 > - **The risk is untrusted code plus credentials.** It is not tied to one trigger. Never put files that a pull request can change on the classpath of a job that holds secrets or a write-scoped token. Typical examples are `pull_request_target`, `workflow_run`, and `issue_comment`/ChatOps jobs that check out the PR head.
 > - **Leaving out `github_token` does not remove the credential:** it defaults to `${{ github.token }}`. Same-repository `pull_request` runs can get a write-scoped token. Fork PRs usually get a read-only token (this is configurable), and even a read-only token can read private repository data. Grant the job only the [permissions it needs](#required-permissions).
 > - **Build custom checks from trusted inputs:** use a separate checkout of a trusted ref, with trusted build scripts and dependencies. Building trusted sources with Gradle/Maven configuration from the pull request still runs the pull request's code. Alternatively, download a pinned artifact and verify its checksum against a value from a trusted source, never from the pull request.
-> - **Empty entries are rejected** (leading, trailing or doubled `:`), because Java treats them as the working directory, which is the workspace root. A `.` entry adds the workspace root's loose classes and resources. A `*` entry adds every JAR in the workspace root. Avoid both unless you mean it.
+> - **Empty entries inside a non-empty value are rejected** (leading, trailing or doubled `:`, for example `:lib/a.jar` or `a.jar::b.jar`), because Java treats them as the working directory, which is the workspace root. A `.` entry adds the workspace root's loose classes and resources. A `*` entry adds every JAR in the workspace root. Avoid both unless you mean it.
 
-**Default:** `''` (empty — only the bundled Checkstyle JAR)
+**Default:** `''` (empty — no extra entries; only the bundled Checkstyle JAR is used)
 
 **Example:**
 
