@@ -80,3 +80,31 @@ jobs:
             testdata/java/excluded
             testdata/java/excluded dir
 
+  # Fails if checkstyle_classpath is not forwarded: custom_checks.xml exists
+  # only inside the classpath directory, so without it Checkstyle cannot find
+  # the config and exits 255. The local reporter needs no API access.
+  test-checkstyle-classpath:
+    if: github.event_name == 'pull_request'
+    name: runner / checkstyle (checkstyle_classpath)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          reporter: local
+          filter_mode: nofilter
+          workdir: ./testdata/java/
+          checkstyle_config: custom_checks.xml
+          checkstyle_classpath: testdata/custom classpath
+

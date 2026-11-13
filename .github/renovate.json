@@ -11,6 +11,28 @@
   ],
   "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/examples/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/__fixtures__/**"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "JDK image the bats suite uses to compile the custom Check fixture",
+      "managerFilePatterns": [
+        "/^tests/entrypoint\\.bats$/"
+      ],
+      "matchStrings": [
+        "(?<depName>eclipse-temurin):(?<currentValue>[^@\\s\"]+)@(?<currentDigest>sha256:[a-f0-9]{64})"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "description": "Longer cooldown for major versions",

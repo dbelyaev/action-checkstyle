@@ -17,7 +17,8 @@
 #
 # Requires: docker, bats, and host tar and git. The image is built once and
 # the workspace copy is made once, both in setup_file: tar copies the checkout
-# and `git init` re-initialises the copy as a repository of its own.
+# and `git init` re-initialises the copy as a repository of its own. A custom
+# Check fixture is also compiled once there, in a JDK container (no host JDK).
 
 setup_file() {
   export IMAGE="action-checkstyle-test:bats"
@@ -46,6 +47,38 @@ setup_file() {
   # Re-initialise as a repo of its own: the real workspace on a runner is a git
   # repository, so the tests should exercise that shape too.
   git -C "$WORKSPACE" init -q
+
+  build_custom_check
+}
+
+# Compiles testdata/custom classpath/src into build/classes and
+# build/lib/custom-checks.jar inside the workspace copy, for the
+# checkstyle_classpath tests. The action image is JRE-only, so a JDK container
+# does the compiling; it compiles against the checkstyle.jar taken from the
+# image under test so the Check API always matches. It runs as the host user
+# with read-only sources so nothing root-owned is left behind for cleanup.
+build_custom_check() {
+  # Keep the Java major version in step with the JRE base image in Dockerfile.
+  # Digest-pinned; kept current by the customManagers entry in .github/renovate.json.
+  local jdk_image="eclipse-temurin:25.0.5_8-jdk-alpine@sha256:c7c3d0bdf7f2bbc5a05a6712ed334d198360105634ea9adf76fca94f381b1e3f"
+  local fixture="$WORKSPACE/testdata/custom classpath"
+  local cid rc=0
+
+  cid="$(docker create "$IMAGE")"
+  docker cp "$cid:/opt/lib/checkstyle.jar" "$BATS_FILE_TMPDIR/checkstyle.jar" >/dev/null || rc=$?
+  docker rm "$cid" >/dev/null
+  [ "$rc" -eq 0 ] || return "$rc"
+
+  mkdir -p "$fixture/build"
+  docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+    -v "$fixture/src:/src:ro" \
+    -v "$BATS_FILE_TMPDIR/checkstyle.jar:/checkstyle.jar:ro" \
+    -v "$fixture/build:/build" \
+    "$jdk_image" sh -ec '
+      javac -cp /checkstyle.jar -d /build/classes $(find /src -name "*.java")
+      mkdir -p /build/lib
+      jar --create --file /build/lib/custom-checks.jar -C /build/classes .
+    ' >/dev/null
 }
 
 # Runs the action in the container against the workspace copy.
@@ -149,6 +182,126 @@ testdata/java/excluded dir"
   run run_action \
     "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/properties_file/test_checks.xml"
   [ "$status" -ne 0 ]
+}
+
+# --- checkstyle_classpath -----------------------------------------------
+# custom_checks.xml is not at the workspace root, so Checkstyle can only find
+# it through the classpath resource lookup - seeing its custom message proves
+# the input reached the JVM. The space in the directory name guards against
+# an unquoted classpath.
+
+@test "checkstyle_classpath: a ruleset on the extra classpath is loaded" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom classpath rule was loaded"* ]]
+}
+
+@test "checkstyle_classpath: the same ruleset is not found without it" {
+  run run_action "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Custom classpath rule was loaded"* ]]
+}
+
+# The tests below load a real Check class compiled in setup_file. The config
+# references com.example.checks.MarkerCheck, which exists only in build/.
+#
+# Checkstyle's own error text is not observable in the output (it goes to the
+# discarded XML stream), so negative tests cannot tell "class missing" from any
+# other config error by message. The positive tests use the very same config,
+# which is what rules out a broken config as the cause of those failures.
+
+@test "checkstyle_classpath: a custom Check class in a JAR is loaded" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/build/lib/custom-checks.jar" \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/custom classpath/config/custom_class_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: a custom Check class in a class directory is loaded" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/build/classes" \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/custom classpath/config/custom_class_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: a custom Check class cannot load without it" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/custom classpath/config/custom_class_checks.xml"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: colon-separated entries are all used" {
+  # The config is found only via the first entry, the class only via the second.
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/config:testdata/custom classpath/build/lib/custom-checks.jar" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_class_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: the config entry alone is not enough" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/config" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_class_checks.xml"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: the JAR entry alone is not enough" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/build/lib/custom-checks.jar" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_class_checks.xml"
+  [ "$status" -ne 0 ]
+  [[ "$output" != *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: a dir/* wildcard picks up the JARs in it" {
+  # Must reach the JVM unexpanded; the JVM, not the shell, expands it.
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath/build/lib/*" \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/custom classpath/config/custom_class_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom check class was loaded"* ]]
+}
+
+@test "checkstyle_classpath: an absolute path entry is accepted" {
+  run run_action \
+    "INPUT_CHECKSTYLE_CLASSPATH=/github/workspace/testdata/custom classpath/build/lib/custom-checks.jar" \
+    "INPUT_CHECKSTYLE_CONFIG=/github/workspace/testdata/custom classpath/config/custom_class_checks.xml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Custom check class was loaded"* ]]
+}
+
+# An empty entry would put the workspace root on the classpath. 'leak-marker'
+# in the values checks that the rejected input is not echoed to the log.
+
+@test "checkstyle_classpath: empty entries are rejected before analysis" {
+  local value
+  for value in ":" ":leak-marker" "leak-marker:" "leak-marker::other"; do
+    run run_action "INPUT_CHECKSTYLE_CLASSPATH=$value"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"Invalid checkstyle_classpath: empty entry"* ]]
+    [[ "$output" != *"leak-marker"* ]]
+    [[ "$output" != *"Run check with"* ]]
+  done
+}
+
+@test "checkstyle_classpath: rejection happens before a custom version downloads" {
+  run run_action "INPUT_CHECKSTYLE_CLASSPATH=a::b" "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_classpath"* ]]
+  [[ "$output" != *"Installing user-defined Checkstyle version"* ]]
+}
+
+@test "checkstyle_classpath: an explicitly empty value is accepted" {
+  run run_action "INPUT_CHECKSTYLE_CLASSPATH="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
 }
 
 # --- failure modes ------------------------------------------------------
@@ -356,10 +509,14 @@ testdata/java/excluded dir"
 
 @test "version validation: a well-formed version passes validation and downloads" {
   # Guards against the pattern being so strict it rejects real versions.
-  run run_action "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  # The classpath rides along to prove it survives the JAR being replaced.
+  run run_action "INPUT_CHECKSTYLE_VERSION=10.21.0" \
+    "INPUT_CHECKSTYLE_CLASSPATH=testdata/custom classpath" \
+    "INPUT_CHECKSTYLE_CONFIG=custom_checks.xml"
   [ "$status" -eq 0 ]
   [[ "$output" != *"Invalid checkstyle_version"* ]]
-  [[ "$output" == *"Application.java"* ]]
+  [[ "$output" == *"Checkstyle version: 10.21.0"* ]]
+  [[ "$output" == *"Custom classpath rule was loaded"* ]]
 }
 
 @test "version validation: a well-formed but nonexistent version fails at download" {

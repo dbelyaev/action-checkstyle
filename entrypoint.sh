@@ -98,6 +98,25 @@ case "${INPUT_FAIL_LEVEL}" in
     ;;
 esac
 
+# Java reads an empty classpath entry (leading, trailing or doubled ':') as the
+# working directory, i.e. the PR-controlled workspace root. That is almost
+# always a typo, so reject it rather than silently widen the classpath. This is
+# footgun prevention, not a security boundary: '.', '*' or an absolute path
+# can still name workspace files on purpose. The value is not echoed back, as
+# it could contain text that should not reach the log.
+CHECKSTYLE_CLASSPATH="/opt/lib/checkstyle.jar"
+if [ -n "${INPUT_CHECKSTYLE_CLASSPATH}" ]; then
+  case ":${INPUT_CHECKSTYLE_CLASSPATH}:" in
+    *::*)
+      echo "Invalid checkstyle_classpath: empty entry (leading, trailing or doubled ':'). Java would treat it as the working directory." >&2
+      exit 1
+      ;;
+    *)
+      CHECKSTYLE_CLASSPATH="${CHECKSTYLE_CLASSPATH}:${INPUT_CHECKSTYLE_CLASSPATH}"
+      ;;
+  esac
+fi
+
 # build optional checkstyle arguments safely using positional parameters
 set --
 
@@ -192,7 +211,8 @@ echo '::group:: Running Checkstyle with reviewdog 🐶 ...'
 cs_output="$(mktemp)"
 trap 'rm -f "$cs_output"' EXIT
 
-java -jar /opt/lib/checkstyle.jar "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
+java -cp "${CHECKSTYLE_CLASSPATH}" com.puppycrawl.tools.checkstyle.Main \
+  "${INPUT_WORKDIR}" -c "${INPUT_CHECKSTYLE_CONFIG}" "$@" -f xml \
   > "$cs_output" || cs_exit=$?
 cs_exit=${cs_exit:-0}
 

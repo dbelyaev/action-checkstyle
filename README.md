@@ -58,6 +58,7 @@ That's it! The action will now analyze Java files in every pull request using Go
   - [Checkstyle Parameters](#checkstyle-parameters)
     - [`checkstyle_config`](#checkstyle_config)
     - [`checkstyle_version`](#checkstyle_version)
+    - [`checkstyle_classpath`](#checkstyle_classpath)
     - [`workdir`](#workdir)
     - [`properties_file`](#properties_file)
     - [`exclude`](#exclude)
@@ -134,7 +135,7 @@ For automated SHA updates, consider using tools like [Dependabot (owned by GitHu
 This action requires specific GitHub token permissions depending on the reporter you choose. Set these in your workflow's `permissions` block:
 
 | Reporter | Required Permissions |
-|---|---|
+| --- | --- |
 | `github-pr-check` | `checks: write`, `contents: read` |
 | `github-check` | `checks: write`, `contents: read` |
 | `github-pr-review` | `pull-requests: write`, `contents: read` |
@@ -187,9 +188,10 @@ Quick reference for all inputs. Click a name to jump to its detailed description
 Checkstyle inputs:
 
 | Name | Required | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [`checkstyle_config`](#checkstyle_config) | No | `google_checks.xml` | Checkstyle ruleset to apply (built-in or custom path). |
 | [`checkstyle_version`](#checkstyle_version) | No | Latest | Checkstyle version to use for analysis. |
+| [`checkstyle_classpath`](#checkstyle_classpath) | No | `''` | Extra classpath entries for custom checks. |
 | [`workdir`](#workdir) | No | `.` | Working directory for analysis, relative to repository root. |
 | [`properties_file`](#properties_file) | No | `''` | Path to a properties file defining variables for the config. |
 | [`exclude`](#exclude) | No | `''` | Newline-separated directories/files to exclude. |
@@ -197,7 +199,7 @@ Checkstyle inputs:
 Reviewdog inputs:
 
 | Name | Required | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [`github_token`](#github_token) | No | `${{ github.token }}` | GitHub token for API authentication. |
 | [`reporter`](#reporter) | No | `github-pr-check` | How reviewdog reports violations. |
 | [`level`](#level) | No | `info` | Severity level for reported violations. |
@@ -262,6 +264,33 @@ with:
   github_token: ${{ secrets.GITHUB_TOKEN }}
   reporter: github-pr-review
   checkstyle_version: "12.3.0" # use double quotes for version numbers
+```
+
+---
+
+#### `checkstyle_classpath`
+
+Extra classpath entries for Checkstyle. Use this when your configuration references custom checks (your own `Check` classes or third-party check libraries) that are not part of the Checkstyle distribution.
+
+Uses Java classpath syntax: colon-separated JAR files or class directories, or `directory/*` for every JAR in a directory. The entries are appended after the bundled Checkstyle JAR. Relative paths resolve from the repository root, not the `workdir` parameter. Build the JAR in an earlier workflow step if it is not committed to the repository.
+
+> **Security:** Classes on this classpath run inside the action with its credentials, and can read the GitHub token from the environment. Treat everything on this classpath as code you are choosing to execute.
+>
+> - **The risk is untrusted code plus credentials.** It is not tied to one trigger. Never put files that a pull request can change on the classpath of a job that holds secrets or a write-scoped token. Typical examples are `pull_request_target`, `workflow_run`, and `issue_comment`/ChatOps jobs that check out the PR head.
+> - **Leaving out `github_token` does not remove the credential:** it defaults to `${{ github.token }}`. Same-repository `pull_request` runs can get a write-scoped token. Fork PRs usually get a read-only token (this is configurable), and even a read-only token can read private repository data. Grant the job only the [permissions it needs](#required-permissions).
+> - **Build custom checks from trusted inputs:** use a separate checkout of a trusted ref, with trusted build scripts and dependencies. Building trusted sources with Gradle/Maven configuration from the pull request still runs the pull request's code. Alternatively, download a pinned artifact and verify its checksum against a value from a trusted source, never from the pull request.
+> - **Empty entries inside a non-empty value are rejected** (leading, trailing or doubled `:`, for example `:lib/a.jar` or `a.jar::b.jar`), because Java treats them as the working directory, which is the workspace root. A `.` entry adds the workspace root's loose classes and resources. A `*` entry adds every JAR in the workspace root. Avoid both unless you mean it.
+
+**Default:** `''` (empty — no extra entries; only the bundled Checkstyle JAR is used)
+
+**Example:**
+
+```yaml
+with:
+  github_token: ${{ secrets.GITHUB_TOKEN }}
+  reporter: github-pr-review
+  checkstyle_config: config/checkstyle.xml
+  checkstyle_classpath: build/libs/custom-checks.jar:lib/*
 ```
 
 ---

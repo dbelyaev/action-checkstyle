@@ -40,6 +40,7 @@ jobs:
           exclude: |
             testdata/java/excluded
             testdata/java/excluded dir
+            testdata/custom classpath
 
   test-pr-check:
     if: github.event_name == 'pull_request'
@@ -95,3 +96,4 @@ jobs:
           exclude: |
             testdata/java/excluded
             testdata/java/excluded dir
+            testdata/custom classpath
