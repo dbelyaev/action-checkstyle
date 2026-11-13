@@ -111,8 +111,10 @@ if [ -n "${INPUT_CHECKSTYLE_CLASSPATH}" ]; then
       echo "Invalid checkstyle_classpath: empty entry (leading, trailing or doubled ':'). Java would treat it as the working directory." >&2
       exit 1
       ;;
+    *)
+      CHECKSTYLE_CLASSPATH="${CHECKSTYLE_CLASSPATH}:${INPUT_CHECKSTYLE_CLASSPATH}"
+      ;;
   esac
-  CHECKSTYLE_CLASSPATH="${CHECKSTYLE_CLASSPATH}:${INPUT_CHECKSTYLE_CLASSPATH}"
 fi
 
 # build optional checkstyle arguments safely using positional parameters
