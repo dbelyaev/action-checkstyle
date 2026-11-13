@@ -277,6 +277,33 @@ testdata/java/excluded dir"
   [[ "$output" == *"Custom check class was loaded"* ]]
 }
 
+# An empty entry would put the workspace root on the classpath. 'leak-marker'
+# in the values checks that the rejected input is not echoed to the log.
+
+@test "checkstyle_classpath: empty entries are rejected before analysis" {
+  local value
+  for value in ":" ":leak-marker" "leak-marker:" "leak-marker::other"; do
+    run run_action "INPUT_CHECKSTYLE_CLASSPATH=$value"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"Invalid checkstyle_classpath: empty entry"* ]]
+    [[ "$output" != *"leak-marker"* ]]
+    [[ "$output" != *"Run check with"* ]]
+  done
+}
+
+@test "checkstyle_classpath: rejection happens before a custom version downloads" {
+  run run_action "INPUT_CHECKSTYLE_CLASSPATH=a::b" "INPUT_CHECKSTYLE_VERSION=10.21.0"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid checkstyle_classpath"* ]]
+  [[ "$output" != *"Installing user-defined Checkstyle version"* ]]
+}
+
+@test "checkstyle_classpath: an explicitly empty value is accepted" {
+  run run_action "INPUT_CHECKSTYLE_CLASSPATH="
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Application.java"* ]]
+}
+
 # --- failure modes ------------------------------------------------------
 
 @test "invalid checkstyle config fails with a non-zero exit code" {

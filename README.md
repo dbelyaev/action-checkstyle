@@ -274,7 +274,12 @@ Extra classpath entries for Checkstyle. Use this when your configuration referen
 
 Uses Java classpath syntax: colon-separated JAR files or class directories, or `directory/*` for every JAR in a directory. The entries are appended after the bundled Checkstyle JAR. Relative paths resolve from the repository root, not the `workdir` parameter. Build the JAR in an earlier workflow step if it is not committed to the repository.
 
-> **Security:** Classes on this classpath are executed inside the action container, which has access to `github_token`. If the classpath points at files a pull request can change, the pull request author controls that code. Do not do this in `pull_request_target` workflows or with write-scoped tokens.
+> **Security:** Classes on this classpath run inside the action with its credentials, and can read the GitHub token from the environment. Treat everything on this classpath as code you are choosing to execute.
+>
+> - **The risk is untrusted code plus credentials.** It is not tied to one trigger. Never put files that a pull request can change on the classpath of a job that holds secrets or a write-scoped token. Typical examples are `pull_request_target`, `workflow_run`, and `issue_comment`/ChatOps jobs that check out the PR head.
+> - **Leaving out `github_token` does not remove the credential:** it defaults to `${{ github.token }}`. Same-repository `pull_request` runs can get a write-scoped token. Fork PRs usually get a read-only token (this is configurable), and even a read-only token can read private repository data. Grant the job only the [permissions it needs](#required-permissions).
+> - **Build custom checks from trusted inputs:** use a separate checkout of a trusted ref, with trusted build scripts and dependencies. Building trusted sources with Gradle/Maven configuration from the pull request still runs the pull request's code. Alternatively, download a pinned artifact and verify its checksum against a value from a trusted source, never from the pull request.
+> - **Empty entries are rejected** (leading, trailing or doubled `:`), because Java treats them as the working directory, which is the workspace root. A `.` entry adds the workspace root's loose classes and resources. A `*` entry adds every JAR in the workspace root. Avoid both unless you mean it.
 
 **Default:** `''` (empty — only the bundled Checkstyle JAR)
 

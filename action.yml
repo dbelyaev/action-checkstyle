@@ -45,8 +45,8 @@ inputs:
   checkstyle_classpath:
     description: |
       Extra classpath entries for Checkstyle, needed when your configuration uses custom checks that are not part of the Checkstyle distribution.
-      Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory. Relative paths resolve from the repository root.
-      WARNING: classes on this classpath are executed. Do not point it at files a pull request can modify when running on pull_request_target or with write-scoped tokens.
+      Java classpath syntax: colon-separated JARs or class directories, or directory/* for all JARs in a directory. Relative paths resolve from the repository root. Empty entries (leading, trailing or doubled ':') are rejected.
+      WARNING: classes on this classpath run with the action's credentials, and github_token defaults to github.token even when omitted. Never include files a pull request can change in a job that holds secrets or a write-scoped token. See the README for details.
     default: ""
   properties_file:
     description: |
