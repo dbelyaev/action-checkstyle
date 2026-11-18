@@ -70,6 +70,7 @@ That's it! The action will now analyze Java files in every pull request using Go
     - [`fail_level`](#fail_level)
     - [`reviewdog_flags`](#reviewdog_flags)
 - [Contributing](#contributing)
+- [Support](#support)
 - [License](#license)
 
 ## Example
@@ -461,6 +462,14 @@ Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) 
 - Follow our code of conduct
 
 We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Support
+
+For bugs and feature requests, please [open an issue](https://github.com/dbelyaev/action-checkstyle/issues).
+
+For other questions, contact the maintainer at <action-checkstyle@16bit.no>.
+
+To report a security vulnerability, see the [Security Policy](SECURITY.md).
 
 ## License
 

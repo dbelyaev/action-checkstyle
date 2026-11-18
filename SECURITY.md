@@ -8,7 +8,7 @@ If you discover a security vulnerability in this project, please follow the step
 Create a GitHub issue for the vulnerability and ask the maintainer to reach out to you.  
 Avoid putting sensitive information in the issue.
 - **Alternative B:**  
-Send an email to the projects maintainer at <opensource+dbelyaev/action-checkstyle@16bit.no> describing the issue.
+Send an email to the projects maintainer at <action-checkstyle@16bit.no> describing the issue.
 
 ## Preferred languages
 
