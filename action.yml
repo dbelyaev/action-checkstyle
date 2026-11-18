@@ -1,4 +1,4 @@
-name: "Java Checkstyle Reviewer"
+name: "Checkstyle for Java"
 # description should be no more than 125 characters!
 description: "Enforce Java code standards in PRs with inline feedback. Powered by Checkstyle + reviewdog for GitHub integration."
 author: "Dmitriy Belyaev"
